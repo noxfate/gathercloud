@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-class HomeController extends Controller
+class PagesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,10 +16,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $dropbox = new \App\Library\DropboxModel();
-        $files = $dropbox->getFiles();
-        return view("dropbox")->with('files',$files);
-        
+        //
     }
 
     /**
@@ -86,5 +83,10 @@ class HomeController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function about()
+    {
+        return view('pages.about');
     }
 }
