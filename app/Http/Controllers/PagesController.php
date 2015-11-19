@@ -16,7 +16,7 @@ class PagesController extends Controller
      */
     public function index()
     {
-        //
+        return view('pages.index');
     }
 
     /**
@@ -88,5 +88,10 @@ class PagesController extends Controller
     public function about()
     {
         return view('pages.about');
+    }
+
+    public function test()
+    {
+        return view('components.contextmenu');
     }
 }

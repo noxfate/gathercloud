@@ -15,6 +15,4 @@
 Route::get('/', "PagesController@index");
 Route::get('/index.php', 'PagesController@index');
 Route::get('about', "PagesController@about");
-
-Route::get('/index.php', 'HomeController@index');
-
+Route::get('test', "PagesController@test");
