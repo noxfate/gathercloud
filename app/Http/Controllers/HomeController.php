@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use Auth;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
 
 class HomeController extends Controller
 {
@@ -16,11 +18,33 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $dropbox = new \App\Library\DropboxModel();
-        $files = $dropbox->getFiles();
-        return view("index")->with('files',$files);
-        
+        if (!Auth::check())
+            return view("index");
+        else
+            return Redirect::to('/home');
     }
+
+    public function dropbox()
+    {
+        $dropbox = new \App\Library\DropboxModel();
+
+        return $dropbox->getFiles();
+//        return "<h1>Access Token Not Found Problem</h1>";
+    }
+
+    public function copy()
+    {
+        $copy = new \App\Library\CopyModel();
+        if (!isset($_GET['oauth_token'])){
+            return Redirect::to($copy->getRequestToken());
+        }else{
+            return $copy->getAccessToken($_GET['oauth_token']);
+        }
+
+    }
+
+
+
 
     /**
      * Show the form for creating a new resource.

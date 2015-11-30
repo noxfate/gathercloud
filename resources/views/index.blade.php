@@ -1,35 +1,14 @@
-@extends("layout")
+@extends('layout')
 
-@section("content")
-    <h2>GetFiles Dropbox</h2>
-    @foreach($files as $file)
+@section('content')
+   <h1>Landing Page</h1>
 
-        NAME : {{ basename($file->path) }} <br>
-        PATH : {{ $file->path }} <br>
-        LAST MODIFIED : {{ $file->modified }} <br>
-        @if($file->is_dir)
-            <a href="#">Open Folder</a>  <br>
-        @else
-            SIZE : {{ $file->size }} <br>
-            <a href="#">Download</a> <br>
-            <a href="#">Share</a> <br>
-            <a href="#">Delete</a> <br>
-        @endif
-        <br>
+    <form action="login" method="POST">
+        E-mail : <input type="email" name="email">
+        Password: <input type="password" name="pwd">
+        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+        <input type="submit" value="submit">
 
-
-        "NAME : ". basename($file->path) . "<br>";
-        echo "PATH : ". $file->path . "<br>";
-        echo "LAST MODIFIED : ". $file->modified . "<br>";
-        if ($file->is_dir){
-        echo "<a href='#'>Open Folder</a><br>";
-        }else{
-        echo "SIZE : ". $file->size . "<br>";
-        echo "<a href='controllers/download.php?dbxPath=". $file->path ."'>Download</a>";
-        echo " <a href='". $dropbox->getLink($file->path) ."'>Share</a> ";
-        echo " <a href='controllers/delete.php?dbxPath=". $file->path."'>Delete</a>";
-        }
-        echo "<br>";
-    @endforeach
-
+    </form>
+    <a href="register">Register</a><br>
 @endsection

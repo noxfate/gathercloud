@@ -14,6 +14,11 @@ Class DropboxModel extends ModelAbstract
 		$this->dropbox = $this->setDropbox();
 	}
 
+	function dummy()
+	{
+		return $this->dropbox->GetAccessToken();
+	}
+
 	function setDropbox()
 	{
 		error_reporting(E_ALL);
@@ -34,31 +39,31 @@ Class DropboxModel extends ModelAbstract
 		$access_token = $this->load_token("access");
 		if(!empty($access_token)) {
 			$dbx->SetAccessToken($access_token);
-			// echo "loaded access token:";
-			// print_r($access_token);
+			 echo "loaded access token:";
+			 print_r($access_token);
 		}
 		elseif(!empty($_GET['auth_callback'])) // are we coming from dbx's auth page?
 		{
 			// then load our previosly created request token
 			$request_token = $this->load_token($_GET['oauth_token']);
 			if(empty($request_token)) die('Request token not found!');
-			
+
 			// get & store access token, the request token is not needed anymore
-			$access_token = $dbx->GetAccessToken($request_token);	
+			$access_token = $dbx->GetAccessToken($request_token);
 			$this->store_token($access_token, "access");
 			$this->delete_token($_GET['oauth_token']);
 		}
 
 		// checks if access token is required
-		if(!$dbx->IsAuthorized())
-		{
+		if(!$dbx->IsAuthorized()) {
 			// redirect user to dbx auth page
-			$return_url = "http://".$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']."?auth_callback=1";
-			$auth_url = $dbx->BuildAuthorizeUrl($return_url);
-			echo "http://".$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']."?auth_callback=1<br>";
+//			$return_url = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'] . "?auth_callback=1";
+			$return_url = "http://localhost/gathercloud/public/dropbox?auth_callback=1";
+            $auth_url = $dbx->BuildAuthorizeUrl($return_url);
+			echo "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'] . "?auth_callback=1<br>";
 			echo $auth_url;
 			$request_token = $dbx->GetRequestToken();
-			$this->store_token($request_token, "access");
+			$this->store_token($request_token, $request_token['t']);
 			die("Authentication required. <a href='$auth_url'>Click here.</a>");
 		}
 

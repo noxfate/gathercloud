@@ -611,8 +611,9 @@ class DropboxClient {
 
 		$context = $this->createRequestContext($url, $method, $content);
 		$json = $this->useCurl ? self::execCurlAndClose($context) : file_get_contents($url, false, $context);
-		//if($json === false)
-//			throw new DropboxException();
+		if($json === false)	throw new DropboxException();
+
+        var_dump($context);
 		$resp = json_decode($json);
 		return self::checkForError($resp);
 	}
