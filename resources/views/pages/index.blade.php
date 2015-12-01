@@ -32,7 +32,7 @@
         <div class="itemMenu-separator"></div>
         <div id="my-cloud" class="my-cloud">
             <ul id="list-cloud" class="list-cloud">
-                <li class="withSelect"><div><span class="glyphicon glyphicon-cloud"></span>All in one</div></li>
+                <li><div><span class="glyphicon glyphicon-cloud"></span>All in one</div></li>
                 <li><div><span class="glyphicon glyphicon-cloud"></span>Box</div></li>
                 <li><div><span class="glyphicon glyphicon-cloud"></span>Copy</div></li>
                 <li><div><span class="glyphicon glyphicon-cloud"></span>Dropbox</div></li>
