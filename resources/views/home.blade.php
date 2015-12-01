@@ -10,8 +10,8 @@
 <body>
     <div id="top-bar">
         <div id="logo">&lt;Logo&gt;</div>
-        <div id="username"> Username: <b>{{ Auth::user()->name }}</b> <span class="glyphicon glyphicon-cog"></span></div>
-        <a href="logout">Logout</a>
+        <div id="username"> Username: <b>{{ Auth::user()->name }}</b> <span class="glyphicon glyphicon-cog"></span> <a href="logout">Logout</a></div>
+
     </div>
 
     <div id="nav-bar">

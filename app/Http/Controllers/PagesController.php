@@ -18,11 +18,13 @@ class PagesController extends Controller
      */
     public function index()
     {
-<<<<<<< HEAD:app/Http/Controllers/HomeController.php
+
         if (!Auth::check())
-            return view("index");
+            return view("pages.index");
         else
             return Redirect::to('/home');
+
+        //        return view('pages.index');
     }
 
     public function dropbox()
@@ -42,9 +44,7 @@ class PagesController extends Controller
             return $copy->getAccessToken($_GET['oauth_token']);
         }
 
-=======
-        return view('pages.index');
->>>>>>> 926ab241342ebc49351f6caac949dbc3d95c410e:app/Http/Controllers/PagesController.php
+
     }
 
 
