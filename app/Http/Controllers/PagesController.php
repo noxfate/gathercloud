@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 
-class HomeController extends Controller
+class PagesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,6 +18,7 @@ class HomeController extends Controller
      */
     public function index()
     {
+<<<<<<< HEAD:app/Http/Controllers/HomeController.php
         if (!Auth::check())
             return view("index");
         else
@@ -41,6 +42,9 @@ class HomeController extends Controller
             return $copy->getAccessToken($_GET['oauth_token']);
         }
 
+=======
+        return view('pages.index');
+>>>>>>> 926ab241342ebc49351f6caac949dbc3d95c410e:app/Http/Controllers/PagesController.php
     }
 
 
@@ -110,5 +114,15 @@ class HomeController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function about()
+    {
+        return view('pages.about');
+    }
+
+    public function test()
+    {
+        return view('components.contextmenu');
     }
 }

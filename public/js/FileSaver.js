@@ -1,3 +1,4 @@
+
 /* FileSaver.js
  * A saveAs() FileSaver implementation.
  * 1.1.20151003
@@ -268,3 +269,4 @@ if (typeof module !== "undefined" && module.exports) {
     return saveAs;
   });
 }
+

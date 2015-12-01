@@ -11,6 +11,7 @@
 |
 */
 
+<<<<<<< HEAD
 Route::get('/', "HomeController@index");
 
 Route::post('/login', "UserController@authenticate");
@@ -35,3 +36,10 @@ Route::get('/dropbox', 'HomeController@dropbox');
 //Route::get('/copy/getAccessToken', 'HomeController@copy');
 
 
+=======
+// PagesController
+Route::get('/', "PagesController@index");
+Route::get('/index.php', 'PagesController@index');
+Route::get('about', "PagesController@about");
+Route::get('test', "PagesController@test");
+>>>>>>> 926ab241342ebc49351f6caac949dbc3d95c410e

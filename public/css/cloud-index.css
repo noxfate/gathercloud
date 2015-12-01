@@ -1,0 +1,274 @@
+@font-face {
+    font-family: 'source_sans_proregular';
+    src: url('https://eu.static.mega.co.nz/3/fonts/SourceSansPro-Regular.eot');
+    src: url('https://eu.static.mega.co.nz/3/fonts/SourceSansPro-Regular.eot?#iefix') format('embedded-opentype'), url('https://eu.static.mega.co.nz/3/fonts/SourceSansPro-Regular.woff2') format('woff2'), url('https://eu.static.mega.co.nz/3/fonts/SourceSansPro-Regular.woff') format('woff'), url('https://eu.static.mega.co.nz/3/fonts/SourceSansPro-Regular.ttf') format('truetype'), url('https://eu.static.mega.co.nz/3/fonts/SourceSansPro-Regular.svg#source_sans_proregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+
+html,body {
+    height: 100%;
+    width: 100%;
+    min-width: 800px;
+    min-height: 600px;
+    font-size: 14px;
+    color: #333333;
+    line-height: 15px;
+    font-family: 'source_sans_proregular';
+}
+
+body {
+    padding: 0px;
+    margin: 0 auto;
+}
+
+
+/* *** TOP BAR ****/
+.top-bar {
+    position: relative;
+    height: 50px;
+    width: 100%;
+    /*background-color: #493d55;*/
+    background-color: #242321;
+    padding: 5px;
+    color: whitesmoke;
+}
+
+.logo {
+    position: absolute;
+    font-size: 1.5em;
+    padding-left: 15px;
+    padding-top: 10px;
+}
+
+.userMenu {
+    position: absolute;
+    right: 0px;
+    padding-right: 10px;
+    padding-top: 8px;
+}
+
+.btn-userMenu {
+    height: 25px;
+    width: 30px;
+    background-color: #5b5a59;
+    border: 0px;
+    border-radius: 5px;
+
+}
+.btn-userMenu:hover {
+    background-color: #8a8988;
+}
+
+.dd-userMenu {
+    top: 34px;
+    left: -120px;
+    background-color: #333;
+    border: 0px;
+    border-radius: 0px;
+}
+
+.dd-userMenu li a{
+    color: whitesmoke;
+}
+
+/* *** BOX Lv 1 ****/
+.box-lv-1 {
+    height: calc(100% - 50px);
+}
+
+/* *** BOX Lv 1 - SIDE-BAR ****/
+.side-bar {
+    float: left;
+    width: 240px;
+    height: 100%;
+    /*background-color: #51445e;*/
+    background-color: #3c3c3c;
+    color: whitesmoke;
+}
+
+.side-bar span {
+    padding-right: 10px;
+}
+
+.add-cloud{
+    font-size: 17px;
+    text-align: center;
+    padding: 15px;
+}
+
+.add-cloud button {
+    background-color: orangered;
+    border: 0;
+
+}
+
+.add-cloud button:hover {
+    background-color: orange;
+}
+
+.list-cloud {
+    margin: 0px;
+    list-style-type: none;
+    padding: 0px;
+}
+.list-cloud li div{
+    padding: 10px 25px 10px 25px;
+}
+
+.list-cloud li div:hover{
+    color:#262626;
+    background-color:#f5f5f5;
+    cursor: pointer;
+}
+
+.list-cloud li.withSelect{
+    color:#262626;
+    background-color: white;
+}
+
+.box-nav-bar {
+    height: 50px;
+    width: 100%;
+    background-color: #f2f2f2;
+    padding: 5px;
+    color: white;
+}
+
+.nav-bar {
+    width: calc(100% - 230px);
+    float: left;
+    color: #999;
+    font-size: 140%;
+    padding-top: 10px;
+}
+
+.nav-bar span {
+    padding-right: 1%;
+}
+
+.nav-bar a {
+    color: #666666;
+    text-decoration: none;
+}
+
+.nav-bar a:hover {
+    color: #999;
+}
+
+.create-bar {
+    width: 230px;
+    float: right;
+    padding-top: 3px;
+
+}
+
+.create-bar button {
+    color: #777777;
+}
+
+.create-bar .icon-new-folder{
+    display: inherit;
+    background-image: url(../images/new_folder.gif);
+    width: 20px;
+    height: 14px;
+}
+.create-bar button:hover {
+    color: lawngreen;
+    background-color: white;
+    border: solid lawngreen 1px;
+}
+
+.create-bar button#new-folder:hover div{
+    background-image: url(../images/new_folder_hover.gif);
+}
+
+
+
+
+
+/* *** BOX Lv 1 - BOARD ****/
+.board {
+    float: left;
+    height: 100%;
+    width: calc(100% - 240px);
+    background-color: #fff;
+}
+
+.table-header {
+    width: 100%;
+    height: 30px;
+}
+
+.table-header tr th {
+    color: #999999;
+    font-weight: normal;
+    padding: 5px 10px 5px 10px;
+    background-image: url(https://eu.static.mega.co.nz/3/images/mega/nw-fm-sprite_v12.svg);
+    background-repeat: no-repeat;
+    background-position: right -1529px;
+}
+
+.th-icon-cloud{
+    width: 30px;
+    text-align: center;
+}
+.th-name {
+    width: calc(100% - 30px - 80px - 120px - 50px);
+    padding-left: 0px;
+}
+
+.th-size {
+    width: 80px;
+}
+
+.th-last-mo {
+    width: 120px;
+}
+
+.th-action {
+    width: 50px;
+    text-align: right;
+}
+
+.board .board-body {
+    overflow: auto;
+    height: calc(100% - 50px - 30px);
+}
+
+.board-body a {
+    color: #666666;
+    text-decoration: none;
+}
+
+.board-body a:hover {
+    color: #999;
+}
+
+.table-body {
+    width: 100%;
+    color: #666666;
+}
+
+.table-body tr td {
+    padding: 5px 10px 5px 10px;
+
+}
+
+.th-name span {
+    padding-right: 1%;
+}
+
+
+
+.table-body.table-hover tr td span.action{
+    display: none;
+}
+
+.table-body.table-hover tr:hover span.action{
+    display: inline-block;
+}
+
+
