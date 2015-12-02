@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Auth;
-use Hash;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 
 class UserController extends Controller
@@ -60,8 +60,8 @@ class UserController extends Controller
     {
         $user = new \App\User();
         $user->email = $_POST['email'];
-        $user->first_name = $_POST['first_name'];
-        $user->last_name = $_POST['last_name'];
+        $user->first_name = $_POST['fname'];
+        $user->last_name = $_POST['lname'];
         if ($_POST['pwd'] == $_POST['repwd'])
             $user->password = Hash::make($_POST['pwd']);
         else

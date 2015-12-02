@@ -14,13 +14,13 @@ Class DropboxModel extends ModelAbstract
 		$this->dropbox = $this->setDropbox();
 	}
 
-	function dummy()
-	{
-		return $this->dropbox->GetAccessToken();
-	}
 
 	function setDropbox()
 	{
+		$APP_KEY = "fv1z1w4yn5039ys";
+		$APP_SECRET = "jyzrgispic9cabg";
+		$APP_FULL_ACCESS = true;
+
 		error_reporting(E_ALL);
 		$this->enable_implicit_flush();
 		// -- end of unneeded stuff
@@ -29,10 +29,9 @@ Class DropboxModel extends ModelAbstract
 		set_time_limit(0);
 
 		$dbx = new \DropboxClient(array(
-			'app_key' => "fv1z1w4yn5039ys", 
-			'app_secret' => "jyzrgispic9cabg",
-			// 'app_full_access' => false,
-			'app_full_access' => true,
+			'app_key' => $APP_KEY,
+			'app_secret' => $APP_SECRET,
+			'app_full_access' => $APP_FULL_ACCESS,
 
 		),'en');
 
