@@ -63,6 +63,19 @@ class OAuthClient extends GuzzleClient
         parent::__construct();
     }
 
+    // +++++++++++++++ modified by sawitree
+    /**
+     * @return KeyValueStore
+     */
+    public function getKvs()
+    {
+        return $this->kvs;
+    }
+
+
+
+
+
     /**
      * @return string access token
      *
@@ -95,7 +108,8 @@ class OAuthClient extends GuzzleClient
 
         }
 
-        return $this->accessToken;
+        // modified by sawitree
+//        return $this->accessToken;
     }
 
     /**

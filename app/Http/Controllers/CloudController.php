@@ -43,6 +43,10 @@ class CloudController extends Controller
         }
 
         if ($service == "box"){
+            $bla = new \App\Library\BoxModel();
+            print_r($bla->getAccessToken());
+
+            print_r($bla->getRefreshToken());
 
         }
 

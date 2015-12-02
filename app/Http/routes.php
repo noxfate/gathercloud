@@ -22,4 +22,4 @@ Route::post('/register', "UserController@store");
 
 Route::resource('/',"HomeController");
 Route::get('/add',"CloudController@index");
-Route::post('/add/{service}',"CloudController@add");
+Route::get('/add/{service}',"CloudController@add");

@@ -9,7 +9,7 @@ namespace App\Library;
 
 use Illuminate\Support\Facades\Redirect;
 
-require '..//vendor/autoload.php';
+require_once '../vendor/autoload.php';
 
 
 

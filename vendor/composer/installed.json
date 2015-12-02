@@ -3398,18 +3398,18 @@
         ]
     },
     {
-        "name": "adammbalogh/key-value-store-null",
-        "version": "0.5.1",
-        "version_normalized": "0.5.1.0",
+        "name": "adammbalogh/key-value-store-memory",
+        "version": "0.5.2",
+        "version_normalized": "0.5.2.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/adammbalogh/key-value-store-null.git",
-            "reference": "939c43472ab1d0b7f6fd0124f7c75d7ac8ae04c5"
+            "url": "https://github.com/adammbalogh/key-value-store-memory.git",
+            "reference": "6bafb9037d61911f76343a7aa7270866b1a11995"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/adammbalogh/key-value-store-null/zipball/939c43472ab1d0b7f6fd0124f7c75d7ac8ae04c5",
-            "reference": "939c43472ab1d0b7f6fd0124f7c75d7ac8ae04c5",
+            "url": "https://api.github.com/repos/adammbalogh/key-value-store-memory/zipball/6bafb9037d61911f76343a7aa7270866b1a11995",
+            "reference": "6bafb9037d61911f76343a7aa7270866b1a11995",
             "shasum": ""
         },
         "require": {
@@ -3417,12 +3417,12 @@
             "php": ">=5.4.0"
         },
         "require-dev": {
-            "phpmd/phpmd": "~2.1",
+            "mockery/mockery": "~0.9.2",
             "phpunit/phpunit": "~4.2.5",
             "satooshi/php-coveralls": "dev-master",
             "squizlabs/php_codesniffer": "~1.5"
         },
-        "time": "2014-10-20 17:42:54",
+        "time": "2015-11-06 09:01:52",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -3442,13 +3442,12 @@
                 "role": "Developer"
             }
         ],
-        "description": "Key-value null store package. It literally does nothing.",
+        "description": "Key-value memory store through a simple php array.",
         "keywords": [
+            "array",
             "key",
             "key-value",
-            "key-value-null",
-            "nosql",
-            "null",
+            "key-value-memory",
             "store",
             "value"
         ]

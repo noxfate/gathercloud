@@ -1,4 +1,4 @@
-<?php namespace AdammBalogh\KeyValueStore\Adapter\NullAdapter;
+<?php namespace AdammBalogh\KeyValueStore\Adapter\MemoryAdapter;
 
 trait ServerTrait
 {
@@ -9,5 +9,6 @@ trait ServerTrait
      */
     public function flush()
     {
+        $this->store = [];
     }
 }
