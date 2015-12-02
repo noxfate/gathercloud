@@ -18,7 +18,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        return view('pages.login');
     }
 
     // Login
@@ -36,7 +36,7 @@ class UserController extends Controller
     public function logout()
     {
         Auth::logout();
-        return Redirect::to('/');
+        return Redirect::to('/home');
     }
 
     /**
@@ -46,7 +46,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view("register");
+        return view("pages.register");
     }
 
     /**
@@ -65,7 +65,7 @@ class UserController extends Controller
         else
             return "Password Missmatch";
         $user->save();
-        return Redirect::to('/');
+        return Redirect::to('/login');
 
     }
 

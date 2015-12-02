@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use Auth;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Redirect;
 
 class CloudController extends Controller
 {
@@ -16,9 +18,10 @@ class CloudController extends Controller
      */
     public function index()
     {
-        if (Auth::check()){
-            return view('home');
-        }
+        if (Auth::check())
+            return view('pages.index');
+        else
+            return Redirect::to('/login');
     }
 
     /**

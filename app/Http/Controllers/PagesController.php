@@ -18,13 +18,7 @@ class PagesController extends Controller
      */
     public function index()
     {
-
-        if (!Auth::check())
-            return view("pages.index");
-        else
-            return Redirect::to('/home');
-
-        //        return view('pages.index');
+        return view('pages.landing');
     }
 
     public function dropbox()
