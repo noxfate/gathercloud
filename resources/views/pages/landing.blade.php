@@ -3,5 +3,5 @@
 
 
 
-<a href="{{ url('/') }}">Try it</a>     <br>
+<a href="{{ url('/login') }}">Try it</a>     <br>
 <a href="{{ url('/register') }}">Register</a>

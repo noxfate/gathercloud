@@ -2,8 +2,9 @@
 
 @section("content")
 
-    <form action="register" method="POST">
-        Name : <input type="text" name="name"><br>
+    <form action="{{ url('/register') }}" method="POST">
+        First Name : <input type="text" name="fname"><br>
+        Last Name : <input type="text" name="lname"><br>
         E-mail : <input type="email" name="email"><br>
         Password : <input type="password" name="pwd"><br>
         Re-Password : <input type="password" name="repwd"><br>

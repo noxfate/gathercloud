@@ -9,7 +9,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
 
-class CloudController extends Controller
+class HomeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,8 +18,12 @@ class CloudController extends Controller
      */
     public function index()
     {
-        return view('pages.addcloud');
+        if (Auth::check())
+            return view('pages.index');
+        else
+            return Redirect::to('/home');
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -31,28 +35,6 @@ class CloudController extends Controller
         //
     }
 
-
-    public function add($service)
-    {
-        if ($service == "dropbox"){
-
-        }
-
-        if ($service == "copy"){
-
-        }
-
-        if ($service == "box"){
-
-        }
-
-        if ($service == "onedrive"){
-
-        }
-
-    }
-
-
     /**
      * Store a newly created resource in storage.
      *
@@ -63,9 +45,6 @@ class CloudController extends Controller
     {
         //
     }
-
-    //
-
 
     /**
      * Display the specified resource.
