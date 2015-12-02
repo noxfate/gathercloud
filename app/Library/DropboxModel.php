@@ -2,78 +2,120 @@
 
 namespace App\Library;
 
+use Auth;
+use App\Token;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
+
 require __DIR__ . "/Dropbox/DropboxClient.php";
 
 
 
 Class DropboxModel extends ModelAbstract
 {
+    private $token;
+    private $dbxObj;
+    private $APP_KEY = "fv1z1w4yn5039ys";
+    private $APP_SECRET = "jyzrgispic9cabg";
+    private $APP_FULL_ACCESS = true;
 
-	function __construct()
+	function __construct($access_token = null)
 	{
-		$this->dropbox = $this->setDropbox();
+        $this->dbxObj = $this->setDbxObj($access_token);
 	}
 
+    /**
+     * @param mixed $dbxObj
+     */
+    public function setDbxObj($access_token)
+    {
+        error_reporting(E_ALL);
+        $this->enable_implicit_flush();
+        // -- end of unneeded stuff
 
-	function setDropbox()
-	{
-		$APP_KEY = "fv1z1w4yn5039ys";
-		$APP_SECRET = "jyzrgispic9cabg";
-		$APP_FULL_ACCESS = true;
+        // if there are many files in your Dropbox it can take some time, so disable the max. execution time
+        set_time_limit(0);
 
-		error_reporting(E_ALL);
-		$this->enable_implicit_flush();
-		// -- end of unneeded stuff
+        $dbx = new \DropboxClient(array(
+            'app_key' => $this->APP_KEY,
+            'app_secret' => $this->APP_SECRET,
+            'app_full_access' => $this->APP_FULL_ACCESS,
 
-		// if there are many files in your Dropbox it can take some time, so disable the max. execution time
-		set_time_limit(0);
+        ),'en');
 
-		$dbx = new \DropboxClient(array(
-			'app_key' => $APP_KEY,
-			'app_secret' => $APP_SECRET,
-			'app_full_access' => $APP_FULL_ACCESS,
+//        $q = \App\Token::where('user_id',1)->get()[0]->access_token;
+//        $access_token = \GuzzleHttp\json_decode($q,true);
+        if(!empty($access_token)) {
+            $dbx->SetAccessToken($access_token);
+//			 echo "loaded access token:";
+//			 print_r($access_token);
+        }
+        elseif(!empty($_GET['auth_callback'])) // are we coming from dbx's auth page?
+        {
+            // then load our previosly created request token
+            $request_token = $this->load_token("request_temp");
 
-		),'en');
+            if(empty($request_token)) die('Request token not found!');
 
-		$access_token = $this->load_token("access");
-		if(!empty($access_token)) {
-			$dbx->SetAccessToken($access_token);
-			 echo "loaded access token:";
-			 print_r($access_token);
-		}
-		elseif(!empty($_GET['auth_callback'])) // are we coming from dbx's auth page?
-		{
-			// then load our previosly created request token
-			$request_token = $this->load_token($_GET['oauth_token']);
-			if(empty($request_token)) die('Request token not found!');
+            // get & store access token, the request token is not needed anymore
+            $access_token = $dbx->GetAccessToken($request_token);
 
-			// get & store access token, the request token is not needed anymore
-			$access_token = $dbx->GetAccessToken($request_token);
-			$this->store_token($access_token, "access");
-			$this->delete_token($_GET['oauth_token']);
-		}
+            $this->setToken($access_token);
 
-		// checks if access token is required
-		if(!$dbx->IsAuthorized()) {
-			// redirect user to dbx auth page
+//			$this->store_token($access_token, "access");
+            $this->delete_token("request_temp");
+        }
+
+        // checks if access token is required
+        if(!$dbx->IsAuthorized()) {
+            // redirect user to dbx auth page
 //			$return_url = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'] . "?auth_callback=1";
-			$return_url = "http://localhost/gathercloud/public/dropbox?auth_callback=1";
-            $auth_url = $dbx->BuildAuthorizeUrl($return_url);
-			echo "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'] . "?auth_callback=1<br>";
-			echo $auth_url;
-			$request_token = $dbx->GetRequestToken();
-			$this->store_token($request_token, $request_token['t']);
-			die("Authentication required. <a href='$auth_url'>Click here.</a>");
-		}
 
-		return $dbx;
-	}
+            $return_url = "http://localhost/gathercloud/public/add/dropbox?auth_callback=1";
+            $auth_url = $dbx->BuildAuthorizeUrl($return_url);
+
+//			echo "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'] . "?auth_callback=1<br>";
+//            echo $return_url;
+//            echo "<br>";
+//            echo $auth_url;
+
+            $request_token = $dbx->GetRequestToken();
+            $this->store_token($request_token, "request_temp");
+            die(redirect($auth_url));
+
+        }
+
+        return $dbx;
+    }
+
+
+
+    function getAccountInfo()
+    {
+        return $this->dbxObj->GetAccountInfo();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param mixed $token
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+    }
 
 	// Implements
 	// @params $file = String of File Paths on Dropbox
 	function downloadFile($file, $destination = null)
 	{
-		return $this->dropbox->DownloadFile($file,$destination);
+		return $this->dbxObj->DownloadFile($file,$destination);
 	}
 	function uploadFile($file, $destination = null)
 	{
@@ -83,37 +125,37 @@ Class DropboxModel extends ModelAbstract
 		{
 			$destination = substr($destination, "/".$file['name']);
 		}	
- 		return $this->dropbox->UploadFile($file['tmp_name'] ,$destination);
+ 		return $this->dbxObj->UploadFile($file['tmp_name'] ,$destination);
 	}
 	function getFiles($file = null)
 	{
-		return $this->dropbox->GetFiles();
+		return $this->dbxObj->GetFiles();
 	}
 	function deleteFile($file)
 	{
-		return $this->dropbox->Delete($file);
+		return $this->dbxObj->Delete($file);
 	}
 
 	function getLink($file)
 	{
-		return $this->dropbox->GetLink($file);
+		return $this->dbxObj->GetLink($file);
 	}
 
 	function store_token($token, $name)
 	{
-		if(!file_put_contents(__DIR__."/Dropbox/tokens/".$name.".token", serialize($token)))
+		if(!file_put_contents(__DIR__."/Dropbox/".$name.".token", serialize($token)))
 			die('<br />Could not store token! <b>Make sure that the directory `tokens` exists and is writable!</b>');
 	}
 
 	function load_token($name)
 	{
-		if(!file_exists(__DIR__."/Dropbox/tokens/".$name.".token")) return null;
-		return @unserialize(@file_get_contents(__DIR__."/Dropbox/tokens/$name.token"));
+		if(!file_exists(__DIR__."/Dropbox/".$name.".token")) return null;
+		return @unserialize(@file_get_contents(__DIR__."/Dropbox/$name.token"));
 	}
 
 	function delete_token($name)
 	{
-		@unlink(__DIR__."/Dropbox/tokens/$name.token");
+		@unlink(__DIR__."/Dropbox/$name.token");
 	}
 
 

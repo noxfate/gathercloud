@@ -15,6 +15,7 @@ class Token extends Model
      */
     protected $fillable = [
         'connection_name',
+        'connection_email',
         'access_token',
         'access_token_expired',
         'refresh_token',
