@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('layout.layout-of-index')
 
 @section('content')
    <h1>Landing Page</h1>

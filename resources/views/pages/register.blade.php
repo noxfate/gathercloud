@@ -1,4 +1,4 @@
-@extends("layout")
+@extends("layout.layout-of-login-register")
 
 @section("content")
 
