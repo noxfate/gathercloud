@@ -2,15 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="586f22c7-dea4-4e64-a53b-a71dc3e51d7f" name="Default" comment="">
-      <change type="MOVED" beforePath="$PROJECT_DIR$/app/Library/keys.json" afterPath="$PROJECT_DIR$/resources/views/pages/addcloud.blade.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Http/Controllers/CloudController.php" afterPath="$PROJECT_DIR$/app/Http/Controllers/CloudController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Library/DropboxModel.php" afterPath="$PROJECT_DIR$/app/Library/DropboxModel.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Token.php" afterPath="$PROJECT_DIR$/app/Token.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/User.php" afterPath="$PROJECT_DIR$/app/User.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Http/Controllers/UserController.php" afterPath="$PROJECT_DIR$/app/Http/Controllers/UserController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/views/pages/landing.blade.php" afterPath="$PROJECT_DIR$/resources/views/pages/landing.blade.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/views/pages/register.blade.php" afterPath="$PROJECT_DIR$/resources/views/pages/register.blade.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Http/routes.php" afterPath="$PROJECT_DIR$/app/Http/routes.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="gathercloud.iws" />
@@ -69,21 +62,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DropboxModel.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="DropboxModel.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/Library/DropboxModel.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="6.8965516">
+            <state vertical-scroll-proportion="0.16977929">
               <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Token.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Token.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/Token.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.762309">
-              <caret line="23" column="1" selection-start-line="23" selection-start-column="1" selection-end-line="23" selection-end-column="1" />
+            <state vertical-scroll-proportion="-18.931034">
+              <caret line="30" column="39" selection-start-line="30" selection-start-column="39" selection-end-line="30" selection-end-column="39" />
               <folding />
             </state>
           </provider>
@@ -92,8 +85,8 @@
       <file leaf-file-name="User.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/User.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-11.448276">
-              <caret line="37" column="55" selection-start-line="23" selection-start-column="3" selection-end-line="37" selection-end-column="55" />
+            <state vertical-scroll-proportion="-6.62069">
+              <caret line="30" column="28" selection-start-line="30" selection-start-column="28" selection-end-line="30" selection-end-column="60" />
               <folding />
             </state>
           </provider>
@@ -127,12 +120,12 @@
         <option value="$PROJECT_DIR$/app/Http/Controllers/HomeController.php" />
         <option value="$PROJECT_DIR$/resources/views/pages/landing.blade.php" />
         <option value="$PROJECT_DIR$/resources/views/pages/register.blade.php" />
-        <option value="$PROJECT_DIR$/app/User.php" />
         <option value="$PROJECT_DIR$/app/Http/Controllers/UserController.php" />
         <option value="$PROJECT_DIR$/app/Http/routes.php" />
         <option value="$PROJECT_DIR$/resources/views/pages/addcloud.blade.php" />
         <option value="$PROJECT_DIR$/app/Library/DropboxModel.php" />
         <option value="$PROJECT_DIR$/app/Http/Controllers/CloudController.php" />
+        <option value="$PROJECT_DIR$/app/User.php" />
         <option value="$PROJECT_DIR$/app/Token.php" />
       </list>
     </option>
@@ -152,7 +145,7 @@
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
     <option name="x" value="1431" />
-    <option name="y" value="24" />
+    <option name="y" value="-744" />
     <option name="width" value="1301" />
     <option name="height" value="744" />
   </component>
@@ -362,7 +355,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1431" y="24" width="1301" height="744" extended-state="6" />
+    <frame x="1431" y="-744" width="1301" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Gulp" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
@@ -541,26 +534,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/Library/DropboxModel.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="6.8965516">
-          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/User.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-11.448276">
-          <caret line="37" column="55" selection-start-line="23" selection-start-column="3" selection-end-line="37" selection-end-column="55" />
+        <state vertical-scroll-proportion="-6.62069">
+          <caret line="30" column="28" selection-start-line="30" selection-start-column="28" selection-end-line="30" selection-end-column="60" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/Token.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.762309">
-          <caret line="23" column="1" selection-start-line="23" selection-start-column="1" selection-end-line="23" selection-end-column="1" />
+        <state vertical-scroll-proportion="-18.931034">
+          <caret line="30" column="39" selection-start-line="30" selection-start-column="39" selection-end-line="30" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/Library/DropboxModel.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.16977929">
+          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
           <folding />
         </state>
       </provider>

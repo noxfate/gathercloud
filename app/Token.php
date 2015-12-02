@@ -13,7 +13,15 @@ class Token extends Model
      *
      * @var array
      */
-    protected $fillable = ['first_name','last_name' , 'email', 'password'];
+    protected $fillable = [
+        'connection_name',
+        'access_token',
+        'access_token_expired',
+        'refresh_token',
+        'refresh_token_expired',
+        'user_id',
+        'provider'
+    ];
 
     /**
      * The attributes excluded from the model's JSON form.
