@@ -11,10 +11,10 @@ namespace App\Library;
 
 abstract class ModelAbstract
 {
-    abstract function downloadFile($file, $destination = null);
-    abstract function uploadFile($file, $destination = null);
-    abstract function getFiles($file = null);
-    abstract function deleteFile($file);
-    abstract function getLink($file);
-    abstract function getAccountInfo();
+    abstract public function downloadFile($file, $destination = null);
+    abstract public function uploadFile($file, $destination = null);
+    abstract public function getFiles($file = null);
+    abstract public function deleteFile($file);
+    abstract public function getLink($file);
+    abstract public function getAccountInfo();
 }

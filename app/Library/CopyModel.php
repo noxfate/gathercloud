@@ -8,6 +8,7 @@
 namespace App\Library;
 
 use Illuminate\Support\Facades\Redirect;
+use Mockery\Exception;
 
 require_once '../vendor/autoload.php';
 
@@ -15,12 +16,10 @@ require_once '../vendor/autoload.php';
 
 Class CopyModel extends ModelAbstract
 {
-    public $copy;
+    public $cpyobj;
 
     private $consumerKey = "bGCvu6JV6fVdIrVzmkA0A8NfbtDy3cG2";
     private $consumerSecret = "3DSK8DV0pcJGT2IMeN3W5FOE7woK2nVDcSMupuCZtfOdWgVc";
-    private $accessToken;
-    private $tokenSecret;
 
     private $server = "api.copy.com";
     private $secure = true;
@@ -28,17 +27,49 @@ Class CopyModel extends ModelAbstract
     private $www = "www.copy.com";
 
 
-    function __construct()
+    public function __construct($access = null)
     {
-        // create a cloud api connection to Copy
-//        $this->copy = new \Barracuda\Copy\API($consumerKey, $consumerSecret, $accessToken, $tokenSecret);
+
+        if (empty($access))
+            $this->accessToken = $this->authenticate();
+        else
+            $this->accessToken = $access;
+
+        $this->cpyobj = new \Barracuda\Copy\API($this->consumerKey,
+            $this->consumerSecret,
+            $this->accessToken['token'],
+            $this->accessToken['secret']);
     }
 
-    function getRequestToken()
+    /**
+     * @return array
+     */
+    public function getAccessToken()
+    {
+        return $this->accessToken;
+    }
+
+
+    private function authenticate()
+    {
+        // From authorize page
+        if (empty($_GET['oauth_token'])){
+            $url = $this->getRequestToken();
+            header("Location: $url");
+            exit();
+        }
+        else{
+            $ac = $this->requestAccessToken($_GET['oauth_token']);
+            return $ac;
+        }
+
+    }
+
+    private function getRequestToken()
     {
         // URL
         $requestURL 	= "https://$this->server/oauth/request";
-        $callbackURL    = 'http://' . $_SERVER['SERVER_NAME'] . '/gathercloud/public/copy/getAccessToken';
+        $callbackURL    = 'http://' . $_SERVER['SERVER_NAME'] . '/gathercloud/public/add/copy';
         $authorizeURL   = "https://$this->www/applications/authorize";
 
 
@@ -103,7 +134,7 @@ Class CopyModel extends ModelAbstract
             $OAuth->enableDebug();
             // SSL CA Signed
             if ($this->self_signed) $OAuth->disableSSLChecks();
-            $tokenInfo          = $OAuth->getRequestToken($requestURL, $callbackURL);
+                $tokenInfo = $OAuth->getRequestToken($requestURL, $callbackURL);
         } catch (Exception $E) {
             echo '<h1>There was an error getting the Request Token</h1>';
             echo '<pre>';
@@ -126,7 +157,6 @@ Class CopyModel extends ModelAbstract
         }
 
         $_SESSION['oauth_token_secret'] = $tokenInfo['oauth_token_secret'];
-
         $location = $authorizeURL . '?oauth_token=' . $tokenInfo['oauth_token'];
 
         $response_body = $OAuth->getLastResponse();
@@ -138,7 +168,8 @@ Class CopyModel extends ModelAbstract
 
     }
 
-    function getAccessToken($oauth_token)
+
+    private function requestAccessToken($oauth_token)
     {
         // URL
         $accessURL	 	= "https://$this->server/oauth/access";
@@ -174,9 +205,10 @@ Class CopyModel extends ModelAbstract
 //            $handle = fopen('keys.json', 'w');
 //            fwrite($handle, $new_data);
 //            fclose($handle);
+            
+            $access = Array("token" => $tokenInfo['oauth_token']
+                , "secret" => $tokenInfo['oauth_token_secret']);
 
-            $_SESSION['copyToken'] = $tokenInfo['oauth_token'];
-            $_SESSION['copyTokenS'] = $tokenInfo['oauth_token'];
         }catch (Exception $E) {
             echo "<pre>OAuth ERROR MESSAGE:\n";
             echo $E->getMessage();
@@ -186,36 +218,44 @@ Class CopyModel extends ModelAbstract
             var_dump($OAuth->getLastResponseInfo());
             echo '</pre>';
         }
-        return $_SESSION['copyToken'];
+        return $access;
 
     }
 
-    function downloadFile($file, $destination = null)
+    public function getAccountInfo()
+    {
+        // TODO: Implement getAccountInfo() method.
+        return $this->cpyobj->getUserInfo();
+
+    }
+
+    public function downloadFile($file, $destination = null)
     {
         // TODO: Implement downloadFile() method.
     }
 
-    function uploadFile($file, $destination = null)
+    public function uploadFile($file, $destination = null)
     {
         // TODO: Implement uploadFile() method.
     }
 
-    function getFiles($file = null)
+    public function getFiles($file = null)
     {
         // TODO: Implement getFiles() method.
+        return $this->cpyobj->listPath('/');
     }
 
-    function deleteFile($file)
+    public function deleteFile($file)
     {
         // TODO: Implement deleteFile() method.
     }
 
-    function getLink($file)
+    public function getLink($file)
     {
         // TODO: Implement getLink() method.
     }
 
-    function json_prettify($json) {
+    private function json_prettify($json) {
         if (strnatcmp(phpversion(),'5.4.0') >= 0) {
             return json_encode(json_decode($json), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         } else {
@@ -268,19 +308,21 @@ Class CopyModel extends ModelAbstract
 
             return $result;
         }
-        function humanFileSize($size)
-        {
-            if (!$size) {
-                return "";
-            } elseif (($size >= 1 << 30)) {
-                return number_format($size / (1 << 30), 2) . "GB";
-            } elseif (($size >= 1 << 20)) {
-                return number_format($size / (1 << 20), 2) . "MB";
-            } elseif (($size >= 1 << 10)) {
-                return number_format($size / (1 << 10),2) . "kB";
-            } else {
-                return number_format($size) . "B";
-            }
+       
+    }
+
+    private function humanFileSize($size)
+    {
+        if (!$size) {
+            return "";
+        } elseif (($size >= 1 << 30)) {
+            return number_format($size / (1 << 30), 2) . "GB";
+        } elseif (($size >= 1 << 20)) {
+            return number_format($size / (1 << 20), 2) . "MB";
+        } elseif (($size >= 1 << 10)) {
+            return number_format($size / (1 << 10),2) . "kB";
+        } else {
+            return number_format($size) . "B";
         }
     }
 }

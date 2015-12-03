@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Auth;
+use App\User;
+use App\Token;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
@@ -39,21 +41,29 @@ class CloudController extends Controller
             $dbxModel = new \App\Library\DropboxModel();
             $token = $dbxModel->getToken();
 
-            echo "Hello Test";
+            $exist = false;
+            $query = User::find(Auth::user()->id)->tokens->where("provider","dropbox");
+            $connEmail = $dbxModel->getAccountInfo()->email;
+            foreach($query as $val){
+                if ($connEmail == $val->connection_email){
+                    $exist = true;
+                    break;
+                }
+            }
 
-            $chk = \App\User::find(Auth::user()->id)->tokens->first()->connection_email;
-            $originalEmail = $dbxModel->getAccountInfo()->email;
-            echo "Hello Test";
-            if ($originalEmail == $chk)
+            if ($exist)
             {
-                echo "Hello Test";
-                $tk =  \App\User::find(Auth::user()->id)->tokens->first();
+
+                $tk =  User::find(Auth::user()->id)->tokens
+                    ->where('connection_email',$connEmail)
+                    ->where('provider',$service)
+                    ->first();
                 $tk->access_token = json_encode($token);
-                echo "Hello Test";
+
             }else{
-                $tk = new \App\Token();
+                $tk = new Token();
                 $tk->connection_name = "";
-                $tk->connection_email = $dbxModel->getAccountInfo()->email;
+                $tk->connection_email = $connEmail;
                 $tk->access_token = json_encode($token);
                 $tk->access_token_expired = "";
                 $tk->refresh_token = "";
@@ -63,10 +73,46 @@ class CloudController extends Controller
             }
 
             $tk->save();
-//            return Redirect::to('/add');
         }
 
         if ($service == "copy"){
+            $cpyModel = new \App\Library\CopyModel();
+            $token = $cpyModel->getAccessToken();
+
+            $exist = false;
+            $connEmail = \GuzzleHttp\json_decode($cpyModel->getAccountInfo())->email;
+            $query = User::find(Auth::user()->id)->tokens->where("provider","copy");
+
+            foreach($query as $val){
+                if ($connEmail == $val->connection_email){
+                    $exist = true;
+                    break;
+                }
+            }
+
+            if ($exist)
+            {
+
+                $tk =  User::find(Auth::user()->id)->tokens
+                    ->where('connection_email',$connEmail)
+                    ->where('provider',$service)
+                    ->first();
+                $tk->access_token = json_encode($token);
+
+            }else{
+                $tk = new Token();
+                $tk->connection_name = "";
+                $tk->connection_email = $connEmail;
+                $tk->access_token = json_encode($token);
+                $tk->access_token_expired = "";
+                $tk->refresh_token = "";
+                $tk->refresh_token_expired = "";
+                $tk->user_id = Auth::user()->id;
+                $tk->provider = $service;
+            }
+
+            $tk->save();
+
 
         }
 
@@ -86,6 +132,7 @@ class CloudController extends Controller
 
         }
 
+        return Redirect::to('/add');
     }
 
 

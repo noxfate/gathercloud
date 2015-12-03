@@ -19,7 +19,7 @@ Class DropboxModel extends ModelAbstract
     private $APP_SECRET = "jyzrgispic9cabg";
     private $APP_FULL_ACCESS = true;
 
-	function __construct($access_token = null)
+	public function __construct($access_token = null)
 	{
         $this->dbxObj = $this->setDbxObj($access_token);
 	}
@@ -74,15 +74,10 @@ Class DropboxModel extends ModelAbstract
             $return_url = "http://localhost/gathercloud/public/add/dropbox?auth_callback=1";
             $auth_url = $dbx->BuildAuthorizeUrl($return_url);
 
-//			echo "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'] . "?auth_callback=1<br>";
-//            echo $return_url;
-//            echo "<br>";
-//            echo $auth_url;
-
             $request_token = $dbx->GetRequestToken();
             $this->store_token($request_token, "request_temp");
-            die(redirect($auth_url));
-
+//            die(redirect($auth_url));
+            header("Location: $auth_url");
         }
 
         return $dbx;
@@ -90,7 +85,7 @@ Class DropboxModel extends ModelAbstract
 
 
 
-    function getAccountInfo()
+    public function getAccountInfo()
     {
         return $this->dbxObj->GetAccountInfo();
     }
@@ -113,11 +108,11 @@ Class DropboxModel extends ModelAbstract
 
 	// Implements
 	// @params $file = String of File Paths on Dropbox
-	function downloadFile($file, $destination = null)
+	public function downloadFile($file, $destination = null)
 	{
 		return $this->dbxObj->DownloadFile($file,$destination);
 	}
-	function uploadFile($file, $destination = null)
+	public function uploadFile($file, $destination = null)
 	{
 		if (empty($destination)){
 			$destination = $file['name'];
@@ -127,39 +122,39 @@ Class DropboxModel extends ModelAbstract
 		}	
  		return $this->dbxObj->UploadFile($file['tmp_name'] ,$destination);
 	}
-	function getFiles($file = null)
+	public function getFiles($file = null)
 	{
 		return $this->dbxObj->GetFiles();
 	}
-	function deleteFile($file)
+	public function deleteFile($file)
 	{
 		return $this->dbxObj->Delete($file);
 	}
 
-	function getLink($file)
+	public function getLink($file)
 	{
 		return $this->dbxObj->GetLink($file);
 	}
 
-	function store_token($token, $name)
+	private function store_token($token, $name)
 	{
 		if(!file_put_contents(__DIR__."/Dropbox/".$name.".token", serialize($token)))
 			die('<br />Could not store token! <b>Make sure that the directory `tokens` exists and is writable!</b>');
 	}
 
-	function load_token($name)
+	private function load_token($name)
 	{
 		if(!file_exists(__DIR__."/Dropbox/".$name.".token")) return null;
 		return @unserialize(@file_get_contents(__DIR__."/Dropbox/$name.token"));
 	}
 
-	function delete_token($name)
+	private function delete_token($name)
 	{
 		@unlink(__DIR__."/Dropbox/$name.token");
 	}
 
 
-	function enable_implicit_flush()
+	private function enable_implicit_flush()
 	{
 		@apache_setenv('no-gzip', 1);
 		@ini_set('zlib.output_compression', 0);
