@@ -16,4 +16,5 @@ abstract class ModelAbstract
     abstract function getFiles($file = null);
     abstract function deleteFile($file);
     abstract function getLink($file);
+    abstract function getAccountInfo();
 }

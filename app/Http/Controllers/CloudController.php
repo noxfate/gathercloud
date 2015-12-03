@@ -36,6 +36,34 @@ class CloudController extends Controller
     {
         if ($service == "dropbox"){
 
+            $dbxModel = new \App\Library\DropboxModel();
+            $token = $dbxModel->getToken();
+
+            echo "Hello Test";
+
+            $chk = \App\User::find(Auth::user()->id)->tokens->first()->connection_email;
+            $originalEmail = $dbxModel->getAccountInfo()->email;
+            echo "Hello Test";
+            if ($originalEmail == $chk)
+            {
+                echo "Hello Test";
+                $tk =  \App\User::find(Auth::user()->id)->tokens->first();
+                $tk->access_token = json_encode($token);
+                echo "Hello Test";
+            }else{
+                $tk = new \App\Token();
+                $tk->connection_name = "";
+                $tk->connection_email = $dbxModel->getAccountInfo()->email;
+                $tk->access_token = json_encode($token);
+                $tk->access_token_expired = "";
+                $tk->refresh_token = "";
+                $tk->refresh_token_expired = "";
+                $tk->user_id = Auth::user()->id;
+                $tk->provider = $service;
+            }
+
+            $tk->save();
+//            return Redirect::to('/add');
         }
 
         if ($service == "copy"){

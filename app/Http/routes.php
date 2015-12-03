@@ -11,7 +11,6 @@
 |
 */
 
-
 Route::get('/home', "PagesController@index");
 
 Route::get('/login',"UserController@index");
