@@ -71,14 +71,18 @@ class CloudController extends Controller
         }
 
         if ($service == "box"){
-            $bla = new \App\Library\BoxModel();
-            print_r($bla->getAccessToken());
-
-            print_r($bla->getRefreshToken());
+            $boxModel = new \App\Library\BoxModel();
+            print_r($boxModel->getAccessToken());
+            print_r($boxModel->getRefreshToken());
+            $userInfo = $boxModel->getAccountInfo();
+            $originalEmail = $userInfo["login"];
 
         }
 
         if ($service == "onedrive"){
+            $ondModel = new \App\Library\OneDriveModel();
+            print_r($ondModel->getAccessToken());
+//            print_r($ondModel->getRefreshToken());
 
         }
 

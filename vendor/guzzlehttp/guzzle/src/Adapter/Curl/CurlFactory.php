@@ -73,8 +73,9 @@ class CurlFactory
             CURLOPT_READFUNCTION   => [$mediator, 'readRequestBody'],
             CURLOPT_HTTP_VERSION   => $request->getProtocolVersion() === '1.0'
                 ? CURL_HTTP_VERSION_1_0 : CURL_HTTP_VERSION_1_1,
-            CURLOPT_SSL_VERIFYPEER => 1,
+            CURLOPT_SSL_VERIFYPEER => true,
             CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_CAINFO         => dirname(__FILE__) . '/cacert.pem',
             '_headers'             => $request->getHeaders()
         ];
 
