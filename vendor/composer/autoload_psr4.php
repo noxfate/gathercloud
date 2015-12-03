@@ -34,6 +34,6 @@ return array(
     'Carbon\\' => array($vendorDir . '/nesbot/carbon/src/Carbon'),
     'Barracuda\\Copy\\' => array($vendorDir . '/barracuda/copy/src'),
     'App\\' => array($baseDir . '/app'),
-    'AdammBalogh\\KeyValueStore\\' => array($vendorDir . '/adammbalogh/key-value-store/src', $vendorDir . '/adammbalogh/key-value-store-null/src'),
+    'AdammBalogh\\KeyValueStore\\' => array($vendorDir . '/adammbalogh/key-value-store/src', $vendorDir . '/adammbalogh/key-value-store-memory/src'),
     'AdammBalogh\\Box\\' => array($vendorDir . '/adammbalogh/box-sdk/src'),
 );

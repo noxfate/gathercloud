@@ -1,21 +1,21 @@
 <?php
-namespace App\Library\OneDrive;
+namespace Krizalys\Onedrive;
 
-/*
- * A Client instance allows communication with the OneDrive API and perform
- * operations programmatically.
- *
- * For an overview of the OneDrive protocol flow, see here:
- * http://msdn.microsoft.com/en-us/library/live/hh243647.aspx
- *
- * To manage your Live Connect applications, see here:
- * https://account.live.com/developers/applications/index
- * Or here:
- * https://manage.dev.live.com/ (not working?)
- *
- * For an example implementation, see here:
- * https://github.com/drumaddict/skydrive-api-yii/blob/master/SkyDriveAPI.php
- */
+	/*
+     * A Client instance allows communication with the OneDrive API and perform
+     * operations programmatically.
+     *
+     * For an overview of the OneDrive protocol flow, see here:
+     * http://msdn.microsoft.com/en-us/library/live/hh243647.aspx
+     *
+     * To manage your Live Connect applications, see here:
+     * https://account.live.com/developers/applications/index
+     * Or here:
+     * https://manage.dev.live.com/ (not working?)
+     *
+     * For an example implementation, see here:
+     * https://github.com/drumaddict/skydrive-api-yii/blob/master/SkyDriveAPI.php
+     */
 // TODO: support refresh tokens: http://msdn.microsoft.com/en-us/library/live/hh243647.aspx
 // TODO: pass parameters in POST request body when obtaining the access token
 class Client {
@@ -102,11 +102,11 @@ class Client {
 		}
 
 		$decoded = json_decode($result);
-		$vars    = get_object_vars($decoded);
+		// $vars    = get_object_vars($decoded);
 
-		if (array_key_exists('error', $vars)) {
-			throw new \Exception($decoded->error->message, (int) $decoded->error->code);
-		}
+		// if (array_key_exists('error', $vars)) {
+		// 	throw new \Exception($decoded->error->message, (int) $decoded->error->code);
+		// }
 
 		return $decoded;
 	}
@@ -186,7 +186,7 @@ class Client {
 	 */
 	public function getTokenExpire() {
 		return $this->_state->token->obtained
-			+ $this->_state->token->data->expires_in - time();
+		+ $this->_state->token->data->expires_in - time();
 	}
 
 	/**
@@ -216,10 +216,9 @@ class Client {
 		return 1;
 	}
 
-	//Only test show Access Token
 	public function getAccessToken() {
 		if (null === $this->_state->token->data->access_token) {
-			return null;
+			return 0;
 		}
 
 		return $this->_state->token->data->access_token;
@@ -303,7 +302,7 @@ class Client {
 			. '?access_token=' . urlencode($this->_state->token->data->access_token);
 
 		$curl = self::_createCurl($path, $options);
-		
+
 		curl_setopt($curl, CURLOPT_URL, $url);
 
 		return $this->_processResult($curl);
@@ -439,6 +438,26 @@ class Client {
 		return $this->_processResult($curl);
 	}
 
+	public function apiShare($path, $data) {
+		$url  = self::API_URL . $path . '/action.createLink';
+		$data = (object) $data;
+		$curl = self::_createCurl($path);
+
+		curl_setopt_array($curl, array(
+			CURLOPT_URL        => $url,
+			CURLOPT_POST       => true,
+
+			CURLOPT_HTTPHEADER => array(
+				'Content-Type: application/json', // The data is sent as JSON as per OneDrive documentation
+				'Authorization: Bearer ' . $this->_state->token->data->access_token
+			),
+
+			CURLOPT_POSTFIELDS => json_encode($data)
+		));
+
+		return $this->_processResult($curl);
+	}
+
 	/**
 	 * Creates a folder in the current OneDrive account.
 	 *
@@ -468,6 +487,15 @@ class Client {
 		return new Folder($this, $folder->id, $folder);
 	}
 
+	public function createSharing($type, $objectId = null) {
+		$properties = array(
+			'type' => (string) $type
+		);
+
+		$link = $this->apiShare($objectId, (object) $properties);
+		return $link;
+	}
+
 	/**
 	 * Creates a file in the current OneDrive account.
 	 *
@@ -485,7 +513,7 @@ class Client {
 			$parentId = 'me/skydrive';
 		}
 
-		$stream = fopen('php://memory', 'w+b');
+		$stream = fopen('php://temp', 'w+b');
 
 		if (false === $stream) {
 			throw new \Exception('fopen() failed');
@@ -507,6 +535,7 @@ class Client {
 		fclose($stream);
 		return new File($this, $file->id, $file);
 	}
+
 
 	/**
 	 * Fetches an object from the current OneDrive account.

@@ -1,4 +1,12 @@
-<?php namespace AdammBalogh\Box\Client;
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Arraylist
+ * Date: 03-Dec-15
+ * Time: 6:13 PM
+ */
+
+namespace App\Library\OneDrive;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Message\ResponseInterface;
@@ -8,13 +16,11 @@ use AdammBalogh\Box\Exception\ExitException;
 use AdammBalogh\Box\Exception\OAuthException;
 use AdammBalogh\KeyValueStore\Exception\KeyNotFoundException;
 
-/**
- * @see http://developers.box.com/oauth
- */
+
 class OAuthClient extends GuzzleClient
 {
-    const AUTHORIZE_URI = 'https://app.box.com/api/oauth2/authorize';
-    const TOKEN_URI = 'https://app.box.com/api/oauth2/token';
+    const AUTHORIZE_URI = 'https://login.live.com/oauth20_authorize.srf';
+    const TOKEN_URI = 'https://login.live.com/oauth20_token.srf';
     const REVOKE_TOKEN_URI = 'https://www.box.com/api/oauth2/revoke';
 
     /**
@@ -85,12 +91,15 @@ class OAuthClient extends GuzzleClient
      */
     public function authorize()
     {
+
         try {
+
             $this->setPropertiesBasedOnSuccessResponse([
                 'access_token' => $this->kvs->get('access_token'),
                 'refresh_token' => $this->kvs->get('refresh_token')
             ]);
         } catch (KeyNotFoundException $e) {
+
             $this->refreshToken();
         }
 
@@ -100,7 +109,9 @@ class OAuthClient extends GuzzleClient
 
         } elseif (!$this->hasAccessToken() && !$this->hasCodeQueryField()) {
 
+
             $this->getCode();
+
 
         } elseif (!$this->hasAccessToken() && $this->hasCodeQueryField()) {
 
@@ -108,9 +119,12 @@ class OAuthClient extends GuzzleClient
 
         }
 
-        // modified by sawitree
-//        return $this->accessToken;
+        return;
+
     }
+
+
+
 
     /**
      * @throws OAuthException
@@ -212,12 +226,22 @@ class OAuthClient extends GuzzleClient
      */
     protected function getCode()
     {
+        $scopes =  array(
+            'wl.signin',
+            'wl.basic',
+            'wl.contacts_skydrive',
+            'wl.skydrive_update'
+        );
+        $imploded    = implode(',', $scopes);
         $queryData = [
             'response_type' => 'code',
             'client_id' => $this->clientId,
-            'redirect_uri' => $this->redirectUri
+            'redirect_uri' => $this->redirectUri,
+            'display' => 'popup',
+            'locale' => 'en',
+            'scope' => $imploded
         ];
-
+//
         header('Location: ' . self::AUTHORIZE_URI . '?' . http_build_query($queryData));
         throw new ExitException();
     }
@@ -230,24 +254,60 @@ class OAuthClient extends GuzzleClient
      */
     protected function getToken()
     {
-        /* @var ResponseInterface $response */
-        $response = $this->post(self::TOKEN_URI, [
-            'body' => [
-                'grant_type' => 'authorization_code',
-                'code' => $this->getCodeQueryField(),
-                'client_id' => $this->clientId,
-                'client_secret' => $this->clientSecret
-            ]
-        ]);
 
-        if ($response->getStatusCode() == 200) {
-            $this->setPropertiesBasedOnSuccessResponse($response->json());
 
-            return;
+        $url = self::TOKEN_URI
+            . '?client_id=' . urlencode($this->clientId)
+            . '&redirect_uri=' . urlencode($this->redirectUri)
+            . '&client_secret=' . urlencode($this->clientSecret)
+            . '&grant_type=authorization_code'
+            . '&code=' . $this->getCodeQueryField();
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            // General options.
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_AUTOREFERER    => true,
+
+            // SSL options.
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_SSL_VERIFYPEER => false,
+
+            CURLOPT_URL            => $url
+        ));
+
+        $response = curl_exec($curl);
+        $decoded = (array)json_decode($response);
+
+        if (null === $decoded) {
+            throw new \Exception('json_decode() failed');
         }
+        $this->kvs->set('access_token', $decoded["access_token"]);
 
-        $response = $response->json();
-        throw new OAuthException("{$response['error']}:{$response['error_description']}");
+//        /* @var ResponseInterface $response */
+//        $response = $this->post(self::TOKEN_URI, [
+//            'body' => [
+//                'grant_type' => 'authorization_code',
+//                'code' => $this->getCodeQueryField(),
+//                'client_id' => $this->clientId,
+//                'client_secret' => $this->clientSecret,
+//                'edirect_uri' => $this->redirectUri
+//            ]
+//        ]);
+//
+//
+//        if ($response->getStatusCode() == 200) {
+//            $this->setPropertiesBasedOnSuccessResponse($response->json());
+//
+//            return;
+//        } else {
+//            var_dump($response->getHeader());
+//        }
+//
+//        $response = $response->json();
+//        throw new OAuthException("{$response['error']}:{$response['error_description']}");
     }
 
     /**
