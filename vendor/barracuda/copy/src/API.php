@@ -683,6 +683,11 @@ class API
         return $result;
     }
 
+    public function getUserInfo()
+    {
+        return $this->get('user');
+    }
+
     /**
      * Update meta object
      *
