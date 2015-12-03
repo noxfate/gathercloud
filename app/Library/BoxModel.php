@@ -165,4 +165,22 @@ class BoxModel extends ModelAbstract
     public function getLink($file){
 
     }
+
+    public function getAccountInfo(){
+        $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
+        $command = new Content\User\GetCurrentUser();
+        $response = ResponseFactory::getResponse($contentClient, $command);
+
+        if ($response instanceof SuccessResponse) {
+            $response->getStatusCode();
+            $response->getReasonPhrase();
+            $response->getHeaders();
+            $data = (string)$response->getBody();
+            $manage = (array) json_decode($data);
+            return $manage;
+        } elseif ($response instanceof ErrorResponse) {
+            # ...
+        }
+
+    }
 }
