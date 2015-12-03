@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Redirect;
 
 class CloudController extends Controller
 {
+
+    private $dbxModel;
+    private $cpyModel;
     /**
      * Display a listing of the resource.
      *
@@ -20,7 +23,9 @@ class CloudController extends Controller
      */
     public function index()
     {
-        return view('pages.addcloud');
+        if (Auth::check())
+            return view('pages.addcloud');
+        return Redirect::to('/home');
     }
 
     /**
@@ -30,7 +35,7 @@ class CloudController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
 
@@ -38,12 +43,12 @@ class CloudController extends Controller
     {
         if ($service == "dropbox"){
 
-            $dbxModel = new \App\Library\DropboxModel();
-            $token = $dbxModel->getToken();
+            $this->dbxModel = new \App\Library\DropboxModel();
+            $token = $this->dbxModel->getToken();
 
             $exist = false;
             $query = User::find(Auth::user()->id)->tokens->where("provider","dropbox");
-            $connEmail = $dbxModel->getAccountInfo()->email;
+            $connEmail = $this->dbxModel->getAccountInfo()->email;
             foreach($query as $val){
                 if ($connEmail == $val->connection_email){
                     $exist = true;
@@ -62,7 +67,11 @@ class CloudController extends Controller
 
             }else{
                 $tk = new Token();
-                $tk->connection_name = "";
+//                if (empyty($_POST['conname']))
+//                    $tk->connection_name = $connEmail;
+//                else
+//                    $tk->connection_name = $_POST['conname'];
+                $tk->connection_name = $connEmail;
                 $tk->connection_email = $connEmail;
                 $tk->access_token = json_encode($token);
                 $tk->access_token_expired = "";
@@ -76,11 +85,11 @@ class CloudController extends Controller
         }
 
         if ($service == "copy"){
-            $cpyModel = new \App\Library\CopyModel();
-            $token = $cpyModel->getAccessToken();
+            $this->cpyModel = new \App\Library\CopyModel();
+            $token = $this->cpyModel->getAccessToken();
 
             $exist = false;
-            $connEmail = \GuzzleHttp\json_decode($cpyModel->getAccountInfo())->email;
+            $connEmail = \GuzzleHttp\json_decode($this->cpyModel->getAccountInfo())->email;
             $query = User::find(Auth::user()->id)->tokens->where("provider","copy");
 
             foreach($query as $val){
@@ -101,7 +110,11 @@ class CloudController extends Controller
 
             }else{
                 $tk = new Token();
-                $tk->connection_name = "";
+//                if (empyty($_POST['conname']))
+//                    $tk->connection_name = $connEmail;
+//                else
+//                    $tk->connection_name = $_POST['conname'];
+                $tk->connection_name = $connEmail;
                 $tk->connection_email = $connEmail;
                 $tk->access_token = json_encode($token);
                 $tk->access_token_expired = "";
@@ -151,6 +164,7 @@ class CloudController extends Controller
     public function show($id)
     {
         //
+
     }
 
     /**

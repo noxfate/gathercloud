@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\User;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +14,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+//        $conn = User::find(auth()->user()->id)->tokens->all();
+        view()->composer('layout.layout-of-index', function($view) {
+            $conn = User::find(auth()->user()->id)->tokens->all();
+            $view->with('conn', $conn);
+        });
     }
 
     /**

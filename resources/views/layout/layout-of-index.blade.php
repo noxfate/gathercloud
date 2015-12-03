@@ -28,16 +28,24 @@
 
 <div class="box-lv-1">
     <div id="side-bar" class="side-bar">
-        <div id="add-cloud" class="add-cloud"><button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span>Add Cloud Account</button></div>
+        <div id="add-cloud" class="add-cloud"><button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span>
+                <a href="{{ url('/add') }}">Add Cloud Account</a></button></div>
         <div class="itemMenu-separator"></div>
         <div id="my-cloud" class="my-cloud">
             <ul id="list-cloud" class="list-cloud">
-                <li><div><span class="glyphicon glyphicon-cloud"></span>All in one</div></li>
-                <li><div><span class="glyphicon glyphicon-cloud"></span>Box</div></li>
-                <li><div><span class="glyphicon glyphicon-cloud"></span>Copy</div></li>
-                <li><div><span class="glyphicon glyphicon-cloud"></span>Dropbox</div></li>
-                <li><div><span class="glyphicon glyphicon-cloud"></span>Google Drive</div></li>
-                <li><div><span class="glyphicon glyphicon-cloud"></span>OneDrive</div></li>
+                <li><div><span class="glyphicon glyphicon-cloud"></span><a href="{{ url('/') }}">All in one</a> </div></li>
+                @foreach ($conn as $c)
+                    <li><div><span class="glyphicon glyphicon-cloud"></span>
+                            <a href="{{ url("/test/{$c->connection_name}") }}">{{ $c->connection_name }}</a>
+                        </div></li>
+                @endforeach
+
+                {{--<li><div><span class="glyphicon glyphicon-cloud"></span>{{$conn}}</div></li>--}}
+                {{--<li><div><span class="glyphicon glyphicon-cloud"></span>Box</div></li>--}}
+                {{--<li><div><span class="glyphicon glyphicon-cloud"></span>Copy</div></li>--}}
+                {{--<li><div><span class="glyphicon glyphicon-cloud"></span>Dropbox</div></li>--}}
+                {{--<li><div><span class="glyphicon glyphicon-cloud"></span>Google Drive</div></li>--}}
+                {{--<li><div><span class="glyphicon glyphicon-cloud"></span>OneDrive</div></li>--}}
             </ul>
         </div>
     </div>
