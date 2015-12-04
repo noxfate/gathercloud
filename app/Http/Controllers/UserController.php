@@ -27,7 +27,7 @@ class UserController extends Controller
     {
         if (Auth::attempt(['email' => $_POST["email"], 'password' => $_POST['pwd']]))
         {
-            return Redirect::to('/');
+            return Redirect::to('/home');
         }else{
             return "Failed";
         }
@@ -37,7 +37,7 @@ class UserController extends Controller
     public function logout()
     {
         Auth::logout();
-        return Redirect::to('/home');
+        return Redirect::to('/');
     }
 
     /**

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Auth;
+use App\User;
+use App\Token;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
@@ -18,10 +20,11 @@ class HomeController extends Controller
      */
     public function index()
     {
-        if (Auth::check())
+        if (Auth::check()){
             return view('pages.index');
+        }
         else
-            return Redirect::to('/home');
+            return Redirect::to('/');
     }
 
 
@@ -54,7 +57,26 @@ class HomeController extends Controller
      */
     public function show($id)
     {
-        //
+
+//        return $id;
+        $que = Token::where('connection_name',$id)->get();
+        if ($que->count() == 1){
+            $provider = $que[0]->provider;
+        }else{
+            return "Error: Connection_name is repeated!, ".$que->count();
+        }
+
+        switch ($provider){
+            case "dropbox":
+                $obj = new \App\Library\DropboxModel((array) \GuzzleHttp\json_decode($que[0]->access_token));
+                break;
+            default:
+                return "Error!! Provider: $provider";
+        }
+
+        $data = $obj->getFiles();
+        print_r($data);
+        return view('pages.index')->with("data",$data);
     }
 
     /**
