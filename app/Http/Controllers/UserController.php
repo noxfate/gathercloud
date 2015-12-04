@@ -19,7 +19,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        return view('pages.login');
+        if (!Auth::check())
+            return view('pages.login');
+        return Redirect::to('/home');
     }
 
     // Login

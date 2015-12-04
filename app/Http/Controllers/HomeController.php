@@ -20,10 +20,12 @@ class HomeController extends Controller
      */
     public function index()
     {
-        if (Auth::check()){
-            return view('pages.index');
-        }
-        else
+        if (Auth::check()) {
+            return view('pages.index', [
+                "data" => null,
+                "cname" => "All"
+            ]);
+        } else
             return Redirect::to('/');
     }
 
@@ -41,7 +43,7 @@ class HomeController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -52,31 +54,106 @@ class HomeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-
-//        return $id;
-        $que = Token::where('connection_name',$id)->get();
-        if ($que->count() == 1){
+        $que = Token::where('connection_name', $id)
+            ->where('user_id', Auth::user()->id)
+            ->get();
+        if ($que->count() == 1) {
             $provider = $que[0]->provider;
-        }else{
-            return "Error: Connection_name is repeated!, ".$que->count();
+        } else {
+            return "Error: Connection_name is $id, COUNT : " . $que->count();
         }
+
+        switch ($provider) {
+            case "dropbox":
+                $obj = new \App\Library\DropboxModel((array)\GuzzleHttp\json_decode($que[0]->access_token));
+                break;
+            case "copy":
+                $obj = new \App\Library\CopyModel((array)\GuzzleHttp\json_decode($que[0]->access_token));
+                break;
+            default:
+                return "Error!! Provider: $provider";
+        }
+        if (empty($_GET['path'])){
+            $data = $obj->getFiles();
+            $data = $this->normalizeMetaData($data,$provider);
+            return view('pages.index', [
+//            "data" => null,
+                "data" => $data,
+                "cname" => $id
+            ]);
+        }
+        else{
+            $data = $obj->getFiles("/".$_GET['path']);
+            $data = $this->normalizeMetaData($data,$provider);
+            return view('pages.board', [
+//            "data" => null,
+                "data" => $data,
+                "cname" => $id
+            ]);
+        }
+    }
+
+    private function normalizeMetaData($data, $provider)
+    {
+//        $name = '';
+//        $path = '';
+//        $size = '';
+//        $bytes = 0;
+//        $mime_type = '';
+//        $file_type = '';
+//        $last_modified = '';
+//        $shared = false;
+
+        $format = array();
 
         switch ($provider){
             case "dropbox":
-                $obj = new \App\Library\DropboxModel((array) \GuzzleHttp\json_decode($que[0]->access_token));
+                foreach ($data as $k => $val) {
+                    $val->is_dir == 1 ? $mime = null : $mime = $val->mime_type;
+                    empty($val->shared_folder) ? $sh = false : $sh = true;
+                    array_push($format,
+                        array(
+                            'name' => basename($k),
+                            'path' => $val->path,
+                            'size' =>  $val->size,
+                            'bytes' => $val->bytes,
+                            'mime_type' => $mime,
+                            'is_dir' => $val->is_dir, // 1 == Folder, 0 = File
+                            'modified' => $val->modified,
+                            'shared' => $sh
+                        ));
+                }
+                break;
+            case "copy":
+                foreach ($data as $k => $val) {
+                    $val->type == "file"? $is = 0 : $is = 1;
+                    $is == 1 ? $mime = null : $mime = $val->mime_type;
+                    $val->share_id != 0 ? $sh = true : $sh = false;
+                    array_push($format,
+                        array(
+                            'name' => basename($val->path),
+                            'path' => $val->path,
+                            'size' =>  $this->humanFileSize($val->size),
+                            'bytes' => $val->size,
+                            'mime_type' => $mime,
+                            'is_dir' => $is, // 1 == Folder, 0 = File
+                            'modified' => date('Y m d H:i:s', $val->modified_time),
+                            'shared' => $sh
+                        ));
+                }
                 break;
             default:
                 return "Error!! Provider: $provider";
         }
 
-        $data = $obj->getFiles();
-        print_r($data);
-        return view('pages.index')->with("data",$data);
+        return $format;
+
+
     }
 
     /**
@@ -111,5 +188,20 @@ class HomeController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    private function humanFileSize($size)
+    {
+        if (!$size) {
+            return "";
+        } elseif (($size >= 1 << 30)) {
+            return number_format($size / (1 << 30), 2) . "GB";
+        } elseif (($size >= 1 << 20)) {
+            return number_format($size / (1 << 20), 2) . "MB";
+        } elseif (($size >= 1 << 10)) {
+            return number_format($size / (1 << 10),2) . "kB";
+        } else {
+            return number_format($size) . "B";
+        }
     }
 }

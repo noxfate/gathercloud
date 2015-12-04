@@ -78,11 +78,11 @@ Class DropboxModel extends ModelAbstract
             $this->store_token($request_token, "request_temp");
 //            die(redirect($auth_url));
             header("Location: $auth_url");
+            exit();
         }
 
         return $dbx;
     }
-
 
 
     public function getAccountInfo()
@@ -124,7 +124,7 @@ Class DropboxModel extends ModelAbstract
 	}
 	public function getFiles($file = null)
 	{
-		return $this->dbxObj->GetFiles();
+		return $this->dbxObj->GetFiles($file);
 	}
 	public function deleteFile($file)
 	{

@@ -13,9 +13,6 @@ use Illuminate\Support\Facades\Redirect;
 
 class CloudController extends Controller
 {
-
-    private $dbxModel;
-    private $cpyModel;
     /**
      * Display a listing of the resource.
      *
@@ -43,12 +40,12 @@ class CloudController extends Controller
     {
         if ($service == "dropbox"){
 
-            $this->dbxModel = new \App\Library\DropboxModel();
-            $token = $this->dbxModel->getToken();
+            $dbxModel = new \App\Library\DropboxModel();
+            $token = $dbxModel->getToken();
 
             $exist = false;
             $query = User::find(Auth::user()->id)->tokens->where("provider","dropbox");
-            $connEmail = $this->dbxModel->getAccountInfo()->email;
+            $connEmail = $dbxModel->getAccountInfo()->email;
             foreach($query as $val){
                 if ($connEmail == $val->connection_email){
                     $exist = true;
@@ -83,13 +80,12 @@ class CloudController extends Controller
 
             $tk->save();
         }
-
-        if ($service == "copy"){
-            $this->cpyModel = new \App\Library\CopyModel();
-            $token = $this->cpyModel->getAccessToken();
+        elseif ($service == "copy"){
+            $cpyModel = new \App\Library\CopyModel();
+            $token = $cpyModel->getAccessToken();
 
             $exist = false;
-            $connEmail = \GuzzleHttp\json_decode($this->cpyModel->getAccountInfo())->email;
+            $connEmail = \GuzzleHttp\json_decode($cpyModel->getAccountInfo())->email;
             $query = User::find(Auth::user()->id)->tokens->where("provider","copy");
 
             foreach($query as $val){
@@ -128,8 +124,7 @@ class CloudController extends Controller
 
 
         }
-
-        if ($service == "box"){
+        elseif ($service == "box"){
             $boxModel = new \App\Library\BoxModel();
             print_r($boxModel->getAccessToken());
             print_r($boxModel->getRefreshToken());
@@ -137,8 +132,7 @@ class CloudController extends Controller
             $originalEmail = $userInfo["login"];
 
         }
-
-        if ($service == "onedrive"){
+        elseif ($service == "onedrive"){
             $ondModel = new \App\Library\OneDriveModel();
             print_r($ondModel->getAccessToken());
 //            print_r($ondModel->getRefreshToken());

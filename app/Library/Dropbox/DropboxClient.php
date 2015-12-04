@@ -460,9 +460,7 @@ class DropboxClient {
 	{
 		static $files;
 		if($depth == 0) $files = array();
-
 		$dir = $this->apiCall("metadata/$this->rootPath/$path", "GET", compact('include_deleted'));
-
 		if(empty($dir) || !is_object($dir)) return false;
 
 		if(!empty($dir->error)) throw new DropboxException($dir->error);
@@ -613,7 +611,6 @@ class DropboxClient {
 		$json = $this->useCurl ? self::execCurlAndClose($context) : file_get_contents($url, false, $context);
 		if($json === false)	throw new DropboxException();
 
-        var_dump($context);
 		$resp = json_decode($json);
 		return self::checkForError($resp);
 	}

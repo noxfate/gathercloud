@@ -23,3 +23,13 @@ Route::resource('/home',"HomeController");
 Route::get('/add',"CloudController@index");
 //Route::post('/add/{service}',"CloudController@add");
 Route::get('/add/{service}',"CloudController@add");
+
+
+Route::post('/ajax/post', function () {
+
+    // pass back some data, along with the original data, just to prove it was received
+    $data   = array('value' => 'some data', 'input' => Request::input());
+
+    // return a JSON response
+    return  Response::json($data);
+});

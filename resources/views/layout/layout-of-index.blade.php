@@ -5,6 +5,8 @@
     <title>Gathercloud</title>
     <link rel="stylesheet" type="text/css" href="{{URL::asset('css/bootstrap.min.css')}}">
     <link rel="stylesheet" href="{{URL::asset('css/cloud-index.css')}}">
+    <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
+    <script src="{{ URL::asset('js/jquery-2.1.4.min.js') }}"></script>
 </head>
 <body>
 
