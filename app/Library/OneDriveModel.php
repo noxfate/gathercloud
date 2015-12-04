@@ -31,13 +31,31 @@ class OneDriveModel
     function __construct($access_token = null){
         if($access_token != null){
             $this->access_token = $access_token;
+            $this->state = (object) array(
+                'redirect_uri' => null,
+                'token'        => null
+            );
+
+            $this->state->token = (object) array(
+                'obtained' => null,
+                'data'     => null
+            );
         } else{
             $keyValueStore = new KeyValueStore(new MemoryAdapter());
             $oAuthClient = new OAuthClient($keyValueStore, $this->clientId, $this->clientSecret, $this->redirectUri);
             try {
-                $oAuthClient->authorize();
+                $decoded = $oAuthClient->authorize();
                 $keyValueStore = $oAuthClient->getKvs();
                 $this->access_token = $keyValueStore->get('access_token');
+                $this->state = (object) array(
+                    'redirect_uri' => null,
+                    'token'        => null
+                );
+                $this->state->token = (object) array(
+                    'obtained' => time(),
+                    'data'     => $decoded
+                );
+                var_dump($this->state);
 //                $this->refresh_token = $keyValueStore->get('refresh_token');
             } catch (ExitException $e) {
                 # Location header has set (box's authorize page)
@@ -58,7 +76,8 @@ class OneDriveModel
      */
     public function getAccessToken()
     {
-        return $this->access_token;
+//        return $this->access_token;
+        return $this->state->token->data->access_token;
     }
 
     /**
@@ -69,4 +88,9 @@ class OneDriveModel
         return $this->refresh_token;
     }
 
+    public function getAccountInfo(){
+        $onedrive = new \App\Library\OneDrive\Client(array(
+            'state' => $this->state
+        ));
+    }
 }

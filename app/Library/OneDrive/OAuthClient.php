@@ -115,7 +115,7 @@ class OAuthClient extends GuzzleClient
 
         } elseif (!$this->hasAccessToken() && $this->hasCodeQueryField()) {
 
-            $this->getToken();
+            return $this->getToken();
 
         }
 
@@ -285,6 +285,8 @@ class OAuthClient extends GuzzleClient
             throw new \Exception('json_decode() failed');
         }
         $this->kvs->set('access_token', $decoded["access_token"]);
+
+        return json_decode($response);
 
 //        /* @var ResponseInterface $response */
 //        $response = $this->post(self::TOKEN_URI, [

@@ -84,6 +84,7 @@ class CloudController extends Controller
             $cpyModel = new \App\Library\CopyModel();
             $token = $cpyModel->getAccessToken();
 
+
             $exist = false;
             $connEmail = \GuzzleHttp\json_decode($cpyModel->getAccountInfo())->email;
             $query = User::find(Auth::user()->id)->tokens->where("provider","copy");
@@ -126,20 +127,51 @@ class CloudController extends Controller
         }
         elseif ($service == "box"){
             $boxModel = new \App\Library\BoxModel();
-            print_r($boxModel->getAccessToken());
-            print_r($boxModel->getRefreshToken());
+            $token = $boxModel->getAccessToken();
             $userInfo = $boxModel->getAccountInfo();
-            $originalEmail = $userInfo["login"];
+
+            $exist = false;
+            $connEmail = $userInfo["login"];
+            $query = User::find(Auth::user()->id)->tokens->where("provider","box");
+
+            foreach($query as $val){
+                if ($connEmail == $val->connection_email){
+                    $exist = true;
+                    break;
+                }
+            }
+
+            if ($exist)
+            {
+
+                $tk =  User::find(Auth::user()->id)->tokens
+                    ->where('connection_email',$connEmail)
+                    ->where('provider',$service)
+                    ->first();
+                $tk->access_token = json_encode($token);
+
+            }else{
+                $tk = new Token();
+                $tk->connection_name = "";
+                $tk->connection_email = $connEmail;
+                $tk->access_token = json_encode($token);
+                $tk->access_token_expired = "";
+                $tk->refresh_token = "";
+                $tk->refresh_token_expired = "";
+                $tk->user_id = Auth::user()->id;
+                $tk->provider = $service;
+            }
+
+            $tk->save();
 
         }
         elseif ($service == "onedrive"){
             $ondModel = new \App\Library\OneDriveModel();
             print_r($ondModel->getAccessToken());
-//            print_r($ondModel->getRefreshToken());
 
         }
 
-        return Redirect::to('/add');
+//        return Redirect::to('/add');
     }
 
 
