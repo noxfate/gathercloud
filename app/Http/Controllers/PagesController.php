@@ -28,18 +28,18 @@ class PagesController extends Controller
         return $dropbox->getFiles();
 //        return "<h1>Access Token Not Found Problem</h1>";
     }
-
-    public function copy()
-    {
-        $copy = new \App\Library\CopyModel();
-        if (!isset($_GET['oauth_token'])){
-            return Redirect::to($copy->getRequestToken());
-        }else{
-            return $copy->getAccessToken($_GET['oauth_token']);
-        }
-
-
-    }
+//
+//    public function copy()
+//    {
+//        $copy = new \App\Library\CopyModel();
+//        if (!isset($_GET['oauth_token'])){
+//            return Redirect::to($copy->getRequestToken());
+//        }else{
+//            return $copy->getAccessToken($_GET['oauth_token']);
+//        }
+//
+//
+//    }
 
 
 

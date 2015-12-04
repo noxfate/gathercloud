@@ -33,10 +33,10 @@
         <div class="itemMenu-separator"></div>
         <div id="my-cloud" class="my-cloud">
             <ul id="list-cloud" class="list-cloud">
-                <li><div><span class="glyphicon glyphicon-cloud"></span><a href="{{ url('/') }}">All in one</a> </div></li>
+                <li><div><span class="glyphicon glyphicon-cloud"></span><a href="{{ url('/home') }}">All in one</a> </div></li>
                 @foreach ($conn as $c)
                     <li><div><span class="glyphicon glyphicon-cloud"></span>
-                            <a href="{{ url("/test/{$c->connection_name}") }}">{{ $c->connection_name }}</a>
+                            <a href="{{ url("/home/{$c->connection_name}") }}">{{ $c->connection_name }}</a>
                         </div></li>
                 @endforeach
 

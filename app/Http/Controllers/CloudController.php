@@ -25,7 +25,7 @@ class CloudController extends Controller
     {
         if (Auth::check())
             return view('pages.addcloud');
-        return Redirect::to('/home');
+        return Redirect::to('/');
     }
 
     /**
