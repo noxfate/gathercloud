@@ -21,7 +21,7 @@ Route::post('/register', "UserController@store");
 
 Route::resource('/home',"HomeController");
 Route::get('/add',"CloudController@index");
-//Route::post('/add/{service}',"CloudController@add");
+Route::post('/add/{service}',"CloudController@add");
 Route::get('/add/{service}',"CloudController@add");
 
 
@@ -33,3 +33,5 @@ Route::post('/ajax/post', function () {
     // return a JSON response
     return  Response::json($data);
 });
+
+Route::get('/test', "PagesController@test");

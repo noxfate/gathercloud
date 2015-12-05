@@ -117,6 +117,6 @@ class PagesController extends Controller
 
     public function test()
     {
-        return view('components.contextmenu');
+        return view('components.test');
     }
 }

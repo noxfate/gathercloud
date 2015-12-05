@@ -84,7 +84,8 @@ class HomeController extends Controller
             return view('pages.index', [
 //            "data" => null,
                 "data" => $data,
-                "cname" => $id
+                "cname" => $id,
+                "cmail" => $que[0]->id
             ]);
         }
         else{
@@ -93,7 +94,8 @@ class HomeController extends Controller
             return view('pages.board', [
 //            "data" => null,
                 "data" => $data,
-                "cname" => $id
+                "cname" => $id.$_GET['path'],
+                "cmail" => $que[0]->id
             ]);
         }
     }

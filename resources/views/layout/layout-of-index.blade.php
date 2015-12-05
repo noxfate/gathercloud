@@ -5,8 +5,8 @@
     <title>Gathercloud</title>
     <link rel="stylesheet" type="text/css" href="{{URL::asset('css/bootstrap.min.css')}}">
     <link rel="stylesheet" href="{{URL::asset('css/cloud-index.css')}}">
+    <link rel="stylesheet" href="{{URL::asset('css/cloud-add.css')}}">
     <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
-    <script src="{{ URL::asset('js/jquery-2.1.4.min.js') }}"></script>
 </head>
 <body>
 
@@ -37,7 +37,7 @@
             <ul id="list-cloud" class="list-cloud">
                 <li><div><span class="glyphicon glyphicon-cloud"></span><a href="{{ url('/home') }}">All in one</a> </div></li>
                 @foreach ($conn as $c)
-                    <li><div><span class="glyphicon glyphicon-cloud"></span>
+                    <li id="side-bar-select-{{ $c->id }}"><div><span class="glyphicon glyphicon-cloud"></span>
                             <a href="{{ url("/home/{$c->connection_name}") }}">{{ $c->connection_name }}</a>
                         </div></li>
                 @endforeach
@@ -52,12 +52,13 @@
         </div>
     </div>
 
-    <div id="board" class="board">
+
     @yield("content")
-    </div>
 
 </div>
+<script>
 
+</script>
 
 @extends("components.contextmenu")
 @extends("components.script")
