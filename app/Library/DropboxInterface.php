@@ -11,7 +11,7 @@ require __DIR__ . "/Dropbox/DropboxClient.php";
 
 
 
-Class DropboxModel extends ModelAbstract
+Class DropboxInterface implements ModelInterface
 {
     private $token;
     private $dbxObj;

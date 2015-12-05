@@ -44,7 +44,10 @@
                             @else
                                 <a href="#">{{ $val['name'] }}</a></td>
                             @endif
-                            <td class="th-size">{{ $val['size'] }}</td>
+                            @if ($val['is_dir'])
+                            <td class="th-size"></td>
+                            @else <td class="th-size">{{ $val['size'] }}</td>
+                            @endif
                             <td class="th-last-mo">{{ $val['modified'] }}</td>
                             <td class="th-action"><span class="caret action"></span></td>
                         </tr>

@@ -70,10 +70,10 @@ class HomeController extends Controller
 
         switch ($provider) {
             case "dropbox":
-                $obj = new \App\Library\DropboxModel((array)\GuzzleHttp\json_decode($que[0]->access_token));
+                $obj = new \App\Library\DroCopyInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
                 break;
             case "copy":
-                $obj = new \App\Library\CopyModel((array)\GuzzleHttp\json_decode($que[0]->access_token));
+                $obj = new \App\Library\CopyInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
                 break;
             default:
                 return "Error!! Provider: $provider";
@@ -89,7 +89,7 @@ class HomeController extends Controller
             ]);
         }
         else{
-            $data = $obj->getFiles("/".$_GET['path']);
+            $data = $obj->getFiles($_GET['path']);
             $data = $this->normalizeMetaData($data,$provider);
             return view('pages.board', [
 //            "data" => null,

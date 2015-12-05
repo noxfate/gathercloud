@@ -25,7 +25,7 @@ use AdammBalogh\Box\Exception\OAuthException;
 use GuzzleHttp\Exception\ClientException;
 session_start();
 
-class BoxModel extends ModelAbstract
+class BoxInterface implements ModelInterface
 {
     private $access_token;
     private $refresh_token;

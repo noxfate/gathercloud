@@ -19,7 +19,7 @@ use AdammBalogh\Box\Exception\OAuthException;
 use GuzzleHttp\Exception\ClientException;
 
 
-class OneDriveModel
+class OneDriveInterface implements ModelInterface
 {
     private $access_token;
     private $refresh_token;
@@ -86,6 +86,31 @@ class OneDriveModel
     public function getRefreshToken()
     {
         return $this->refresh_token;
+    }
+
+    public function downloadFile($file, $destination = null)
+    {
+        // TODO: Implement downloadFile() method.
+    }
+
+    public function uploadFile($file, $destination = null)
+    {
+        // TODO: Implement uploadFile() method.
+    }
+
+    public function getFiles($file = null)
+    {
+        // TODO: Implement getFiles() method.
+    }
+
+    public function deleteFile($file)
+    {
+        // TODO: Implement deleteFile() method.
+    }
+
+    public function getLink($file)
+    {
+        // TODO: Implement getLink() method.
     }
 
     public function getAccountInfo(){

@@ -13,10 +13,9 @@ use Mockery\Exception;
 require_once '../vendor/autoload.php';
 
 
-
-Class CopyModel extends ModelAbstract
+Class CopyInterface implements ModelInterface
 {
-    public $cpyobj;
+    private $cpyobj;
 
     private $consumerKey = "bGCvu6JV6fVdIrVzmkA0A8NfbtDy3cG2";
     private $consumerSecret = "3DSK8DV0pcJGT2IMeN3W5FOE7woK2nVDcSMupuCZtfOdWgVc";
@@ -53,12 +52,11 @@ Class CopyModel extends ModelAbstract
     private function authenticate()
     {
         // From authorize page
-        if (empty($_GET['oauth_token'])){
+        if (empty($_GET['oauth_token'])) {
             $url = $this->getRequestToken();
             header("Location: $url");
             exit();
-        }
-        else{
+        } else {
             $ac = $this->requestAccessToken($_GET['oauth_token']);
             return $ac;
         }
@@ -68,9 +66,9 @@ Class CopyModel extends ModelAbstract
     private function getRequestToken()
     {
         // URL
-        $requestURL 	= "https://$this->server/oauth/request";
-        $callbackURL    = 'http://' . $_SERVER['SERVER_NAME'] . '/gathercloud/public/add/copy';
-        $authorizeURL   = "https://$this->www/applications/authorize";
+        $requestURL = "https://$this->server/oauth/request";
+        $callbackURL = 'http://' . $_SERVER['SERVER_NAME'] . '/gathercloud/public/add/copy';
+        $authorizeURL = "https://$this->www/applications/authorize";
 
 
         // Get Request Token
@@ -134,7 +132,7 @@ Class CopyModel extends ModelAbstract
             $OAuth->enableDebug();
             // SSL CA Signed
             if ($this->self_signed) $OAuth->disableSSLChecks();
-                $tokenInfo = $OAuth->getRequestToken($requestURL, $callbackURL);
+            $tokenInfo = $OAuth->getRequestToken($requestURL, $callbackURL);
         } catch (Exception $E) {
             echo '<h1>There was an error getting the Request Token</h1>';
             echo '<pre>';
@@ -172,7 +170,7 @@ Class CopyModel extends ModelAbstract
     private function requestAccessToken($oauth_token)
     {
         // URL
-        $accessURL	 	= "https://$this->server/oauth/access";
+        $accessURL = "https://$this->server/oauth/access";
 
         // Get Access Token Flow
         session_start();
@@ -205,11 +203,11 @@ Class CopyModel extends ModelAbstract
 //            $handle = fopen('keys.json', 'w');
 //            fwrite($handle, $new_data);
 //            fclose($handle);
-            
-            $access = Array("token" => $tokenInfo['oauth_token']
-                , "secret" => $tokenInfo['oauth_token_secret']);
 
-        }catch (Exception $E) {
+            $access = Array("token" => $tokenInfo['oauth_token']
+            , "secret" => $tokenInfo['oauth_token_secret']);
+
+        } catch (Exception $E) {
             echo "<pre>OAuth ERROR MESSAGE:\n";
             echo $E->getMessage();
             echo "\nRESPONSE:\n";
@@ -255,20 +253,21 @@ Class CopyModel extends ModelAbstract
         // TODO: Implement getLink() method.
     }
 
-    private function json_prettify($json) {
-        if (strnatcmp(phpversion(),'5.4.0') >= 0) {
+    private function json_prettify($json)
+    {
+        if (strnatcmp(phpversion(), '5.4.0') >= 0) {
             return json_encode(json_decode($json), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         } else {
 
-            $result      = '';
-            $pos         = 0;
-            $strLen      = strlen($json);
-            $indentStr   = '  ';
-            $newLine     = "\n";
-            $prevChar    = '';
+            $result = '';
+            $pos = 0;
+            $strLen = strlen($json);
+            $indentStr = '  ';
+            $newLine = "\n";
+            $prevChar = '';
             $outOfQuotes = true;
 
-            for ($i=0; $i<=$strLen; $i++) {
+            for ($i = 0; $i <= $strLen; $i++) {
 
                 // Grab the next character in the string.
                 $char = substr($json, $i, 1);
@@ -279,10 +278,10 @@ Class CopyModel extends ModelAbstract
 
                     // If this character is the end of an element,
                     // output a new line and indent the next line.
-                } else if(($char == '}' || $char == ']') && $outOfQuotes) {
+                } else if (($char == '}' || $char == ']') && $outOfQuotes) {
                     $result .= $newLine;
-                    $pos --;
-                    for ($j=0; $j<$pos; $j++) {
+                    $pos--;
+                    for ($j = 0; $j < $pos; $j++) {
                         $result .= $indentStr;
                     }
                 }
@@ -295,7 +294,7 @@ Class CopyModel extends ModelAbstract
                 if (($char == ',' || $char == '{' || $char == '[') && $outOfQuotes) {
                     $result .= $newLine;
                     if ($char == '{' || $char == '[') {
-                        $pos ++;
+                        $pos++;
                     }
 
                     for ($j = 0; $j < $pos; $j++) {
@@ -308,7 +307,7 @@ Class CopyModel extends ModelAbstract
 
             return $result;
         }
-       
+
     }
 
 

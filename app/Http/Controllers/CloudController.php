@@ -46,12 +46,12 @@ class CloudController extends Controller
         }
         if ($service == "dropbox"){
 
-            $dbxModel = new \App\Library\DropboxModel();
-            $token = $dbxModel->getToken();
+            $dbxInterface = new \App\Library\DropboxInterface();
+            $token = $dbxInterface->getToken();
 
             $exist = false;
             $query = User::find(Auth::user()->id)->tokens->where("provider","dropbox");
-            $connEmail = $dbxModel->getAccountInfo()->email;
+            $connEmail = $dbxInterface->getAccountInfo()->email;
             foreach($query as $val){
                 if ($connEmail == $val->connection_email){
                     $exist = true;
@@ -85,12 +85,12 @@ class CloudController extends Controller
         }
         elseif ($service == "copy"){
 
-            $cpyModel = new \App\Library\CopyModel();
-            $token = $cpyModel->getAccessToken();
+            $cpyInterface = new \App\Library\CopyInterface();
+            $token = $cpyInterface->getAccessToken();
 
 
             $exist = false;
-            $connEmail = \GuzzleHttp\json_decode($cpyModel->getAccountInfo())->email;
+            $connEmail = \GuzzleHttp\json_decode($cpyInterface->getAccountInfo())->email;
             $query = User::find(Auth::user()->id)->tokens->where("provider","copy");
 
             foreach($query as $val){
@@ -126,9 +126,9 @@ class CloudController extends Controller
 
         }
         elseif ($service == "box"){
-            $boxModel = new \App\Library\BoxModel();
-            $token = $boxModel->getAccessToken();
-            $userInfo = $boxModel->getAccountInfo();
+            $boxInterface = new \App\Library\BoxInterface();
+            $token = $boxInterface->getAccessToken();
+            $userInfo = $boxInterface->getAccountInfo();
 
             $exist = false;
             $connEmail = $userInfo["login"];
@@ -166,8 +166,8 @@ class CloudController extends Controller
 
         }
         elseif ($service == "onedrive"){
-            $ondModel = new \App\Library\OneDriveModel();
-            print_r($ondModel->getAccessToken());
+            $ondInterface = new \App\Library\OneDriveInterface();
+            print_r($ondInterface->getAccessToken());
 
         }
 
