@@ -1,0 +1,99 @@
+header {
+    color: whitesmoke;
+    background-color: #420952;
+    height: 80px;
+    border-top: solid #101010 2px;
+}
+
+
+.land-logo{
+    float: left;
+    padding: 30px 0px 0px 50px;
+    font-size: 2.5em;
+}
+
+.land-menu{
+    float: right;
+}
+
+.land-menu ul{
+    padding-top: 40px;
+    padding-right: 20px;
+    list-style: none;
+}
+
+.land-menu ul li{
+    display: inline;
+    padding-right: 30px;
+}
+
+.land-menu ul li a{
+    text-transform: uppercase;
+    color: whitesmoke;
+    font-size: 1.1em;
+}
+
+.land-menu ul li a:hover{
+    color: white;
+    border-bottom: 1px dashed white;
+    text-decoration: none;
+}
+
+.board-land{
+    width: 100%;
+    position: relative;
+    height: calc(100% - 80px - 100px);
+    background-color: #420952;
+    padding-top: 100px;
+}
+
+
+.web-name{
+    text-transform: uppercase;
+    width: 590px;
+    height: 40px;
+    margin: 0 auto;
+    text-align: center;
+    line-height: 0px;
+    color: black;
+    font-size: 4.5em;
+    padding: 70px;
+    border: solid black 3px;
+    border-radius: 50px;
+}
+
+.qoute{
+    padding-top: 30px;
+    text-align: center;
+    color: whitesmoke;
+    font-size: 2em;
+}
+
+.join{
+    padding-top: 100px;
+    text-align: center;
+}
+
+.join a{
+    color: #420952;
+    padding: 10px 30px 10px 30px;
+    background-color: whitesmoke;
+    border-radius: 10px;
+}
+
+
+.join a:hover{
+    text-decoration: none;
+    background-color: black;
+    color: whitesmoke;
+}
+
+footer{
+    background-color: gainsboro;
+    height: 100px;
+
+    padding-top: 40px;
+    text-align: center;
+    color: purple;
+    font-size: 2.3em;
+}

@@ -100,13 +100,13 @@ body {
 }
 
 .add-cloud button {
-    background-color: orangered;
+    background-color: purple;
     border: 0;
 
 }
 
 .add-cloud button:hover {
-    background-color: orange;
+    background-color: mediumpurple;
 }
 
 .list-cloud {
@@ -127,6 +127,11 @@ body {
 .list-cloud li.withSelect{
     color:#262626;
     background-color: white;
+}
+
+.list-cloud li a{
+    text-decoration: none;
+    color: inherit;
 }
 
 .box-nav-bar {

@@ -1,0 +1,115 @@
+/* ---------- regis ---------- */
+.regis-bg{
+    float: left;
+    width: 100%;
+    height: 100%;
+    background-color: #204d74;
+    color: whitesmoke;
+}
+
+.regis {
+    width: 260px;
+    position: relative;
+    height: 300px;
+    z-index: 15;
+    top: 35%;
+    left: 50%;
+    margin: -125px 0 0 -130px;
+}
+
+.regis span {
+    color: #676767;
+    display: block;
+    height: 48px;
+    position: absolute;
+    text-align: center;
+    width: 36px;
+}
+
+.regis-logo {
+    width: 100%;
+}
+.regis-logo h1{
+    padding-left: 70px;
+}
+
+.regis span.glyphicon-pencil{
+    top: 73px;
+}
+
+
+.regis span.glyphicon-pencil.last{
+    top: 128px;
+}
+
+.regis span.glyphicon-envelope{
+    top: 182px;
+}
+
+.regis span.glyphicon-lock{
+    top: 238px;
+}
+.regis span.glyphicon-lock.re{
+    top: 293px;
+}
+
+.regis input {
+    width: 260px;
+    border: none;
+    height: 30px;
+    outline: none;
+}
+
+.regis input[type="email"] {
+    background: #dedede;
+    /* 	border-top: 1px solid #000;
+    border-right: 1px solid #000;
+    border-left: 1px solid #000;
+    border-radius: 5px 5px 0 0; */
+    color: #363636;
+    padding-left: 36px;
+    margin-bottom: 10px;
+}
+.regis input[type="text"] {
+    background: #dedede;
+    /* 	border-top: 1px solid #000;
+    border-right: 1px solid #000;
+    border-left: 1px solid #000;
+    border-radius: 5px 5px 0 0; */
+    color: #363636;
+    padding-left: 36px;
+    margin-bottom: 10px;
+}
+
+.regis input[type="password"] {
+    background-color: #dedede;
+    /* 	border-top: 1px solid #828282;
+    border-right: 1px solid #000;
+    border-bottom: 1px solid #000;
+    border-left: 1px solid #000;
+    border-radius: 0 0 5px 5px; */
+    color: #363636;
+    margin-bottom: 10px;
+    padding-left: 36px;
+}
+
+.regis input[type="submit"] {
+    height: 48px;
+    width: 260px;
+    background: #529ecc;
+    /* 	border: 1px solid #391515;
+    border-radius: 5px; */
+    color: #fff;
+    line-height: 48px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.regis input[type="text"]:hover,.regis input[type="email"]:hover,.regis input[type="password"]:hover,
+.regis input[type="text"]:focus,.regis input[type="email"]:focus,.regis input[type="password"]:focus{
+    background-color: white;
+}
+.regis input[type="submit"]:hover,#regis input[type="submit"]:FOCUS {
+    background: #4e96c2;  .}
