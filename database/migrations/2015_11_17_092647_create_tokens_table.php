@@ -16,9 +16,9 @@ class CreateTokensTable extends Migration
             $table->increments('id');
             $table->string('connection_name')->unique();
             $table->string('connection_email');
-            $table->string('access_token');
+            $table->longText('access_token');
             $table->dateTime('access_token_expired');
-            $table->string('refresh_token');
+            $table->longText('refresh_token');
             $table->dateTime('refresh_token_expired');
             $table->integer('user_id')->unsigned();
             $table->timestamps();
