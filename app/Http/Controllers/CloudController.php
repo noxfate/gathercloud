@@ -8,6 +8,7 @@ use Auth;
 use App\User;
 use App\Token;
 use App\Http\Requests;
+use Session;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
 
@@ -39,6 +40,10 @@ class CloudController extends Controller
 
     public function add($service)
     {
+
+        if (!empty($_POST['conname'])){
+            Session::put('new_conname', $_POST['conname']);
+        }
         if ($service == "dropbox"){
 
             $dbxModel = new \App\Library\DropboxModel();
@@ -65,11 +70,8 @@ class CloudController extends Controller
 
             }else{
                 $tk = new Token();
-//                if (empyty($_POST['conname']))
-//                    $tk->connection_name = $connEmail;
-//                else
-//                    $tk->connection_name = $_POST['conname'];
-                $tk->connection_name = $connEmail;
+
+                $tk->connection_name = Session::get('new_conname');;
                 $tk->connection_email = $connEmail;
                 $tk->access_token = json_encode($token);
                 $tk->access_token_expired = "";
@@ -82,9 +84,6 @@ class CloudController extends Controller
             $tk->save();
         }
         elseif ($service == "copy"){
-            if (!empty($_POST['conname'])){
-                $_SESSION["new_conname"] = $_POST['conname'];
-            }
 
             $cpyModel = new \App\Library\CopyModel();
             $token = $cpyModel->getAccessToken();
@@ -112,7 +111,7 @@ class CloudController extends Controller
 
             }else{
                 $tk = new Token();
-                $tk->connection_name = $_SESSION["new_conname"];
+                $tk->connection_name = Session::get('new_conname');;
                 $tk->connection_email = $connEmail;
                 $tk->access_token = json_encode($token);
                 $tk->access_token_expired = "";
@@ -153,7 +152,7 @@ class CloudController extends Controller
 
             }else{
                 $tk = new Token();
-                $tk->connection_name = "";
+                $tk->connection_name = Session::get('new_conname');;
                 $tk->connection_email = $connEmail;
                 $tk->access_token = json_encode($token);
                 $tk->access_token_expired = "";
