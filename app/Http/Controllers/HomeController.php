@@ -70,7 +70,7 @@ class HomeController extends Controller
 
         switch ($provider) {
             case "dropbox":
-                $obj = new \App\Library\DroCopyInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
+                $obj = new \App\Library\DropboxInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
                 break;
             case "copy":
                 $obj = new \App\Library\CopyInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));

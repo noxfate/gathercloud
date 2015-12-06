@@ -71,7 +71,7 @@ class CloudController extends Controller
             }else{
                 $tk = new Token();
 
-                $tk->connection_name = Session::get('new_conname');;
+                $tk->connection_name = Session::get('new_conname');
                 $tk->connection_email = $connEmail;
                 $tk->access_token = json_encode($token);
                 $tk->access_token_expired = "";
@@ -87,8 +87,6 @@ class CloudController extends Controller
 
             $cpyInterface = new \App\Library\CopyInterface();
             $token = $cpyInterface->getAccessToken();
-
-
             $exist = false;
             $connEmail = \GuzzleHttp\json_decode($cpyInterface->getAccountInfo())->email;
             $query = User::find(Auth::user()->id)->tokens->where("provider","copy");
@@ -111,7 +109,7 @@ class CloudController extends Controller
 
             }else{
                 $tk = new Token();
-                $tk->connection_name = Session::get('new_conname');;
+                $tk->connection_name = Session::get('new_conname');
                 $tk->connection_email = $connEmail;
                 $tk->access_token = json_encode($token);
                 $tk->access_token_expired = "";

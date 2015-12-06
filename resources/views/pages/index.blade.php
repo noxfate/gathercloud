@@ -105,7 +105,7 @@
             // we're not passing any data with the get route, though you can if you want
             var dir = $(this).attr('value');
 //                    $.get(window.location.href+"?path="+dir, onSuccess);
-            var url = window.location.href + "?path=" + encodeURIComponent(dir);
+            var url = window.location.pathname + "?path=" + encodeURIComponent(dir);
 //            alert(dir);
             $("body").css("cursor", "progress");
             $("#board").load(url);
