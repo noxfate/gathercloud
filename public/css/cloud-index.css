@@ -276,4 +276,12 @@ body {
     display: inline-block;
 }
 
+.dir{
+    color: #666666;
+}
+
+.dir:hover{
+    cursor: pointer;
+    color: #999;
+}
 

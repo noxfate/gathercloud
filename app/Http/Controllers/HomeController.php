@@ -80,22 +80,26 @@ class HomeController extends Controller
         }
         if (empty($_GET['path'])){
             $data = $obj->getFiles();
+            $parent = $this->navbarData($id);
             $data = $this->normalizeMetaData($data,$provider);
             return view('pages.index', [
 //            "data" => null,
                 "data" => $data,
                 "cname" => $id,
-                "cmail" => $que[0]->id
+                "cmail" => $que[0]->id,
+                "parent" => $parent
             ]);
         }
         else{
             $data = $obj->getFiles($_GET['path']);
+            $parent = $this->navbarData($id.$_GET['path']);
             $data = $this->normalizeMetaData($data,$provider);
             return view('pages.board', [
 //            "data" => null,
                 "data" => $data,
                 "cname" => $id.$_GET['path'],
-                "cmail" => $que[0]->id
+                "cmail" => $que[0]->id,
+                "parent" => $parent
             ]);
         }
     }
@@ -156,6 +160,28 @@ class HomeController extends Controller
         return $format;
 
 
+    }
+
+    private function navbarData($path){
+        $parent = (object) array(
+            'pname' => array(),
+            'ppath' => array()
+        );
+        $parent->pname = explode("/", $path);
+        $temp = '/';
+        for($i = 0; $i < count($parent->pname); $i++){
+            if( $i == 0){
+                $temp = $temp . $parent->pname[$i];
+                $parent->ppath[] = $temp;
+                $temp = '/';
+            }else{
+                $temp = $temp . $parent->pname[$i];
+                $parent->ppath[] = $temp;
+                $temp = $temp . '/';
+            }
+
+        }
+        return $parent;
     }
 
     /**

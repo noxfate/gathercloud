@@ -117,6 +117,28 @@ class PagesController extends Controller
 
     public function test()
     {
-        return view('components.test');
+        $path = 'id/ff';
+        $parent = (object) array(
+            'pname' => array(),
+            'ppath' => array()
+        );
+        $parent->pname = explode("/", $path);
+        var_dump($parent);
+        $temp = '/';
+        for($i = 0; $i < count($parent->pname); $i++){
+            if( $i == 0){
+            $temp = $temp . $parent->pname[$i];
+            $parent->ppath[] = $temp;
+            echo $parent->pname[$i] . " --- " . $parent->ppath[$i] . "<br>";
+            $temp = '/';
+            }else{
+                $temp = $temp . $parent->pname[$i];
+                $parent->ppath[] = $temp;
+                echo $parent->pname[$i] . " --- " . $parent->ppath[$i] . "<br>";
+                $temp = $temp . '/';
+            }
+
+        }
+
     }
 }

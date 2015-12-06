@@ -3,9 +3,17 @@
     <div id="board" class="board">
         <div id="box-nav-bar" class="box-nav-bar">
             <div id="nav-bar" class="nav-bar">
-                <a href="#"><span class="glyphicon glyphicon-cloud"></span></a>
-                <span class="glyphicon glyphicon-menu-right"></span>
-                <a href="#"><span class="glyphicon glyphicon-folder-open"></span><span id="cwd">{{ $cname }}</span></a>
+                @if (!empty($parent))
+                    @for ($i = 0; $i < count($parent->pname); $i++)
+                        @if ($i == 0)
+                            <a href="{{ url("/home{$parent->ppath[$i]}") }}"><span>{{ $parent->pname[$i] }}</span></a>
+                        @else
+                            <span class="glyphicon glyphicon-menu-right"></span>
+                            <span class="glyphicon glyphicon-folder-open"></span>
+                            <span id="dir" class="dir" value="{{$parent->ppath[$i]}}">{{ $parent->pname[$i] }}</span>
+                        @endif
+                    @endfor
+                @endif
             </div>
             <div id="create-bar" class="create-bar">
                 <button id="new-folder" class="btn btn-default">
@@ -40,13 +48,14 @@
                                 @if ($val['is_dir'])
                                     <span class="glyphicon glyphicon-folder-close"></span>
                                     {{--<a id="dir" href="{{ Request::url()."/".$val['name'] }}">{{ $val['name'] }}</a></td>--}}
-                                    <span id="dir" value="{{ $val['path'] }}">{{ $val['name'] }}</span></td>
+                                    <span id="dir" class="dir" value="{{ $val['path'] }}">{{ $val['name'] }}</span></td>
                             @else
                                 <a href="#">{{ $val['name'] }}</a></td>
                             @endif
                             @if ($val['is_dir'])
-                            <td class="th-size"></td>
-                            @else <td class="th-size">{{ $val['size'] }}</td>
+                                <td class="th-size"></td>
+                            @else
+                                <td class="th-size">{{ $val['size'] }}</td>
                             @endif
                             <td class="th-last-mo">{{ $val['modified'] }}</td>
                             <td class="th-action"><span class="caret action"></span></td>
@@ -87,7 +96,7 @@
 
 
     <script>
-
+        $("body").css("cursor", "default");
         // set up jQuery with the CSRF token, or else post routes will fail
         $.ajaxSetup({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}});
 
@@ -97,8 +106,9 @@
             var dir = $(this).attr('value');
 //                    $.get(window.location.href+"?path="+dir, onSuccess);
             var url = window.location.href + "?path=" + encodeURIComponent(dir);
-            alert(dir);
-            $(".board-body").load(url);
+//            alert(dir);
+            $("body").css("cursor", "progress");
+            $("#board").load(url);
         }
 
         function onPostClick(event) {
