@@ -24,6 +24,15 @@ Route::get('/add',"CloudController@index");
 Route::post('/add/{service}',"CloudController@add");
 Route::get('/add/{service}',"CloudController@add");
 
+Route::get("set",function(){
+    Session::put("test","test");
+    Session::save();
+});
+
+Route::get("get",function(){
+    return Session::get("test");
+});
+
 
 Route::post('/ajax/post', function () {
 

@@ -75,13 +75,19 @@ class HomeController extends Controller
             case "copy":
                 $obj = new \App\Library\CopyInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
                 break;
+            case "box":
+                $obj = new \App\Library\BoxInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
+                break;
+            case "onedrive":
+                $obj = new \App\Library\OneDriveInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
+                break;
             default:
                 return "Error!! Provider: $provider";
         }
-        if (empty($_GET['path'])){
+        if (empty($_GET['path'])) {
             $data = $obj->getFiles();
-            $parent = $this->navbarData($id);
-            $data = $this->normalizeMetaData($data,$provider);
+            $parent = $this->navbarDataByPath($id);
+            $data = $this->normalizeMetaData($data, $provider);
             return view('pages.index', [
 //            "data" => null,
                 "data" => $data,
@@ -89,15 +95,19 @@ class HomeController extends Controller
                 "cmail" => $que[0]->id,
                 "parent" => $parent
             ]);
-        }
-        else{
+        } else {
             $data = $obj->getFiles($_GET['path']);
-            $parent = $this->navbarData($id.$_GET['path']);
-            $data = $this->normalizeMetaData($data,$provider);
+//            $parent = $this->navbarDataByPath($id.$_GET['path']);
+            if ($provider == 'dropbox' || $provider == 'copy') {
+                $parent = $this->navbarDataByPath($id);
+            } elseif(($provider == 'box' || $provider == 'onedrive')) {
+                $parent = $this->navbarDataById($id, $_GET['path'], $obj,$provider);
+            }
+            $data = $this->normalizeMetaData($data, $provider);
             return view('pages.board', [
 //            "data" => null,
                 "data" => $data,
-                "cname" => $id.$_GET['path'],
+                "cname" => $id . $_GET['path'],
                 "cmail" => $que[0]->id,
                 "parent" => $parent
             ]);
@@ -117,7 +127,7 @@ class HomeController extends Controller
 
         $format = array();
 
-        switch ($provider){
+        switch ($provider) {
             case "dropbox":
                 foreach ($data as $k => $val) {
                     $val->is_dir == 1 ? $mime = null : $mime = $val->mime_type;
@@ -126,7 +136,7 @@ class HomeController extends Controller
                         array(
                             'name' => basename($k),
                             'path' => $val->path,
-                            'size' =>  $val->size,
+                            'size' => $val->size,
                             'bytes' => $val->bytes,
                             'mime_type' => $mime,
                             'is_dir' => $val->is_dir, // 1 == Folder, 0 = File
@@ -137,19 +147,55 @@ class HomeController extends Controller
                 break;
             case "copy":
                 foreach ($data as $k => $val) {
-                    $val->type == "file"? $is = 0 : $is = 1;
+                    $val->type == "file" ? $is = 0 : $is = 1;
                     $is == 1 ? $mime = null : $mime = $val->mime_type;
                     $val->share_id != 0 ? $sh = true : $sh = false;
                     array_push($format,
                         array(
                             'name' => basename($val->path),
                             'path' => $val->path,
-                            'size' =>  $this->humanFileSize($val->size),
+                            'size' => $this->humanFileSize($val->size),
                             'bytes' => $val->size,
                             'mime_type' => $mime,
                             'is_dir' => $is, // 1 == Folder, 0 = File
                             'modified' => date('Y m d H:i:s', $val->modified_time),
                             'shared' => $sh
+                        ));
+                }
+                break;
+            case "box":
+                foreach ($data as $k => $val) {
+//                    $val->type == "file"? $is = 0 : $is = 1;
+//                    $is == 1 ? $mime = null : $mime = $val->mime_type;
+//                    $val->share_id != 0 ? $sh = true : $sh = false;
+                    array_push($format,
+                        array(
+                            'name' => $val['name'],
+                            'path' => $val['path'],
+                            'size' => $this->humanFileSize($val['size']),
+                            'bytes' => $val['size'],
+                            'mime_type' => $val['mime_type'],
+                            'is_dir' => $val['is_dir'],
+                            'modified' => date('Y m d H:i:s', strtotime($val['modified'])),
+                            'shared' => $val['shared']
+                        ));
+                }
+                break;
+            case "onedrive":
+                foreach ($data as $val) {
+                    $val->isFolder() ? $is = 1 : $is = 0;
+//                    $is == 1 ? $mime = null : $mime = $val->mime_type;
+//                    $val->share_id != 0 ? $sh = true : $sh = false;
+                    array_push($format,
+                        array(
+                            'name' => basename($val->getName()),
+                            'path' => $val->getId(),
+                            'size' => $this->humanFileSize($val->getSize()),
+                            'bytes' => $val->getSize(),
+                            'mime_type' => null,
+                            'is_dir' => $is, // 1 == Folder, 0 = File
+                            'modified' => date('Y m d H:i:s', $val->getUpdatedTime()),
+                            'shared' => false
                         ));
                 }
                 break;
@@ -162,19 +208,20 @@ class HomeController extends Controller
 
     }
 
-    private function navbarData($path){
-        $parent = (object) array(
+    private function navbarDataByPath($path)
+    {
+        $parent = (object)array(
             'pname' => array(),
             'ppath' => array()
         );
         $parent->pname = explode("/", $path);
         $temp = '/';
-        for($i = 0; $i < count($parent->pname); $i++){
-            if( $i == 0){
+        for ($i = 0; $i < count($parent->pname); $i++) {
+            if ($i == 0) {
                 $temp = $temp . $parent->pname[$i];
                 $parent->ppath[] = $temp;
                 $temp = '/';
-            }else{
+            } else {
                 $temp = $temp . $parent->pname[$i];
                 $parent->ppath[] = $temp;
                 $temp = $temp . '/';
@@ -184,13 +231,52 @@ class HomeController extends Controller
         return $parent;
     }
 
+    private function navbarDataById($id, $path, $obj, $provider)
+    {
+        $parent = (object)array(
+            'pname' => array(),
+            'ppath' => array()
+        );
+
+
+        if ($provider == 'box') {
+
+            $parent->pname[] = $id;
+            $parent->ppath[] = '/' . $id;
+
+            $entity = $obj->getEntity($path);
+            $pcollection = $entity->path_collection;
+            for($i = 1; $i < $pcollection->total_count ; $i++){
+                $parent->pname[] = $pcollection->entries[$i]->name;
+                $parent->ppath[] = ($pcollection->entries[$i]->type == 'folder') ? 'folder.'.$pcollection->entries[$i]->id : 'file.'.$pcollection->entries[$i]->id;
+            }
+            $parent->pname[] = $entity->name;
+            $parent->ppath[] = $entity->type . "." . $entity->id;
+
+        }elseif($provider == 'onedrive'){
+            $entity = $obj->getFolder($path);
+            while($entity->getParentId() != null){
+                $parent->pname[] = $entity->getName();
+                $parent->ppath[] = $entity->getId();
+                $entity = $obj->getFolder($entity->getParentId());
+            }
+            $parent->pname[] = $id;
+            $parent->ppath[] = '/' . $id;
+
+            $parent->pname = array_reverse($parent->pname);
+            $parent->ppath = array_reverse($parent->ppath);
+        }
+        return $parent;
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public
+    function edit($id)
     {
         //
     }
@@ -198,11 +284,12 @@ class HomeController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public
+    function update(Request $request, $id)
     {
         //
     }
@@ -210,15 +297,17 @@ class HomeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public
+    function destroy($id)
     {
         //
     }
 
-    private function humanFileSize($size)
+    private
+    function humanFileSize($size)
     {
         if (!$size) {
             return "";
@@ -227,7 +316,7 @@ class HomeController extends Controller
         } elseif (($size >= 1 << 20)) {
             return number_format($size / (1 << 20), 2) . "MB";
         } elseif (($size >= 1 << 10)) {
-            return number_format($size / (1 << 10),2) . "kB";
+            return number_format($size / (1 << 10), 2) . "kB";
         } else {
             return number_format($size) . "B";
         }

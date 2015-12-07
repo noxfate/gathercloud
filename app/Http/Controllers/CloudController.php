@@ -41,8 +41,10 @@ class CloudController extends Controller
     public function add($service)
     {
 
-        if (!empty($_POST['conname'])){
-            Session::put('new_conname', $_POST['conname']);
+        if (!empty($_REQUEST['conname'])){
+            Session::put('new_conname', $_REQUEST['conname']);
+            Session::save();
+
         }
         if ($service == "dropbox"){
 
@@ -51,6 +53,7 @@ class CloudController extends Controller
 
             $exist = false;
             $query = User::find(Auth::user()->id)->tokens->where("provider","dropbox");
+            $conname = Session::get('new_conname');
             $connEmail = $dbxInterface->getAccountInfo()->email;
             foreach($query as $val){
                 if ($connEmail == $val->connection_email){
@@ -71,7 +74,7 @@ class CloudController extends Controller
             }else{
                 $tk = new Token();
 
-                $tk->connection_name = Session::get('new_conname');
+                $tk->connection_name = $conname;
                 $tk->connection_email = $connEmail;
                 $tk->access_token = json_encode($token);
                 $tk->access_token_expired = "";
@@ -84,10 +87,11 @@ class CloudController extends Controller
             $tk->save();
         }
         elseif ($service == "copy"){
-
             $cpyInterface = new \App\Library\CopyInterface();
             $token = $cpyInterface->getAccessToken();
             $exist = false;
+
+            $conname = Session::get('new_conname');
             $connEmail = \GuzzleHttp\json_decode($cpyInterface->getAccountInfo())->email;
             $query = User::find(Auth::user()->id)->tokens->where("provider","copy");
 
@@ -109,7 +113,7 @@ class CloudController extends Controller
 
             }else{
                 $tk = new Token();
-                $tk->connection_name = Session::get('new_conname');
+                $tk->connection_name = $conname;
                 $tk->connection_email = $connEmail;
                 $tk->access_token = json_encode($token);
                 $tk->access_token_expired = "";
@@ -129,6 +133,8 @@ class CloudController extends Controller
             $userInfo = $boxInterface->getAccountInfo();
 
             $exist = false;
+
+            $conname = Session::get('new_conname');
             $connEmail = $userInfo["login"];
             $query = User::find(Auth::user()->id)->tokens->where("provider","box");
 
@@ -150,7 +156,7 @@ class CloudController extends Controller
 
             }else{
                 $tk = new Token();
-                $tk->connection_name = Session::get('new_conname');;
+                $tk->connection_name = $conname;
                 $tk->connection_email = $connEmail;
                 $tk->access_token = json_encode($token);
                 $tk->access_token_expired = "";
@@ -165,10 +171,47 @@ class CloudController extends Controller
         }
         elseif ($service == "onedrive"){
             $ondInterface = new \App\Library\OneDriveInterface();
-            print_r($ondInterface->getAccessToken());
+            $token = $ondInterface->getAccessToken();
+            $userInfo = $ondInterface->getAccountInfo();
+
+            $exist = false;
+
+            $conname = Session::get('new_conname');
+            $connEmail = $userInfo->id;
+            $query = User::find(Auth::user()->id)->tokens->where("provider","onedrive");
+
+            foreach($query as $val){
+                if ($connEmail == $val->connection_email){
+                    $exist = true;
+                    break;
+                }
+            }
+
+            if ($exist)
+            {
+
+                $tk =  User::find(Auth::user()->id)->tokens
+                    ->where('connection_email',$connEmail)
+                    ->where('provider',$service)
+                    ->first();
+                $tk->access_token = json_encode($token);
+
+            }else{
+                $tk = new Token();
+                $tk->connection_name = $conname;
+                $tk->connection_email = $connEmail;
+                $tk->access_token = json_encode($token);
+                $tk->access_token_expired = "";
+                $tk->refresh_token = "";
+                $tk->refresh_token_expired = "";
+                $tk->user_id = Auth::user()->id;
+                $tk->provider = $service;
+            }
+
+            $tk->save();
 
         }
-
+//
         return Redirect::to('/add');
     }
 

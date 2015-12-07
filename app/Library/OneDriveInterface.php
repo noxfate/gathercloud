@@ -30,7 +30,7 @@ class OneDriveInterface implements ModelInterface
 
     function __construct($access_token = null){
         if($access_token != null){
-            $this->access_token = $access_token;
+            $this->access_token = $access_token[0];
             $this->state = (object) array(
                 'redirect_uri' => null,
                 'token'        => null
@@ -38,7 +38,7 @@ class OneDriveInterface implements ModelInterface
 
             $this->state->token = (object) array(
                 'obtained' => null,
-                'data'     => null
+                'data'     => (object) array('access_token' => $access_token[0])
             );
         } else{
             $keyValueStore = new KeyValueStore(new MemoryAdapter());
@@ -55,7 +55,6 @@ class OneDriveInterface implements ModelInterface
                     'obtained' => time(),
                     'data'     => $decoded
                 );
-                var_dump($this->state);
 //                $this->refresh_token = $keyValueStore->get('refresh_token');
             } catch (ExitException $e) {
                 # Location header has set (box's authorize page)
@@ -90,32 +89,82 @@ class OneDriveInterface implements ModelInterface
 
     public function downloadFile($file, $destination = null)
     {
-        // TODO: Implement downloadFile() method.
+        $onedrive = new \App\Library\OneDrive\Client(array(
+            'state' => $this->state
+        ));
+
+        $objects = $onedrive->fetchObject($file);
+        return $objects->getSource();
+
     }
 
     public function uploadFile($file, $destination = null)
     {
-        // TODO: Implement uploadFile() method.
+        $onedrive = new \App\Library\OneDrive\Client(array(
+            'state' => $this->state
+        ));
+
+        $parentId    = empty($destination) ? null : $destination;
+        $name		 = $file['name'];
+        $content 	 = file_get_contents($file['tmp_name']);
+        $parent      = $onedrive->fetchObject($parentId);
+        $file        = $parent->createFile($name, $content);
+        return $file;
     }
 
     public function getFiles($file = null)
     {
-        // TODO: Implement getFiles() method.
+        $onedrive = new \App\Library\OneDrive\Client(array(
+            'state' => $this->state
+        ));
+
+        if (null === $file) {
+            $root    = $onedrive->fetchRoot();
+            $objects = $root->fetchObjects();
+            return $objects;
+        } else if (strpos($file,'folder') !== false) {
+            $folder  = $onedrive->fetchObject($file);
+            $objects = $folder->fetchObjects();
+            return $objects;
+        } else {
+            $object = $onedrive->fetchObject($file);
+            return $object;
+		}
     }
 
     public function deleteFile($file)
     {
-        // TODO: Implement deleteFile() method.
+        $onedrive = new \App\Library\OneDrive\Client(array(
+            'state' => $this->state
+        ));
+
+        $onedrive->deleteObject($file);
+        return true;
     }
 
     public function getLink($file)
     {
-        // TODO: Implement getLink() method.
+        $onedrive = new \App\Library\OneDrive\Client(array(
+            'state' => $this->state
+        ));
     }
 
     public function getAccountInfo(){
         $onedrive = new \App\Library\OneDrive\Client(array(
             'state' => $this->state
         ));
+        $objects = $onedrive->fetchAccountInfo();
+        return $objects;
+
+    }
+
+    public function getFolder($file)
+    {
+        $onedrive = new \App\Library\OneDrive\Client(array(
+            'state' => $this->state
+        ));
+        $folder  = $onedrive->fetchObject($file);
+        return  $folder;
+
     }
 }

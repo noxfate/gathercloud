@@ -23,6 +23,7 @@ use AdammBalogh\KeyValueStore\Adapter\MemoryAdapter;
 use AdammBalogh\Box\Exception\ExitException;
 use AdammBalogh\Box\Exception\OAuthException;
 use GuzzleHttp\Exception\ClientException;
+
 session_start();
 
 class BoxInterface implements ModelInterface
@@ -33,10 +34,11 @@ class BoxInterface implements ModelInterface
     private $clientSecret = '4Nw8sSNI2OQediWzn3VgyZeqYzqNKbur';
     private $redirectUri = 'http://localhost/gathercloud/public/add/box';
 
-    function __construct($access_token =  null){
-        if($access_token != null){
-            $this->access_token = $access_token;
-        } else{
+    function __construct($access_token = null)
+    {
+        if ($access_token != null) {
+            $this->access_token = $access_token[0];
+        } else {
             $keyValueStore = new KeyValueStore(new MemoryAdapter());
             $oAuthClient = new OAuthClient($keyValueStore, $this->clientId, $this->clientSecret, $this->redirectUri);
             try {
@@ -75,7 +77,8 @@ class BoxInterface implements ModelInterface
     }
 
 
-    public function downloadFile($file, $destination = null){
+    public function downloadFile($file, $destination = null)
+    {
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
         $er = new ExtendedRequest();
         $command = new Content\File\DownloadFile($file, $er);
@@ -87,45 +90,49 @@ class BoxInterface implements ModelInterface
             echo "<br>";
             echo (string)$response->getReasonPhrase();
             echo "<br>";
-            header("Location: ".$response->getHeaders()["Location"][0]);
+            header("Location: " . $response->getHeaders()["Location"][0]);
         } elseif ($response instanceof ErrorResponse) {
             # ...
         }
 
     }
-    public function uploadFile($file, $destination = null){
+
+    public function uploadFile($file, $destination = null)
+    {
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
 
-        if(null === $destination){
+        if (null === $destination) {
             $destination = '0';
         }
 
-        $parentId    = $destination;
-        $name		 = $file['name'];
-        $content 	 = file_get_contents($file['tmp_name']);
-        $command = new Content\File\UploadFile( $name, $parentId, $content);
+        $parentId = $destination;
+        $name = $file['name'];
+        $content = file_get_contents($file['tmp_name']);
+        $command = new Content\File\UploadFile($name, $parentId, $content);
         $response = ResponseFactory::getResponse($contentClient, $command);
         if ($response instanceof SuccessResponse) {
             $response->getStatusCode();
             $response->getReasonPhrase();
             $response->getHeaders();
             $data = (string)$response->getBody();
-            $manage = (array) json_decode($data);
+            $manage = (array)json_decode($data);
             print_r($manage);
         } elseif ($response instanceof ErrorResponse) {
             # same as above
         }
 
     }
-    public function getFiles($file = null){
+
+    public function getFiles($file = null)
+    {
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
         if (null === $file) {
             $id = '0';
             $command = new Content\Folder\GetFolderInfo($id);
-        } elseif (strpos($file,'folder') !== false) {
-            $id = substr($file, 6);
+        } elseif (strpos($file, 'folder') !== false) {
+            $id = substr($file, 7);
             $command = new Content\Folder\GetFolderInfo($id);
-        } elseif (strpos($file,'file') !== false) {
+        } elseif (strpos($file, 'file') !== false) {
             $id = substr($file, 5);
             $command = new Content\File\GetFileInfo($id);
         } else {
@@ -138,8 +145,23 @@ class BoxInterface implements ModelInterface
             $response->getHeaders();
             $data = (string)$response->getBody();
             $manage = json_decode($data);
-            $manage = (array) json_decode($data);
-            print_r($manage);
+            $format = array();
+            if ($manage->type == 'folder' && $manage->item_collection->total_count != 0) {
+                for ($i = 0; $i < $manage->item_collection->total_count; $i++) {
+                    $entity = $this->getEntity($manage->item_collection->entries[$i]->type . "." . $manage->item_collection->entries[$i]->id);
+                    array_push($format,
+                        array(
+                            'name' => $entity->name,
+                            'path' => ($entity->id == "0") ? null : ($entity->type == "folder") ? "folder." . $entity->id : "file." . $entity->id,
+                            'size' => $entity->size,
+                            'mime_type' => null,
+                            'is_dir' => ($entity->type == "folder") ? 1 : 0, // 1 == Folder, 0 = File
+                            'modified' => $entity->modified_at,
+                            'shared' => null
+                        ));
+                }
+            }
+            return $format;
         } elseif ($response instanceof ErrorResponse) {
             echo $id;
             echo (string)$response->getStatusCode();
@@ -147,7 +169,9 @@ class BoxInterface implements ModelInterface
         }
 
     }
-    public function deleteFile($file){
+
+    public function deleteFile($file)
+    {
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
         $er = new ExtendedRequest();
         $command = new Content\File\DeleteFile($file);
@@ -162,11 +186,14 @@ class BoxInterface implements ModelInterface
         }
 
     }
-    public function getLink($file){
+
+    public function getLink($file)
+    {
 
     }
 
-    public function getAccountInfo(){
+    public function getAccountInfo()
+    {
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
         $command = new Content\User\GetCurrentUser();
         $response = ResponseFactory::getResponse($contentClient, $command);
@@ -176,11 +203,44 @@ class BoxInterface implements ModelInterface
             $response->getReasonPhrase();
             $response->getHeaders();
             $data = (string)$response->getBody();
-            $manage = (array) json_decode($data);
+            $manage = (array)json_decode($data);
             return $manage;
         } elseif ($response instanceof ErrorResponse) {
             # ...
         }
 
     }
+
+    public function getEntity($file)
+    {
+        $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
+        if (null === $file) {
+            $id = '0';
+            $command = new Content\Folder\GetFolderInfo($id);
+        } elseif (strpos($file, 'folder') !== false) {
+            $id = substr($file, 7);
+            $command = new Content\Folder\GetFolderInfo($id);
+        } elseif (strpos($file, 'file') !== false) {
+            $id = substr($file, 5);
+            $command = new Content\File\GetFileInfo($id);
+        } else {
+            echo "LOL";
+        }
+        $response = ResponseFactory::getResponse($contentClient, $command);
+        if ($response instanceof SuccessResponse) {
+            $response->getStatusCode();
+            $response->getReasonPhrase();
+            $response->getHeaders();
+            $data = (string)$response->getBody();
+            $entity = json_decode($data);
+
+            return $entity;
+
+        } elseif ($response instanceof ErrorResponse) {
+            echo $id;
+            echo (string)$response->getStatusCode();
+            echo (string)$response->getReasonPhrase();
+        }
+    }
+
 }

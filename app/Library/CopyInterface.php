@@ -8,6 +8,7 @@
 namespace App\Library;
 
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
 use Mockery\Exception;
 
 require_once '../vendor/autoload.php';
@@ -55,6 +56,7 @@ Class CopyInterface implements ModelInterface
         if (empty($_GET['oauth_token'])) {
             $url = $this->getRequestToken();
             header("Location: $url");
+
             exit();
         } else {
             $ac = $this->requestAccessToken($_GET['oauth_token']);
