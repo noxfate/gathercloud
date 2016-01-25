@@ -86,7 +86,7 @@ class HomeController extends Controller
         }
         if (empty($_GET['path'])) {
             $data = $obj->getFiles();
-            $parent = $this->navbarDataByPath($id);
+            $parent = $this->navbarDataByPath($id,"");
             $data = $this->normalizeMetaData($data, $provider);
             return view('pages.index', [
 //            "data" => null,
@@ -99,11 +99,12 @@ class HomeController extends Controller
             $data = $obj->getFiles($_GET['path']);
 //            $parent = $this->navbarDataByPath($id.$_GET['path']);
             if ($provider == 'dropbox' || $provider == 'copy') {
-                $parent = $this->navbarDataByPath($id);
+                $parent = $this->navbarDataByPath($id,$_GET['path']);
             } elseif(($provider == 'box' || $provider == 'onedrive')) {
                 $parent = $this->navbarDataById($id, $_GET['path'], $obj,$provider);
             }
             $data = $this->normalizeMetaData($data, $provider);
+//            dd($parent);
             return view('pages.board', [
 //            "data" => null,
                 "data" => $data,
@@ -208,8 +209,9 @@ class HomeController extends Controller
 
     }
 
-    private function navbarDataByPath($path)
+    private function navbarDataByPath($id,$path)
     {
+        $path = $id . "/" . $path;
         $parent = (object)array(
             'pname' => array(),
             'ppath' => array()
