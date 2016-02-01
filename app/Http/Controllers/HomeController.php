@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Auth;
 use App\User;
 use App\Token;
+use App\Cache;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
@@ -86,10 +87,28 @@ class HomeController extends Controller
             default:
                 return "Error!! Provider: $provider";
         }
+
+        $cac = Cache::where('user_id',Auth::user()->id)
+            ->where('provider',$provider)
+            ->where('user_connection_name',$id)
+            ->get();
+        if ($cac->count() == 0){
+            $cac = new Cache();
+            $cac->user_id = Auth::user()->id;
+            $cac->provider = $provider;
+            $cac->user_connection_name = $id;
+        }else if ($cac->count() == 1){
+            $cac = $cac->first();
+        }
+
         if (empty($_GET['path'])) {
             $data = $obj->getFiles();
             $parent = $this->navbarDataByPath($id,"");
             $data = $this->normalizeMetaData($data, $provider);
+            
+            $cac->data = json_encode($data);
+            $cac->save();
+
             return view('pages.index', [
 //            "data" => null,
                 "data" => $data,
@@ -107,6 +126,8 @@ class HomeController extends Controller
             }
             $data = $this->normalizeMetaData($data, $provider);
 //            dd($parent);
+            print_r($_GET['path']);
+
             return view('pages.board', [
 //            "data" => null,
                 "data" => $data,
