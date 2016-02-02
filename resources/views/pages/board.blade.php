@@ -36,7 +36,7 @@
 <table class="table-body table-hover table-striped" >
     @if (!empty($data))
         @foreach($data as $d => $val)
-            <tr class="withItemMenu" id="{{ $val['path'] }}">
+            <tr class="withItemMenu" value="{{ $val['path'] }}">
                 <td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>
                 <td class="th-name">
                     @if ($val['is_dir'])

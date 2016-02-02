@@ -20,6 +20,7 @@ Route::get('/register', "UserController@create");
 Route::post('/register', "UserController@store");
 
 Route::resource('/home',"HomeController");
+Route::post('/download',"HomeController@download");
 Route::get('/add',"CloudController@index");
 Route::post('/add/{service}',"CloudController@add");
 Route::get('/add/{service}',"CloudController@add");
@@ -44,3 +45,4 @@ Route::post('/ajax/post', function () {
 });
 
 Route::get('/test', "PagesController@test");
+Route::get('/context', "PagesController@context");
