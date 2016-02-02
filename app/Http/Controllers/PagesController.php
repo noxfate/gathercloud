@@ -141,4 +141,8 @@ class PagesController extends Controller
         }
 
     }
+
+    public  function context(){
+        return view('test.testcontextmenu');
+    }
 }

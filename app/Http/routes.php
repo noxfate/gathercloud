@@ -44,3 +44,4 @@ Route::post('/ajax/post', function () {
 });
 
 Route::get('/test', "PagesController@test");
+Route::get('/context', "PagesController@context");
