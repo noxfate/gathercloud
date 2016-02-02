@@ -23,11 +23,22 @@ class HomeController extends Controller
     {
         if (Auth::check()) {
 
-
-            return view('pages.index', [
-                "data" => null,
-                "cname" => "All"
+            $que = Cache::where('user_id',Auth::user()->id)->get();
+            $data = array();
+            foreach ($que as $d ) {
+                $inside_json = json_decode($d->data, true);
+                foreach ($inside_json as $in){
+                    array_push($data, $in);
+                }
+                
+                
+            }
+            // dd($data);
+            return view('pages.index',[
+                'data' => $data,
+                'cmail' => 'aaa@hotmail.com' // Hard code as Fuck
             ]);
+
         } else
             return Redirect::to('/');
     }
@@ -109,6 +120,7 @@ class HomeController extends Controller
             $cac->data = json_encode($data);
             $cac->save();
 
+
             return view('pages.index', [
 //            "data" => null,
                 "data" => $data,
@@ -125,7 +137,8 @@ class HomeController extends Controller
                 $parent = $this->navbarDataById($id, $_GET['path'], $obj,$provider);
             }
             $data = $this->normalizeMetaData($data, $provider);
-//            dd($parent);
+
+
             print_r($_GET['path']);
 
             return view('pages.board', [
@@ -234,7 +247,7 @@ class HomeController extends Controller
 
     private function navbarDataByPath($id,$path)
     {
-        $path = $id . "/" . $path;
+        $path = $id . $path;
         $parent = (object)array(
             'pname' => array(),
             'ppath' => array()
