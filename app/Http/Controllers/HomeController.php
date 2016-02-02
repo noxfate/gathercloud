@@ -105,7 +105,7 @@ class HomeController extends Controller
             $data = $obj->getFiles();
             $parent = $this->navbarDataByPath($id,"");
             $data = $this->normalizeMetaData($data, $provider);
-            
+
             $cac->data = json_encode($data);
             $cac->save();
 
