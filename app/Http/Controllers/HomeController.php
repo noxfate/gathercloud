@@ -211,7 +211,7 @@ class HomeController extends Controller
 
     private function navbarDataByPath($id,$path)
     {
-        $path = $id . "/" . $path;
+        $path = $id . $path;
         $parent = (object)array(
             'pname' => array(),
             'ppath' => array()
