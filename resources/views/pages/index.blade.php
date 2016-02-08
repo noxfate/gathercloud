@@ -42,7 +42,7 @@
                         document.getElementById('side-bar-select-{{$cmail}}').className = "withSelect";
                     </script>
                     @foreach($data as $d => $val)
-                        <tr class="withItemMenu">
+                        <tr class="withItemMenu" value="{{ $val['path'] }}">
                             <td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>
                             <td class="th-name">
                                 @if ($val['is_dir'])
