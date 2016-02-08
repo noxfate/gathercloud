@@ -43,4 +43,10 @@ Route::post('/ajax/post', function () {
     return  Response::json($data);
 });
 
-Route::get('/test', "PagesController@test");
+Route::resource('/test', "PagesController");
+// Route::get('/test', function(){
+// 	$job = new App\Jobs\SendRemiderEmail;
+// 	dispatch($job);
+
+// 	return 'Done!';
+// });

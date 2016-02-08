@@ -7,6 +7,7 @@ use Auth;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use App\Jobs\CreateFileMapping;
 use Illuminate\Support\Facades\Redirect;
 
 class PagesController extends Controller
@@ -18,6 +19,7 @@ class PagesController extends Controller
      */
     public function index()
     {
+        
         return view('pages.landing');
     }
 

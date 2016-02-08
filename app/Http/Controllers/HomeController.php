@@ -8,6 +8,7 @@ use Auth;
 use App\User;
 use App\Token;
 use App\Cache;
+use App\Jobs\CreateFileMapping;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
@@ -98,6 +99,9 @@ class HomeController extends Controller
             default:
                 return "Error!! Provider: $provider";
         }
+
+        $job = (new CreateFileMapping($obj,$provider));
+        $this->dispatch($job);
 
         $cac = Cache::where('user_id',Auth::user()->id)
             ->where('provider',$provider)
