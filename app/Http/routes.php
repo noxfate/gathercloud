@@ -19,7 +19,9 @@ Route::get('/logout', "UserController@logout");
 Route::get('/register', "UserController@create");
 Route::post('/register', "UserController@store");
 
+// Index Page
 Route::resource('/home',"HomeController");
+
 Route::post('/download',"HomeController@download");
 Route::get('/add',"CloudController@index");
 Route::post('/add/{service}',"CloudController@add");

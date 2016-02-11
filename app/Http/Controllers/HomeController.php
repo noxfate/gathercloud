@@ -23,22 +23,34 @@ class HomeController extends Controller
     public function index()
     {
         if (Auth::check()) {
-
             $que = Cache::where('user_id',Auth::user()->id)->get();
             $data = array();
             foreach ($que as $d ) {
                 $inside_json = json_decode($d->data, true);
                 foreach ($inside_json as $in){
                     array_push($data, $in);
-                }
-                
-                
+                }   
             }
-            // dd($data);
-            return view('pages.index',[
+            // All in One without Ajax Request
+            if (empty($_GET['path'])){
+
+                return view('pages.index',[
                 'data' => $data,
                 'cmail' => 'aaa@hotmail.com' // Hard code as Fuck
-            ]);
+                ]);
+            }else{
+                // $data = $data[array_search($_GET['path'], array_column($data, 'path'))];
+
+                $index = array_search($_GET['path'], array_column($data, 'path'));
+                $data = $data[$index]['is_dir'];
+                // dd($data);
+                return view('pages.board',[
+                    'data' => $data,
+                    'cmail' => 'aaa@hotmail.com'
+                    ]);
+            }
+            // dd($data);
+            
 
         } else
             return Redirect::to('/');
@@ -100,8 +112,7 @@ class HomeController extends Controller
                 return "Error!! Provider: $provider";
         }
 
-        $job = (new CreateFileMapping($obj,$provider));
-        $this->dispatch($job);
+        
 
         $cac = Cache::where('user_id',Auth::user()->id)
             ->where('provider',$provider)
@@ -116,13 +127,20 @@ class HomeController extends Controller
             $cac = $cac->first();
         }
 
+        
+
+        // if at 1st level Folder, No Ajax request.
         if (empty($_GET['path'])) {
+
+            $job = (new CreateFileMapping($obj,$provider,$cac));
+            $this->dispatch($job);
+
             $data = $obj->getFiles();
             $parent = $this->navbarDataByPath($id,"");
             $data = $this->normalizeMetaData($data, $provider);
             
             $cac->data = json_encode($data);
-            $cac->save();
+            // $cac->save();
 
 
             return view('pages.index', [
@@ -182,7 +200,8 @@ class HomeController extends Controller
                             'mime_type' => $mime,
                             'is_dir' => $val->is_dir, // 1 == Folder, 0 = File
                             'modified' => $val->modified,
-                            'shared' => $sh
+                            'shared' => $sh,
+                            'provider' => $provider
                         ));
                 }
                 break;
@@ -200,7 +219,8 @@ class HomeController extends Controller
                             'mime_type' => $mime,
                             'is_dir' => $is, // 1 == Folder, 0 = File
                             'modified' => date('Y m d H:i:s', $val->modified_time),
-                            'shared' => $sh
+                            'shared' => $sh,
+                            'provider' => $provider
                         ));
                 }
                 break;
@@ -218,7 +238,8 @@ class HomeController extends Controller
                             'mime_type' => $val['mime_type'],
                             'is_dir' => $val['is_dir'],
                             'modified' => date('Y m d H:i:s', strtotime($val['modified'])),
-                            'shared' => $val['shared']
+                            'shared' => $val['shared'],
+                            'provider' => $provider
                         ));
                 }
                 break;
@@ -236,7 +257,8 @@ class HomeController extends Controller
                             'mime_type' => null,
                             'is_dir' => $is, // 1 == Folder, 0 = File
                             'modified' => date('Y m d H:i:s', $val->getUpdatedTime()),
-                            'shared' => false
+                            'shared' => false, // dafuq is this?
+                            'provider' => $provider
                         ));
                 }
                 break;

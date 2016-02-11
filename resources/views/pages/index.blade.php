@@ -45,10 +45,10 @@
                         <tr class="withItemMenu" value="{{ $val['path'] }}">
                             <td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>
                             <td class="th-name">
-                                @if ($val['is_dir'])
-                                    <span class="glyphicon glyphicon-folder-close"></span>
-                                    {{--<a id="dir" href="{{ Request::url()."/".$val['name'] }}">{{ $val['name'] }}</a></td>--}}
-                                    <span id="dir" class="dir" value="{{ $val['path'] }}">{{ $val['name'] }}</span></td>
+                            @if ($val['is_dir'])
+                                <span class="glyphicon glyphicon-folder-close"></span>
+                                {{--<a id="dir" href="{{ Request::url()."/".$val['name'] }}">{{ $val['name'] }}</a></td>--}}
+                                <span id="dir" class="dir" value="{{ $val['path'] }}">{{ $val['name'] }}</span></td>
                             @else
                                 <a href="#">{{ $val['name'] }}</a></td>
                             @endif

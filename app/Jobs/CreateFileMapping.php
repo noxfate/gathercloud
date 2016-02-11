@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Jobs\Job;
 use Illuminate\Contracts\Bus\SelfHandling;
+use App\Cache;
 
 class CreateFileMapping extends Job implements SelfHandling
 {
@@ -11,16 +12,18 @@ class CreateFileMapping extends Job implements SelfHandling
     private $obj;
     private $provider;
     private $done;
+    private $cache;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($conn, $prov)
+    public function __construct($conn, $prov, $cache_obj)
     {
         $this->obj = $conn;
         $this->provider = $prov; 
         $this->done = array();
+        $this->cache = $cache_obj;
     }
 
     /**
@@ -32,7 +35,11 @@ class CreateFileMapping extends Job implements SelfHandling
     {
         $f = $this->processData();
         $js = json_encode($f);
-        dd($js);
+
+        $this->cache->data = $js;
+        $this->cache->save();
+        // print_r($this->cache->data);
+        
     }
 
     private function processData($path = '/')
@@ -80,7 +87,8 @@ class CreateFileMapping extends Job implements SelfHandling
                             'mime_type' => $mime,
                             'is_dir' => $val->is_dir, // 1 == Folder, 0 = File
                             'modified' => $val->modified,
-                            'shared' => $sh
+                            'shared' => $sh,
+                            'provider' => $provider
                         ));
                 }
                 break;
@@ -98,7 +106,8 @@ class CreateFileMapping extends Job implements SelfHandling
                             'mime_type' => $mime,
                             'is_dir' => $is, // 1 == Folder, 0 = File
                             'modified' => date('Y m d H:i:s', $val->modified_time),
-                            'shared' => $sh
+                            'shared' => $sh,
+                            'provider' => $provider
                         ));
                 }
                 break;
@@ -116,7 +125,8 @@ class CreateFileMapping extends Job implements SelfHandling
                             'mime_type' => $val['mime_type'],
                             'is_dir' => $val['is_dir'],
                             'modified' => date('Y m d H:i:s', strtotime($val['modified'])),
-                            'shared' => $val['shared']
+                            'shared' => $val['shared'],
+                            'provider' => $provider
                         ));
                 }
                 break;
@@ -134,7 +144,8 @@ class CreateFileMapping extends Job implements SelfHandling
                             'mime_type' => null,
                             'is_dir' => $is, // 1 == Folder, 0 = File
                             'modified' => date('Y m d H:i:s', $val->getUpdatedTime()),
-                            'shared' => false
+                            'shared' => false,
+                            'provider' => $provider
                         ));
                 }
                 break;
