@@ -23,7 +23,7 @@ class CloudController extends Controller
     public function index()
     {
         if (Auth::check())
-            return view('pages.addcloud');
+            return view('pages.setting');
         return Redirect::to('/');
     }
 
@@ -34,7 +34,9 @@ class CloudController extends Controller
      */
     public function create()
     {
-
+        if (Auth::check())
+            return view('pages.addcloud');
+        return Redirect::to('/');
     }
 
 

@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Auth;
+use App\Cache;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use App\Jobs\CreateFileMapping;
 use Illuminate\Support\Facades\Redirect;
+use App\Library\FileMapping;
 
 class PagesController extends Controller
 {
@@ -19,7 +21,6 @@ class PagesController extends Controller
      */
     public function index()
     {
-        
         return view('pages.landing');
     }
 
@@ -119,28 +120,33 @@ class PagesController extends Controller
 
     public function test()
     {
-        $path = 'id/ff';
-        $parent = (object) array(
-            'pname' => array(),
-            'ppath' => array()
-        );
-        $parent->pname = explode("/", $path);
-        var_dump($parent);
-        $temp = '/';
-        for($i = 0; $i < count($parent->pname); $i++){
-            if( $i == 0){
-            $temp = $temp . $parent->pname[$i];
-            $parent->ppath[] = $temp;
-            echo $parent->pname[$i] . " --- " . $parent->ppath[$i] . "<br>";
-            $temp = '/';
-            }else{
-                $temp = $temp . $parent->pname[$i];
-                $parent->ppath[] = $temp;
-                echo $parent->pname[$i] . " --- " . $parent->ppath[$i] . "<br>";
-                $temp = $temp . '/';
-            }
+        // $path = 'id/ff';
+        // $parent = (object) array(
+        //     'pname' => array(),
+        //     'ppath' => array()
+        // );
+        // $parent->pname = explode("/", $path);
+        // var_dump($parent);
+        // $temp = '/';
+        // for($i = 0; $i < count($parent->pname); $i++){
+        //     if( $i == 0){
+        //     $temp = $temp . $parent->pname[$i];
+        //     $parent->ppath[] = $temp;
+        //     echo $parent->pname[$i] . " --- " . $parent->ppath[$i] . "<br>";
+        //     $temp = '/';
+        //     }else{
+        //         $temp = $temp . $parent->pname[$i];
+        //         $parent->ppath[] = $temp;
+        //         echo $parent->pname[$i] . " --- " . $parent->ppath[$i] . "<br>";
+        //         $temp = $temp . '/';
+        //     }
 
-        }
+        // }
+        $data = json_decode(Cache::where('user_id',1)->get()->find(2)->data, true);
+        // dd($data);
+        $ob = new FileMapping($data);
+        var_dump($ob->traverseInsideFolder($data, "/Test/aaa/in_aaa/new_folder"));
+
 
     }
 

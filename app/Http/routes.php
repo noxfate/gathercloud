@@ -23,7 +23,10 @@ Route::post('/register', "UserController@store");
 Route::resource('/home',"HomeController");
 
 Route::post('/download',"HomeController@download");
-Route::get('/add',"CloudController@index");
+
+// Setting Page @ CloudController
+Route::resource('/cloud',"CloudController");
+Route::get('/add',"CloudController@create");
 Route::post('/add/{service}',"CloudController@add");
 Route::get('/add/{service}',"CloudController@add");
 
@@ -46,7 +49,6 @@ Route::post('/ajax/post', function () {
     return  Response::json($data);
 });
 
-Route::resource('/test', "PagesController");
 // Route::get('/test', function(){
 // 	$job = new App\Jobs\SendRemiderEmail;
 // 	dispatch($job);

@@ -31,6 +31,7 @@ class HomeController extends Controller
                     array_push($data, $in);
                 }   
             }
+
             // All in One without Ajax Request
             if (empty($_GET['path'])){
 
