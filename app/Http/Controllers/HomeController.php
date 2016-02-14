@@ -9,6 +9,7 @@ use App\User;
 use App\Token;
 use App\Cache;
 use App\Jobs\CreateFileMapping;
+use App\Library\FileMapping;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
@@ -20,9 +21,12 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    private $fmap;
+
     public function index()
     {
         if (Auth::check()) {
+
             $que = Cache::where('user_id',Auth::user()->id)->get();
             $data = array();
             foreach ($que as $d ) {
@@ -31,27 +35,31 @@ class HomeController extends Controller
                     array_push($data, $in);
                 }   
             }
+            $email = User::find(Auth::user()->id)->email;
+
+
+            $this->fmap = new FileMapping($data);
 
             // All in One without Ajax Request
             if (empty($_GET['path'])){
-
+                $par = $this->navbarDataByPath("All","");
                 return view('pages.index',[
                 'data' => $data,
-                'cmail' => 'aaa@hotmail.com' // Hard code as Fuck
+                "cname" => "All",
+                'cmail' => $email,
+                'parent' => $par
                 ]);
             }else{
-                // $data = $data[array_search($_GET['path'], array_column($data, 'path'))];
-
-                $index = array_search($_GET['path'], array_column($data, 'path'));
-                $data = $data[$index]['is_dir'];
-                // dd($data);
+                $data = $this->fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
+                $par = $this->navbarDataByPath("All",$_GET['path']);
                 return view('pages.board',[
                     'data' => $data,
-                    'cmail' => 'aaa@hotmail.com'
+                    "cname" => "All",
+                    'cmail' => $email,
+                    'parent' => $par
                     ]);
             }
-            // dd($data);
-            
+          
 
         } else
             return Redirect::to('/');
@@ -92,6 +100,8 @@ class HomeController extends Controller
             ->get();
         if ($que->count() == 1) {
             $provider = $que[0]->provider;
+        } else if ($id == "All"){
+            return Redirect::to('/home');
         } else {
             return "Error: Connection_name is $id, COUNT : " . $que->count();
         }
@@ -113,26 +123,20 @@ class HomeController extends Controller
                 return "Error!! Provider: $provider";
         }
 
-        
-
-        $cac = Cache::where('user_id',Auth::user()->id)
+        // if at 1st level Folder, No Ajax request.
+        if (empty($_GET['path'])) {
+             $cac = Cache::where('user_id',Auth::user()->id)
             ->where('provider',$provider)
             ->where('user_connection_name',$id)
             ->get();
-        if ($cac->count() == 0){
-            $cac = new Cache();
-            $cac->user_id = Auth::user()->id;
-            $cac->provider = $provider;
-            $cac->user_connection_name = $id;
-        }else if ($cac->count() == 1){
-            $cac = $cac->first();
-        }
-
-        
-
-        // if at 1st level Folder, No Ajax request.
-        if (empty($_GET['path'])) {
-
+            if ($cac->count() == 0){
+                $cac = new Cache();
+                $cac->user_id = Auth::user()->id;
+                $cac->provider = $provider;
+                $cac->user_connection_name = $id;
+            }else if ($cac->count() == 1){
+                $cac = $cac->first();
+            }
             $job = (new CreateFileMapping($obj,$provider,$cac));
             $this->dispatch($job);
 
@@ -142,7 +146,6 @@ class HomeController extends Controller
             
             $cac->data = json_encode($data);
             // $cac->save();
-
 
             return view('pages.index', [
 //            "data" => null,
@@ -160,9 +163,6 @@ class HomeController extends Controller
                 $parent = $this->navbarDataById($id, $_GET['path'], $obj,$provider);
             }
             $data = $this->normalizeMetaData($data, $provider);
-
-
-            print_r($_GET['path']);
 
             return view('pages.board', [
 //            "data" => null,
@@ -184,6 +184,7 @@ class HomeController extends Controller
 //        $file_type = '';
 //        $last_modified = '';
 //        $shared = false;
+//        $provider = '';
 
         $format = array();
 
@@ -269,7 +270,6 @@ class HomeController extends Controller
 
         return $format;
 
-
     }
 
     private function navbarDataByPath($id,$path)
@@ -277,8 +277,12 @@ class HomeController extends Controller
         $path = $id . $path;
         $parent = (object)array(
             'pname' => array(),
-            'ppath' => array()
+            'ppath' => array(),
+            'pprovider' => array()
         );
+        if (!empty($_GET['provider'])){
+            $parent->pprovider = $_GET['provider'];
+        }
         $parent->pname = explode("/", $path);
         $temp = '/';
         for ($i = 0; $i < count($parent->pname); $i++) {

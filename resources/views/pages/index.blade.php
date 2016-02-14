@@ -45,14 +45,14 @@
                         <tr class="withItemMenu" value="{{ $val['path'] }}">
                             <td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>
                             <td class="th-name">
-                            @if ($val['is_dir'])
+                            @if ($val['is_dir']  or ($val['size'] == 0))
                                 <span class="glyphicon glyphicon-folder-close"></span>
                                 {{--<a id="dir" href="{{ Request::url()."/".$val['name'] }}">{{ $val['name'] }}</a></td>--}}
-                                <span id="dir" class="dir" value="{{ $val['path'] }}">{{ $val['name'] }}</span></td>
+                                <span id="dir" class="dir" alt="{{ $val['provider'] }}" value="{{ $val['path'] }}">{{ $val['name'] }}</span></td>
                             @else
                                 <a href="#">{{ $val['name'] }}</a></td>
                             @endif
-                            @if ($val['is_dir'])
+                            @if ($val['is_dir']  or ($val['size'] == 0))
                                 <td class="th-size"></td>
                             @else
                                 <td class="th-size">{{ $val['size'] }}</td>
@@ -104,8 +104,11 @@
         function onGetClick(event) {
             // we're not passing any data with the get route, though you can if you want
             var dir = $(this).attr('value');
+            var prov = $(this).attr('alt');
+
 //                    $.get(window.location.href+"?path="+dir, onSuccess);
-            var url = window.location.pathname + "?path=" + encodeURIComponent(dir);
+            var url = window.location.pathname + "?path=" + encodeURIComponent(dir)
+            + "&provider=" + encodeURIComponent(prov);
 //            alert(dir);
             $("body").css("cursor", "progress");
             $("#board").load(url);

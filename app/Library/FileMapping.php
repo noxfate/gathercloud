@@ -28,31 +28,35 @@ class FileMapping
 	}
 
 	// Return Array of metaData in the selected Level
-	public function traverseInsideFolder($data, $path, $level = 0)
+	public function traverseInsideFolder($data, $path, $provider)
 	{
-		// print_r($data);
-		echo "-------------<br>";
-		print_r("lvl: ".$level);
-		echo "<br>-------------<br>";		
-		print_r(array_column($data, 'path'));
-		echo "<br>-------------<br>";
-
-		$index = array_search($path, array_column($data, 'path'));
-	
+		
+		$index = $this->getFolderIndex($path, $provider, $data);
+		
 
 		if ($index !== false){
-			echo "Found!";
-			print_r($data[$index]['is_dir']);
 			return $data[$index]['is_dir'];
 		}else{
 			foreach ($data as $k) {
 				if ($k['is_dir']){
-					$this->traverseInsideFolder($k['is_dir'], $path, $level+1);
+					$a = $this->traverseInsideFolder($k['is_dir'], $path, $provider);
+					if (!is_null($a)){
+						return $a;
+					}
 				}
 			}
 		}
 	}
 
+	private function getFolderIndex($path, $provider , $array_data)
+	{
+		foreach ($array_data as $key => $val) {
+			# code...
+			if ($val['path'] == $path && $val['provider'] == $provider)
+				return $key;
+		}
+		return false;
+	}
 	public function dataEncode()
 	{
 
