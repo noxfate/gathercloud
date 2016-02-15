@@ -21,13 +21,13 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    private $fmap;
 
     public function index()
     {
         if (Auth::check()) {
 
             $que = Cache::where('user_id',Auth::user()->id)->get();
+
             $data = array();
             foreach ($que as $d ) {
                 $inside_json = json_decode($d->data, true);
@@ -38,7 +38,7 @@ class HomeController extends Controller
             $email = User::find(Auth::user()->id)->email;
 
 
-            $this->fmap = new FileMapping($data);
+            $fmap = new FileMapping($data);
 
             // All in One without Ajax Request
             if (empty($_GET['path'])){
@@ -50,7 +50,7 @@ class HomeController extends Controller
                 'parent' => $par
                 ]);
             }else{
-                $data = $this->fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
+                $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
                 $par = $this->navbarDataByPath("All",$_GET['path']);
                 return view('pages.board',[
                     'data' => $data,
@@ -173,6 +173,86 @@ class HomeController extends Controller
             ]);
         }
     }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public
+    function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public
+    function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public
+    function destroy($id)
+    {
+        //
+    }
+
+    public
+    function search()
+    {
+        $que = Cache::where('user_id',Auth::user()->id)->get();
+
+        $data = array();
+        foreach ($que as $d ) {
+            $inside_json = json_decode($d->data, true);
+            foreach ($inside_json as $in){
+                array_push($data, $in);
+            }   
+        }
+
+        $fmap = new FileMapping($data);
+        $result = array();
+        $result = $fmap->searchFiles($data, $_GET['keyword'], $result);
+
+        echo "<br>Result Count: ".count($result);
+
+        $email = User::find(Auth::user()->id)->email;
+
+        // All in One without Ajax Request
+        if (empty($_GET['path'])){
+            $par = $this->navbarDataByPath("All","");
+            return view('pages.index',[
+            'data' => $result,
+            "cname" => "All",
+            'cmail' => $email,
+            'parent' => $par
+            ]);
+        }else{
+            $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
+            $par = $this->navbarDataByPath("All",$_GET['path']);
+            return view('pages.board',[
+                'data' => $result,
+                "cname" => "All",
+                'cmail' => $email,
+                'parent' => $par
+                ]);
+        }
+    }
+
 
     private function normalizeMetaData($data, $provider)
     {
@@ -338,42 +418,6 @@ class HomeController extends Controller
         return $parent;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public
-    function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public
-    function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public
-    function destroy($id)
-    {
-        //
-    }
 
     public function download($service, $file){
 

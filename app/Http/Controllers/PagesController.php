@@ -24,29 +24,6 @@ class PagesController extends Controller
         return view('pages.landing');
     }
 
-    public function dropbox()
-    {
-        $dropbox = new \App\Library\DropboxModel();
-
-        return $dropbox->getFiles();
-//        return "<h1>Access Token Not Found Problem</h1>";
-    }
-//
-//    public function copy()
-//    {
-//        $copy = new \App\Library\CopyModel();
-//        if (!isset($_GET['oauth_token'])){
-//            return Redirect::to($copy->getRequestToken());
-//        }else{
-//            return $copy->getAccessToken($_GET['oauth_token']);
-//        }
-//
-//
-//    }
-
-
-
-
     /**
      * Show the form for creating a new resource.
      *

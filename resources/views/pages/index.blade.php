@@ -23,6 +23,16 @@
                 <button id="file-upload" class="btn btn-default"><span class="glyphicon glyphicon-cloud-upload"></span>
                     File Upload
                 </button>
+                <form action=" {{ url("/home/search") }}">
+                    <div class="input-group">
+                      <input type="text" name="keyword" class="form-control" placeholder="Search for...">
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">Go!</button>
+                      </span>
+                    </div>
+                </form>
+               
+
             </div>
         </div>
 
