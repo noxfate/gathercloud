@@ -8,6 +8,8 @@ use Auth;
 use App\User;
 use App\Token;
 use App\Cache;
+use App\Jobs\CreateFileMapping;
+use App\Library\FileMapping;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
@@ -19,25 +21,45 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index()
     {
         if (Auth::check()) {
 
             $que = Cache::where('user_id',Auth::user()->id)->get();
+
             $data = array();
             foreach ($que as $d ) {
                 $inside_json = json_decode($d->data, true);
                 foreach ($inside_json as $in){
                     array_push($data, $in);
-                }
-                
-                
+                }   
             }
-            // dd($data);
-            return view('pages.index',[
+            $email = User::find(Auth::user()->id)->email;
+
+
+            $fmap = new FileMapping($data);
+
+            // All in One without Ajax Request
+            if (empty($_GET['path'])){
+                $par = $this->navbarDataByPath("All","");
+                return view('pages.index',[
                 'data' => $data,
-                'cmail' => 'aaa@hotmail.com' // Hard code as Fuck
-            ]);
+                "cname" => "All",
+                'cmail' => $email,
+                'parent' => $par
+                ]);
+            }else{
+                $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
+                $par = $this->navbarDataByPath("All",$_GET['path']);
+                return view('pages.board',[
+                    'data' => $data,
+                    "cname" => "All",
+                    'cmail' => $email,
+                    'parent' => $par
+                    ]);
+            }
+          
 
         } else
             return Redirect::to('/');
@@ -78,6 +100,8 @@ class HomeController extends Controller
             ->get();
         if ($que->count() == 1) {
             $provider = $que[0]->provider;
+        } else if ($id == "All"){
+            return Redirect::to('/home');
         } else {
             return "Error: Connection_name is $id, COUNT : " . $que->count();
         }
@@ -99,27 +123,29 @@ class HomeController extends Controller
                 return "Error!! Provider: $provider";
         }
 
-        $cac = Cache::where('user_id',Auth::user()->id)
+        // if at 1st level Folder, No Ajax request.
+        if (empty($_GET['path'])) {
+             $cac = Cache::where('user_id',Auth::user()->id)
             ->where('provider',$provider)
             ->where('user_connection_name',$id)
             ->get();
-        if ($cac->count() == 0){
-            $cac = new Cache();
-            $cac->user_id = Auth::user()->id;
-            $cac->provider = $provider;
-            $cac->user_connection_name = $id;
-        }else if ($cac->count() == 1){
-            $cac = $cac->first();
-        }
+            if ($cac->count() == 0){
+                $cac = new Cache();
+                $cac->user_id = Auth::user()->id;
+                $cac->provider = $provider;
+                $cac->user_connection_name = $id;
+            }else if ($cac->count() == 1){
+                $cac = $cac->first();
+            }
+            $job = (new CreateFileMapping($obj,$provider,$cac));
+            $this->dispatch($job);
 
-        if (empty($_GET['path'])) {
             $data = $obj->getFiles();
             $parent = $this->navbarDataByPath($id,"");
             $data = $this->normalizeMetaData($data, $provider);
 
             $cac->data = json_encode($data);
-            $cac->save();
-
+            // $cac->save();
 
             return view('pages.index', [
 //            "data" => null,
@@ -138,9 +164,6 @@ class HomeController extends Controller
             }
             $data = $this->normalizeMetaData($data, $provider);
 
-
-            print_r($_GET['path']);
-
             return view('pages.board', [
 //            "data" => null,
                 "data" => $data,
@@ -150,6 +173,86 @@ class HomeController extends Controller
             ]);
         }
     }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public
+    function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public
+    function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public
+    function destroy($id)
+    {
+        //
+    }
+
+    public
+    function search()
+    {
+        $que = Cache::where('user_id',Auth::user()->id)->get();
+
+        $data = array();
+        foreach ($que as $d ) {
+            $inside_json = json_decode($d->data, true);
+            foreach ($inside_json as $in){
+                array_push($data, $in);
+            }   
+        }
+
+        $fmap = new FileMapping($data);
+        $result = array();
+        $result = $fmap->searchFiles($data, $_GET['keyword'], $result);
+
+        echo "<br>Result Count: ".count($result);
+
+        $email = User::find(Auth::user()->id)->email;
+
+        // All in One without Ajax Request
+        if (empty($_GET['path'])){
+            $par = $this->navbarDataByPath("All","");
+            return view('pages.index',[
+            'data' => $result,
+            "cname" => "All",
+            'cmail' => $email,
+            'parent' => $par
+            ]);
+        }else{
+            $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
+            $par = $this->navbarDataByPath("All",$_GET['path']);
+            return view('pages.board',[
+                'data' => $result,
+                "cname" => "All",
+                'cmail' => $email,
+                'parent' => $par
+                ]);
+        }
+    }
+
 
     private function normalizeMetaData($data, $provider)
     {
@@ -161,6 +264,7 @@ class HomeController extends Controller
 //        $file_type = '';
 //        $last_modified = '';
 //        $shared = false;
+//        $provider = '';
 
         $format = array();
 
@@ -178,7 +282,8 @@ class HomeController extends Controller
                             'mime_type' => $mime,
                             'is_dir' => $val->is_dir, // 1 == Folder, 0 = File
                             'modified' => $val->modified,
-                            'shared' => $sh
+                            'shared' => $sh,
+                            'provider' => $provider
                         ));
                 }
                 break;
@@ -196,7 +301,8 @@ class HomeController extends Controller
                             'mime_type' => $mime,
                             'is_dir' => $is, // 1 == Folder, 0 = File
                             'modified' => date('Y m d H:i:s', $val->modified_time),
-                            'shared' => $sh
+                            'shared' => $sh,
+                            'provider' => $provider
                         ));
                 }
                 break;
@@ -214,7 +320,8 @@ class HomeController extends Controller
                             'mime_type' => $val['mime_type'],
                             'is_dir' => $val['is_dir'],
                             'modified' => date('Y m d H:i:s', strtotime($val['modified'])),
-                            'shared' => $val['shared']
+                            'shared' => $val['shared'],
+                            'provider' => $provider
                         ));
                 }
                 break;
@@ -232,7 +339,8 @@ class HomeController extends Controller
                             'mime_type' => null,
                             'is_dir' => $is, // 1 == Folder, 0 = File
                             'modified' => date('Y m d H:i:s', $val->getUpdatedTime()),
-                            'shared' => false
+                            'shared' => false, // dafuq is this?
+                            'provider' => $provider
                         ));
                 }
                 break;
@@ -242,7 +350,6 @@ class HomeController extends Controller
 
         return $format;
 
-
     }
 
     private function navbarDataByPath($id,$path)
@@ -250,8 +357,12 @@ class HomeController extends Controller
         $path = $id . $path;
         $parent = (object)array(
             'pname' => array(),
-            'ppath' => array()
+            'ppath' => array(),
+            'pprovider' => array()
         );
+        if (!empty($_GET['provider'])){
+            $parent->pprovider = $_GET['provider'];
+        }
         $parent->pname = explode("/", $path);
         $temp = '/';
         for ($i = 0; $i < count($parent->pname); $i++) {
@@ -307,42 +418,6 @@ class HomeController extends Controller
         return $parent;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public
-    function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public
-    function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public
-    function destroy($id)
-    {
-        //
-    }
 
     private
     function humanFileSize($size)

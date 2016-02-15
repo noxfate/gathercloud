@@ -19,9 +19,16 @@ Route::get('/logout', "UserController@logout");
 Route::get('/register', "UserController@create");
 Route::post('/register', "UserController@store");
 
+// Index Page
+Route::get('/home/search', "HomeController@search");
 Route::resource('/home',"HomeController");
+
+
 Route::post('/download',"HomeController@download");
-Route::get('/add',"CloudController@index");
+
+// Setting Page @ CloudController
+Route::resource('/cloud',"CloudController");
+Route::get('/add',"CloudController@create");
 Route::post('/add/{service}',"CloudController@add");
 Route::get('/add/{service}',"CloudController@add");
 
@@ -44,5 +51,11 @@ Route::post('/ajax/post', function () {
     return  Response::json($data);
 });
 
+// Route::get('/test', function(){
+// 	$job = new App\Jobs\SendRemiderEmail;
+// 	dispatch($job);
+
+// 	return 'Done!';
+// });
 Route::get('/test', "PagesController@test");
 Route::get('/context', "PagesController@context");
