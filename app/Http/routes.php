@@ -22,7 +22,7 @@ Route::post('/register', "UserController@store");
 // Index Page
 Route::resource('/home',"HomeController");
 
-Route::post('/download',"HomeController@download");
+Route::post('/download/{service}/{file}',"HomeController@download");
 
 // Setting Page @ CloudController
 Route::resource('/cloud',"CloudController");

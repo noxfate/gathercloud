@@ -108,7 +108,7 @@
 
 //                    $.get(window.location.href+"?path="+dir, onSuccess);
             var url = window.location.pathname + "?path=" + encodeURIComponent(dir)
-            + "&provider=" + encodeURIComponent(prov);
+                    + "&provider=" + encodeURIComponent(prov);
 //            alert(dir);
             $("body").css("cursor", "progress");
             $("#board").load(url);
