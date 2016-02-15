@@ -20,7 +20,9 @@ Route::get('/register', "UserController@create");
 Route::post('/register', "UserController@store");
 
 // Index Page
+Route::get('/home/search', "HomeController@search");
 Route::resource('/home',"HomeController");
+
 
 Route::post('/download',"HomeController@download");
 

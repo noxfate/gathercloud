@@ -22,9 +22,23 @@ class FileMapping
 		
 	}
 
-	public function searchFiles()
+	// Return multidimentional array contains of metaData of similar name
+	public function searchFiles($data, $keyword, $result)
 	{
+		if (empty($keyword))
+			return null;
+		foreach ($data as $k) {
+			if ($k['is_dir']){
+				$a = $this->searchFiles($k['is_dir'], $keyword, $result);
+			} else if (stripos($k['name'], $keyword) !== false){
+				print_r($k['name']);
+				array_push($result, $k);
+			}	
 
+		}	
+		return $result;
+
+		
 	}
 
 	// Return Array of metaData in the selected Level
@@ -33,7 +47,6 @@ class FileMapping
 		
 		$index = $this->getFolderIndex($path, $provider, $data);
 		
-
 		if ($index !== false){
 			return $data[$index]['is_dir'];
 		}else{
@@ -48,6 +61,7 @@ class FileMapping
 		}
 	}
 
+	// Use to Retrieve Folder index which has the same Name but different Provider
 	private function getFolderIndex($path, $provider , $array_data)
 	{
 		foreach ($array_data as $key => $val) {
@@ -57,6 +71,7 @@ class FileMapping
 		}
 		return false;
 	}
+
 	public function dataEncode()
 	{
 
