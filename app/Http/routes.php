@@ -24,7 +24,8 @@ Route::get('/home/search', "HomeController@search");
 Route::resource('/home',"HomeController");
 
 
-Route::post('/download',"HomeController@download");
+Route::post('/download/{service}/{file}',"HomeController@download");
+
 
 // Setting Page @ CloudController
 Route::resource('/cloud',"CloudController");

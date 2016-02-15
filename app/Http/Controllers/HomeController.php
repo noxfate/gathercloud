@@ -417,6 +417,10 @@ class HomeController extends Controller
     }
 
 
+    public function download($service, $file){
+
+    }
+
     private
     function humanFileSize($size)
     {

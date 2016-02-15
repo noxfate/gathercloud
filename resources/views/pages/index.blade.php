@@ -115,7 +115,6 @@
             // we're not passing any data with the get route, though you can if you want
             var dir = $(this).attr('value');
             var prov = $(this).attr('alt');
-
             if (window.location.pathname.search("search") == -1){
                 var url = window.location.pathname + "?path=" + encodeURIComponent(dir)
                         + "&provider=" + encodeURIComponent(prov);
