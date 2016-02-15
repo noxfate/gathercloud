@@ -228,8 +228,6 @@ class HomeController extends Controller
         $result = array();
         $result = $fmap->searchFiles($data, $_GET['keyword'], $result);
 
-        echo "<br>Result Count: ".count($result);
-
         $email = User::find(Auth::user()->id)->email;
 
         // All in One without Ajax Request

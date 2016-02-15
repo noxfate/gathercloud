@@ -116,10 +116,13 @@
             var dir = $(this).attr('value');
             var prov = $(this).attr('alt');
 
-//                    $.get(window.location.href+"?path="+dir, onSuccess);
-            var url = window.location.pathname + "?path=" + encodeURIComponent(dir)
-            + "&provider=" + encodeURIComponent(prov);
-//            alert(dir);
+            if (window.location.pathname.search("search") == -1){
+                var url = window.location.pathname + "?path=" + encodeURIComponent(dir)
+                        + "&provider=" + encodeURIComponent(prov);
+            }else{
+                var path = window.location.pathname.replace('/search','');
+                var url = path + "?path=" + encodeURIComponent(dir) + "&provider=" + encodeURIComponent(prov);
+            }
             $("body").css("cursor", "progress");
             $("#board").load(url);
         }

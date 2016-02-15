@@ -27,15 +27,18 @@ class FileMapping
 	{
 		if (empty($keyword))
 			return null;
+        $result = array();
 		foreach ($data as $k) {
-			if ($k['is_dir']){
-				$a = $this->searchFiles($k['is_dir'], $keyword, $result);
-			} else if (stripos($k['name'], $keyword) !== false){
-				print_r($k['name']);
-				array_push($result, $k);
-			}	
+            if ($k['is_dir']) {
+                $a = $this->searchFiles($k['is_dir'], $keyword, $result);
+                if (!is_null($a))
+                    $result = array_merge($result, $a);
+            }
+            if (stripos($k['name'], $keyword) !== false) {
+                $result[] = $k;
+            }
 
-		}	
+        }
 		return $result;
 
 		

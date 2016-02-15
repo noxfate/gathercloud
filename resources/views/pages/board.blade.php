@@ -20,6 +20,14 @@
         <button id="file-upload" class="btn btn-default"><span class="glyphicon glyphicon-cloud-upload"></span>
             File Upload
         </button>
+        <form action=" {{ url("/home/search") }}">
+            <div class="input-group">
+                <input type="text" name="keyword" class="form-control" placeholder="Search for...">
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">Go!</button>
+                      </span>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -68,11 +76,13 @@
         // we're not passing any data with the get route, though you can if you want
         var dir = $(this).attr('value');
         var prov = $(this).attr('alt');
-
-//      $.get(window.location.href+"?path="+dir, onSuccess);
+        if (window.location.pathname.search("search") == -1){
             var url = window.location.pathname + "?path=" + encodeURIComponent(dir)
-            + "&provider=" + encodeURIComponent(prov);
-//        alert(dir);
+                    + "&provider=" + encodeURIComponent(prov);
+        }else{
+            var path = window.location.pathname.replace('/search','');
+            var url = path + "?path=" + encodeURIComponent(dir) + "&provider=" + encodeURIComponent(prov);
+        }
         $("body").css("cursor", "progress");
         $("#board").load(url);
     }
