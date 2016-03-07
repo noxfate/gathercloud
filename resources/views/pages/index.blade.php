@@ -1,4 +1,7 @@
 @extends('layout.layout-of-index')
+
+
+
 @section('content')
     <div id="board" class="board">
         <div id="box-nav-bar" class="box-nav-bar">

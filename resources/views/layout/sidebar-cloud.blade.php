@@ -1,37 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Gathercloud</title>
-    <link rel="stylesheet" type="text/css" href="{{URL::asset('css/bootstrap.min.css')}}">
-    <link rel="stylesheet" href="{{URL::asset('css/cloud-index.css')}}">
-    <link rel="stylesheet" href="{{URL::asset('css/cloud-add.css')}}">
-    <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
-    <script src="{{ URL::asset('js/jquery.contextmenu.js') }}"></script>
-</head>
-<body>
-
-<div id="top-bar" class="top-bar">
-    <div id="logo" class="logo">&lt;Logo&gt;</div>
-    <div id="userMenu" class="userMenu">
-        <div class="dropdown">
-            <button class="btn-userMenu dropdown-toggle " type="button" id="dropdownMenu1" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="true">
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu dd-userMenu" aria-labelledby="dropdownMenuDivider">
-                <li><a href="{{ url('/setting/profile') }}">Profile Setting</a></li>
-                <li><a href="{{ url('/setting/cloud') }}">Cloud Connection</a></li>
-                <li class="itemMenu-separator"></li>
-                <!-- <li><a href="#">Something else here</a></li> -->
-                <li><a href="{{url('/logout')}}">Log out</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
-
-<div class="box-lv-1">
-    <div id="side-bar" class="side-bar">
+<div id="side-bar" class="side-bar">
         <div id="add-cloud" class="add-cloud">
             <a href="{{ url('/add') }}">
                 <button class="btn btn-primary">
@@ -70,16 +37,3 @@
             </ul>
         </div>
     </div>
-
-
-    @yield("content")
-
-</div>
-<script>
-
-</script>
-
-@extends("components.contextmenu")
-@extends("components.script")
-</body>
-</html>

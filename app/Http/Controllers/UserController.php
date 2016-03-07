@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Auth;
+use App\User;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -18,6 +19,15 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
+    {
+        if (Auth::check()){
+            $user = User::find(Auth::user()->id);
+            return view('pages.profile-setting')->with('user',$user);
+        }
+        return Redirect::to('/');
+    }
+
+    public function login()
     {
         if (!Auth::check())
             return view('pages.login');

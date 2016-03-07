@@ -22,8 +22,10 @@ class CloudController extends Controller
      */
     public function index()
     {
-        if (Auth::check())
-            return view('pages.setting');
+        if (Auth::check()){
+            $user = User::find(Auth::user()->id);
+            return view('pages.setting')->with('user',$user);
+        }
         return Redirect::to('/');
     }
 

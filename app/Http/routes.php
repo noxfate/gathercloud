@@ -13,7 +13,8 @@
 
 Route::get('/', "PagesController@index");
 
-Route::get('/login',"UserController@index");
+// UserController
+Route::get('/login',"UserController@login");
 Route::post('/login', "UserController@authenticate");
 Route::get('/logout', "UserController@logout");
 Route::get('/register', "UserController@create");
@@ -27,8 +28,11 @@ Route::resource('/home',"HomeController");
 Route::post('/download/{service}/{file}',"HomeController@download");
 
 
-// Setting Page @ CloudController
-Route::resource('/cloud',"CloudController");
+// Setting
+Route::resource('/setting/cloud',"CloudController");
+Route::resource('/setting/profile', "UserController");
+
+// Add Cloud Route
 Route::get('/add',"CloudController@create");
 Route::post('/add/{service}',"CloudController@add");
 Route::get('/add/{service}',"CloudController@add");
