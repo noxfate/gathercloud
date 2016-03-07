@@ -114,7 +114,24 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $usr = User::find($id);
+        if ($request->has('menu') and ($request->input('menu') == "pwd")){
+            $req = $request->all();
+            if (Hash::check($req['old_pwd'], $usr->password) and ($req['new_pwd'] == $req['re_pwd'])){
+                $usr->password = Hash::make($req['new_pwd']);
+                $usr->save();
+//                return "Success";
+            }
+            // debug for Another fail cases
+        }elseif($request->has('menu') and ($request->input('menu') == "prof")){
+            $req = $request->all();
+            $usr->first_name = $req['fname'];
+            $usr->last_name = $req['lname'];
+            $usr->save();
+//            return "Success";
+        }
+
+        return Redirect::to('/setting/profile');
     }
 
     /**
