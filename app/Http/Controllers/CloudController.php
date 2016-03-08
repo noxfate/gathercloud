@@ -270,7 +270,14 @@ class CloudController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $token = User::find(Auth::user()->id)->tokens->find($id);
+        $old_conn = $token->connection_name;
+        $token->connection_name = $request->input('rename');
+        $token->save();
+
+        $cac = User::find(Auth::user()->id)->caches->where("user_connection_name", $old_conn)->first();
+        $cac->user_connection_name = $request->input('rename');
+        $cac->save();
     }
 
     /**
@@ -281,6 +288,12 @@ class CloudController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $token = User::find(Auth::user()->id)->tokens->find($id);
+        $connName = $token->connection_name;
+        $token->delete();
+
+        $cac = User::find(Auth::user()->id)->caches->where("user_connection_name", $connName)->first();
+        $cac->delete();
+        return "Delete!";
     }
 }

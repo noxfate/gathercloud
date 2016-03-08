@@ -17,10 +17,10 @@ class FileMapping
 		$this->data = $data;
 	}
 
-	public function createFileMapping()
-	{
+	// public function createFileMapping()
+	// {
 		
-	}
+	// }
 
 	// Return multidimentional array contains of metaData of similar name
 	public function searchFiles($data, $keyword, $result)
