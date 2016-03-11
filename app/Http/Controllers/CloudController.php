@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Auth;
 use App\User;
 use App\Token;
+use App\Cache;
+use App\Library\FileMapping;
 use App\Http\Requests;
 use Session;
 use App\Http\Controllers\Controller;
@@ -232,7 +234,46 @@ class CloudController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $file = $request->file('file');
+
+        // ============== Redundancy Check! ==========================
+        if ($request->hasFile('file') && $request->file('file')->isvalid()){
+            // return "Last modified: ".date("F d Y H:i:s.",filemtime($_FILES['file']['name']));
+
+            // .. 1. Search the similar FileName
+            $que = Cache::where('user_id', Auth::user()->id)->get();
+
+            $data = array();
+            foreach ($que as $d ) {
+                $inside_json = json_decode($d->data, true);
+                foreach ($inside_json as $in){
+                    array_push($data, $in);
+                }   
+            }
+            $fmp = new FileMapping($data);
+            $result = array();
+            $result = $fmp->searchFiles($data, $_FILES['file']['name'], $result);
+            if (empty($result)){
+                return "No file with the same name";
+            }else{
+                // .. 2. Search in $result for similar Size and File Type
+                $same_file = array();
+                foreach ($result as $d){
+                    if (($d['bytes'] == $_FILES['file']['size'])
+                        && ($d['mime_type'] == $_FILES['file']['type'])){
+                        array_push($same_file, $d);
+                    }
+                }
+                if (empty($same_file)){
+                    return "No file Matching. Ok to upload!";
+                }else{
+                    return $same_file;
+                }
+
+            }
+        // ============================================================
+        }
+        return "Error";
     }
 
     //
@@ -246,8 +287,7 @@ class CloudController extends Controller
      */
     public function show($id)
     {
-        //
-
+       //
     }
 
     /**

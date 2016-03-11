@@ -23,9 +23,14 @@
                     <div class="icon-new-folder"></div>
                     New Folder
                 </button>
-                <button id="file-upload" class="btn btn-default"><span class="glyphicon glyphicon-cloud-upload"></span>
+               <!--  <button id="file-upload" class="btn btn-default"><span class="glyphicon glyphicon-cloud-upload"></span>
                     File Upload
-                </button>
+                </bitton> -->
+
+                <a href="upload" id="file-upload" class="btn btn-default"><span class="glyphicon glyphicon-cloud-upload"></span>
+                    File Upload
+                </a>
+
                 <form action=" {{ url("/home/search") }}">
                     <div class="input-group">
                       <input type="text" name="keyword" class="form-control" placeholder="Search for...">

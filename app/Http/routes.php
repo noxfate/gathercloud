@@ -13,7 +13,7 @@
 
 Route::get('/', "PagesController@index");
 
-// UserController
+// Authentication System
 Route::get('/login',"UserController@login");
 Route::post('/login', "UserController@authenticate");
 Route::get('/logout', "UserController@logout");
@@ -32,21 +32,22 @@ Route::post('/download/{service}/{file}',"HomeController@download");
 Route::resource('/setting/cloud',"CloudController");
 Route::resource('/setting/profile', "UserController");
 
-// Add Cloud Route
+// Add Cloud Connection Route
 Route::get('/add',"CloudController@create");
 Route::post('/add/{service}',"CloudController@add");
 Route::get('/add/{service}',"CloudController@add");
 
-Route::get("set",function(){
-    Session::put("test","test");
-    Session::save();
+
+
+// Redundancy Checking Ver.1
+Route::get('/upload',function(){
+	return view('pages.upload-temp');
 });
-
-Route::get("get",function(){
-    return Session::get("test");
-});
+Route::post('/upload', 'CloudController@store');
 
 
+
+// =========== FOR TESTING ==================
 Route::post('/ajax/post', function () {
 
     // pass back some data, along with the original data, just to prove it was received
@@ -64,3 +65,13 @@ Route::post('/ajax/post', function () {
 // });
 Route::get('/test', "PagesController@test");
 Route::get('/context', "PagesController@context");
+
+Route::get("set",function(){
+    Session::put("test","test");
+    Session::save();
+});
+
+Route::get("get",function(){
+    return Session::get("test");
+});
+// ===========================================
