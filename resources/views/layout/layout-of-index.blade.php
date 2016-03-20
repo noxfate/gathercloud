@@ -60,13 +60,31 @@
                         </a>
                     </li>
                 @endforeach
+            </ul>
+        </div>
 
-                {{--<li><div><span class="glyphicon glyphicon-cloud"></span>{{$conn}}</div></li>--}}
-                {{--<li><div><span class="glyphicon glyphicon-cloud"></span>Box</div></li>--}}
-                {{--<li><div><span class="glyphicon glyphicon-cloud"></span>Copy</div></li>--}}
-                {{--<li><div><span class="glyphicon glyphicon-cloud"></span>Dropbox</div></li>--}}
-                {{--<li><div><span class="glyphicon glyphicon-cloud"></span>Google Drive</div></li>--}}
-                {{--<li><div><span class="glyphicon glyphicon-cloud"></span>OneDrive</div></li>--}}
+        <div class="itemMenu-separator"></div>
+        <div id="add-cloud" class="add-cloud"><!-- 
+            <a href="{{ url('/gtl') }}"> -->
+                <button class="btn btn-primary" id="gtl-btn">
+                    <span class="glyphicon glyphicon-plus"></span>
+                    Create new GatherLink
+                </button>
+            <!-- </a> -->
+        </div>
+
+         <div class="itemMenu-separator"></div>
+        <div id="my-cloud" class="my-cloud">
+            <ul id="list-cloud" class="list-cloud">
+                @foreach ($link as $l)
+                    <li id="side-bar-select-{{ $l->id }}">
+                        <a href="{{ url("/gtl/{$l->id}") }}">
+                            <div><span class="glyphicon glyphicon-cloud"></span>
+                                {{ $l->link_name }}
+                            </div>
+                        </a>
+                    </li>
+                @endforeach
             </ul>
         </div>
     </div>
@@ -75,9 +93,6 @@
     @yield("content")
 
 </div>
-<script>
-
-</script>
 
 @extends("components.contextmenu")
 @extends("components.script")

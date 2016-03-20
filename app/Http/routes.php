@@ -37,14 +37,14 @@ Route::get('/add',"CloudController@create");
 Route::post('/add/{service}',"CloudController@add");
 Route::get('/add/{service}',"CloudController@add");
 
-
-
 // Redundancy Checking Ver.1
 Route::get('/upload',function(){
 	return view('pages.upload-temp');
 });
 Route::post('/upload', 'CloudController@store');
 
+// GatherLink Ver. 1
+Route::resource('/gtl','GatherlinkController');
 
 
 // =========== FOR TESTING ==================

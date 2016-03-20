@@ -66,8 +66,6 @@
         connId = connId.substr(7);
         var connName = $(this).val();
         var url = window.location.pathname + "/" + connId;
-        // alert(connName);
-        // $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
         $.ajax({
             type: 'PUT',
             url: url,

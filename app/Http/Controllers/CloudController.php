@@ -250,7 +250,7 @@ class CloudController extends Controller
                     array_push($data, $in);
                 }   
             }
-            $fmp = new FileMapping($data);
+            $fmp = new FileMapping();
             $result = array();
             $result = $fmp->searchFiles($data, $_FILES['file']['name'], $result);
             if (empty($result)){

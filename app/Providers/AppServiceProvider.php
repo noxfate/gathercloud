@@ -17,7 +17,11 @@ class AppServiceProvider extends ServiceProvider
 //        $conn = User::find(auth()->user()->id)->tokens->all();
         view()->composer('layout.layout-of-index', function($view) {
             $conn = User::find(auth()->user()->id)->tokens->all();
-            $view->with('conn', $conn);
+            $link = User::find(auth()->user()->id)->links->all(); 
+            $view->with([
+                'conn'=> $conn,
+                'link' => $link
+                ]);
         });
     }
 

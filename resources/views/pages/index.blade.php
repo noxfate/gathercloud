@@ -1,7 +1,5 @@
 @extends('layout.layout-of-index')
 
-
-
 @section('content')
     <div id="board" class="board">
         <div id="box-nav-bar" class="box-nav-bar">
@@ -27,7 +25,7 @@
                     File Upload
                 </bitton> -->
 
-                <a href="upload" id="file-upload" class="btn btn-default"><span class="glyphicon glyphicon-cloud-upload"></span>
+                <a href="{{ url('upload') }}" id="file-upload" class="btn btn-default"><span class="glyphicon glyphicon-cloud-upload"></span>
                     File Upload
                 </a>
 
@@ -47,6 +45,7 @@
         <table id="table-header" class="table-header">
             <tr>
                 <th class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></th>
+                <th class="th-icon-cloud"></th>
                 <th class="th-name">Name</th>
                 <th class="th-size">Size</th>
                 <th class="th-last-mo">Last modified</th>
@@ -62,6 +61,9 @@
                     @foreach($data as $d => $val)
                         <tr class="withItemMenu" value="{{ $val['path'] }}">
                             <td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>
+
+                            <td class="th-icon-cloud"><input class="gtl-chkbox" id="{{ $d }}" type="checkbox"></td>
+
                             <td class="th-name">
                             @if ($val['is_dir']  or ($val['size'] == 0))
                                 <span class="glyphicon glyphicon-folder-close"></span>
@@ -81,8 +83,12 @@
                     @endforeach
                 @endif
             </table>
+            <button id="gtl-btn-save">Save</button>  <button id="gtl-btn-cancel">Cancel</button>
         </div>
     </div>
+
+    
+
     {{--<tr class="withItemMenu">--}}
     {{--<td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>--}}
     {{--<td class="th-name"><span class="glyphicon glyphicon-folder-close   "></span><a href="#"> test <te></te>st test</a></td>--}}
@@ -117,6 +123,51 @@
         $("body").css("cursor", "default");
         // set up jQuery with the CSRF token, or else post routes will fail
         $.ajaxSetup({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}});
+
+
+        $(".gtl-chkbox").hide();
+        $("#gtl-btn-cancel").hide();
+        $("#gtl-btn-save").hide();
+        $("#gtl-btn").click(function(){
+            $("#gtl-btn-cancel").show();
+            $("#gtl-btn-save").show();
+            $(".gtl-chkbox").show();
+        });
+        $(".gtl-chkbox").click(function(){
+            if (typeof Storage !== "undefined") { // Support Web Storage
+                if (sessionStorage.getItem("selected") === null){
+                    sessionStorage.setItem("selected",JSON.stringify([$(this).attr("id")]));
+                    // alert("Created");
+                }else{
+                    var ids = JSON.parse(sessionStorage.getItem("selected"));
+                    var index = ids.indexOf($(this).attr("id"));
+                    if (index !== -1){
+                        ids.splice(index,1);
+                    }else{
+                        ids.push($(this).attr("id"));
+                    }
+                    ids.sort();
+                    sessionStorage.setItem("selected",JSON.stringify(ids));
+                    // alert(ids);
+                }
+            }
+        });
+        $("#gtl-btn-save").click(function(e){
+            var selected_ids = JSON.parse(sessionStorage.getItem("selected"));
+            if (selected_ids === null){
+                alert("Please Selected at least 1 item");
+            }else{
+                window.location.href = window.location.pathname.replace('/home','/gtl/create');;
+            }
+        });
+        $("#gtl-btn-cancel").click(function(e){
+            $(".gtl-chkbox").attr('checked',false);
+            sessionStorage.removeItem("selected");
+            $(".gtl-chkbox").hide();
+            $("#gtl-btn-cancel").hide();
+            $("#gtl-btn-save").hide();
+        });
+
 
         // handlers
         function onGetClick(event) {

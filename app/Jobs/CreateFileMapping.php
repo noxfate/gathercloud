@@ -47,7 +47,6 @@ class CreateFileMapping extends Job implements SelfHandling
         $files = array();
         $rec_data = $this->normalizeMetaData($this->obj->getFiles($path), $this->provider);
         foreach ($rec_data as $d) {
-            # code...
             if (!$d['is_dir']){
                 array_push($files, $d);
             }else{
