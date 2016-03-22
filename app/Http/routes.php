@@ -27,7 +27,6 @@ Route::resource('/home',"HomeController");
 
 Route::post('/download/{service}/{file}',"HomeController@download");
 
-
 // Setting
 Route::resource('/setting/cloud',"CloudController");
 Route::resource('/setting/profile', "UserController");
@@ -44,7 +43,9 @@ Route::get('/upload',function(){
 Route::post('/upload', 'CloudController@store');
 
 // GatherLink Ver. 1
+Route::get('/gtl/shared', 'GatherLinkController@showFromToken');
 Route::resource('/gtl','GatherlinkController');
+
 
 
 // =========== FOR TESTING ==================

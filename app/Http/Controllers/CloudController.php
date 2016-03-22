@@ -27,7 +27,7 @@ class CloudController extends Controller
         if (Auth::check()){
             $user = User::find(Auth::user()->id);
             $conn = $user->tokens;
-            return view('pages.cloud-setting',[
+            return view('pages.setting-cloud',[
                 "conn" => $conn,
                 "user" => $user
             ]);

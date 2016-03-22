@@ -17,11 +17,10 @@
 		<br>
 		<input type="hidden" name="items" id="post-data">
 		<input type="hidden" name="_token" value="{{ csrf_token() }}">
-		<input type="Submit" value="Confirm">
+		<input type="Submit" id="gtl-create-btn" value="Confirm">
 	</form>
 
 	<script>
-
 		
 		$.ajaxSetup({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}});
 		$.ajax({
@@ -38,6 +37,7 @@
 					row.insertCell(3).innerHTML = result[r]['modified'];
 				}
 				$("#post-data").attr("value",JSON.stringify(result));
+				sessionStorage.removeItem("selected");
 			}
 		});
 

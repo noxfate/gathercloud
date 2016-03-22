@@ -4,7 +4,10 @@
 	<h1>GatherLinks</h1>
 	<br>
 
-	Links: {{ $link->link_name }} <br><br>
+	Links name: {{ $link->link_name }} <br>
+
+	<button id="geturl-btn" value="{{ url('gtl/shared').'?tokens='.$link->url }}">Get Shareable URL</button>
+	<br><br>
 
 	<table border="1">
 		<tr>
@@ -22,4 +25,20 @@
         </tr>
         @endforeach
 	</table>
+
+	<form method="POST">
+		<input type="submit" id="gtl-del-btn" value="Delete">
+		<input type="hidden" name="_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="_method" value="delete">
+	</form>
+
+	<script>
+		$("#geturl-btn").click(function(){
+			window.prompt("Copy to Clipboard: Press Ctrl+C, Enter", $(this).val());
+		});
+
+		$("#gtl-del-btn").click(function(){
+			confirm("Are you sure? ** BUG ALERT ** ");
+		});
+	</script>
 @endsection

@@ -67,7 +67,7 @@ class GatherlinkController extends Controller
         $link = new Link();
         $link->link_name = $request->input('lkname');
         $link->user_id = Auth::user()->id;
-        $link->url = '';
+        $link->url = substr(base64_encode(sha1(mt_rand())), 0, 16);
         $link->data = $request->input('items');
         $link->save();
         return Redirect::to('/home');
@@ -85,6 +85,13 @@ class GatherlinkController extends Controller
             $link = Link::find($id);
             return view("pages.gtl-index")->with('link', $link);
         }
+        return Redirect::to('/');
+    }
+
+    public function showFromToken()
+    {
+        $link = Link::where("url",$_GET['tokens'])->get();
+        return $link;
     }
 
     /**
@@ -118,6 +125,8 @@ class GatherlinkController extends Controller
      */
     public function destroy($id)
     {
-        //
+        if(Link::find($id)->delete()){
+            return Redirect::to('/home');
+        }
     }
 }
