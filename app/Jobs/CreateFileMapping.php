@@ -3,11 +3,15 @@
 namespace App\Jobs;
 
 use App\Jobs\Job;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Bus\SelfHandling;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Cache;
 
-class CreateFileMapping extends Job implements SelfHandling
+class CreateFileMapping extends Job implements SelfHandling, ShouldQueue
 {
+    use InteractsWithQueue, SerializesModels;
 
     private $obj;
     private $provider;
@@ -38,7 +42,7 @@ class CreateFileMapping extends Job implements SelfHandling
 
         $this->cache->data = $js;
         $this->cache->save();
-        // print_r($this->cache->data);
+        print_r("Create"+ $this->provider + " Cache Success!");
         
     }
 
