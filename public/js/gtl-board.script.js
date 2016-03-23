@@ -4,14 +4,14 @@ $("body").css("cursor", "default");
 $.ajaxSetup({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}});
 
 
-$(".gtl-chkbox").hide();
-$("#gtl-btn-cancel").hide();
-$("#gtl-btn-save").hide();
-$("#gtl-btn").click(function(){
-    $("#gtl-btn-cancel").show();
-    $("#gtl-btn-save").show();
-    $(".gtl-chkbox").show();
-});
+//$(".gtl-chkbox").hide();
+//$("#gtl-btn-cancel").hide();
+//$("#gtl-btn-save").hide();
+//$("#gtl-btn").click(function(){
+//    $("#gtl-btn-cancel").show();
+//    $("#gtl-btn-save").show();
+//    $(".gtl-chkbox").show();
+//});
 $(".gtl-chkbox").click(function(){
     if (typeof Storage !== "undefined") { // Support Web Storage
         if (sessionStorage.getItem("selected") === null){
@@ -39,13 +39,13 @@ $("#gtl-btn-save").click(function(e){
         window.location.href = window.location.pathname.replace('/home','/gtl/create');;
     }
 });
-$("#gtl-btn-cancel").click(function(e){
-    $(".gtl-chkbox").attr('checked',false);
-    sessionStorage.removeItem("selected");
-    $(".gtl-chkbox").hide();
-    $("#gtl-btn-cancel").hide();
-    $("#gtl-btn-save").hide();
-});
+//$("#gtl-btn-cancel").click(function(e){
+//    $(".gtl-chkbox").attr('checked',false);
+//    sessionStorage.removeItem("selected");
+//    $(".gtl-chkbox").hide();
+//    $("#gtl-btn-cancel").hide();
+//    $("#gtl-btn-save").hide();
+//});
 
 
 // handlers
