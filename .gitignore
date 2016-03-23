@@ -7,3 +7,5 @@
 .idea/blade.xml
 .idea/blade.xml
 *.env
+.env
+.env

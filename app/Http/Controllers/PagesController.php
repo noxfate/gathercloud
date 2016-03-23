@@ -21,7 +21,7 @@ class PagesController extends Controller
      */
     public function index()
     {
-        return view('pages.landing');
+        return view('pages.info.landing');
     }
 
     /**
@@ -92,7 +92,7 @@ class PagesController extends Controller
 
     public function about()
     {
-        return view('pages.about');
+        return view('pages.info.about');
     }
 
     public function test()
@@ -127,7 +127,4 @@ class PagesController extends Controller
 
     }
 
-    public  function context(){
-        return view('test.testcontextmenu');
-    }
 }

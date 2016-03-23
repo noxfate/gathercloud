@@ -43,18 +43,18 @@ class HomeController extends Controller
             // All in One without Ajax Request
             if (empty($_GET['path'])){
                 $par = $this->navbarDataByPath("All","");
-                return view('pages.index',[
+                return view('pages.cloud.index',[
                 'data' => $data,
-                "cname" => "All",
+                "cname" => "all",
                 'cmail' => $email,
                 'parent' => $par
                 ]);
             }else{
                 $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
                 $par = $this->navbarDataByPath("All",$_GET['path']);
-                return view('pages.board',[
+                return view('pages.cloud.components.index-board',[
                     'data' => $data,
-                    "cname" => "All",
+                    "cname" => "all",
                     'cmail' => $email,
                     'parent' => $par
                     ]);
@@ -65,6 +65,48 @@ class HomeController extends Controller
             return Redirect::to('/');
     }
 
+    public function getAllItems()
+    {
+        if (Auth::check()) {
+
+            $que = Cache::where('user_id',Auth::user()->id)->get();
+
+            $data = array();
+            foreach ($que as $d ) {
+                $inside_json = json_decode($d->data, true);
+                foreach ($inside_json as $in){
+                    array_push($data, $in);
+                }
+            }
+            $email = User::find(Auth::user()->id)->email;
+
+
+            $fmap = new FileMapping($data);
+
+            // All in One without Ajax Request
+            if (empty($_GET['path'])){
+                $par = $this->navbarDataByPath("All","");
+                return view('pages.cloud.index',[
+                    'data' => $data,
+                    "cname" => "all",
+                    'cmail' => $email,
+                    'parent' => $par
+                ]);
+            }else{
+                $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
+                $par = $this->navbarDataByPath("All",$_GET['path']);
+                return view('pages.cloud.components.index-board',[
+                    'data' => $data,
+                    "cname" => "all",
+                    'cmail' => $email,
+                    'parent' => $par
+                ]);
+            }
+
+
+        } else
+            return Redirect::to('/');
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -147,7 +189,7 @@ class HomeController extends Controller
             $cac->data = json_encode($data);
             // $cac->save();
 
-            return view('pages.index', [
+            return view('pages.cloud.index', [
 //            "data" => null,
                 "data" => $data,
                 "cname" => $id,
@@ -164,7 +206,7 @@ class HomeController extends Controller
             }
             $data = $this->normalizeMetaData($data, $provider);
 
-            return view('pages.board', [
+            return view('pages.cloud.components.index-board', [
 //            "data" => null,
                 "data" => $data,
                 "cname" => $id . $_GET['path'],
@@ -233,7 +275,7 @@ class HomeController extends Controller
         // All in One without Ajax Request
         if (empty($_GET['path'])){
             $par = $this->navbarDataByPath("All","");
-            return view('pages.index',[
+            return view('pages.cloud.index',[
             'data' => $result,
             "cname" => "All",
             'cmail' => $email,
@@ -242,7 +284,7 @@ class HomeController extends Controller
         }else{
             $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
             $par = $this->navbarDataByPath("All",$_GET['path']);
-            return view('pages.board',[
+            return view('pages.cloud.components.index-board',[
                 'data' => $result,
                 "cname" => "All",
                 'cmail' => $email,
