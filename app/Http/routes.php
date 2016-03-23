@@ -65,7 +65,7 @@ Route::post('/ajax/post', function () {
 // 	return 'Done!';
 // });
 Route::get('/test', "PagesController@test");
-Route::get('/context', "PagesController@context");
+
 
 Route::get("set",function(){
     Session::put("test","test");

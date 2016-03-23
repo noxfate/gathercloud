@@ -30,7 +30,7 @@ class UserController extends Controller
     public function login()
     {
         if (!Auth::check())
-            return view('pages.login');
+            return view('pages.info.login');
         return Redirect::to('/home');
     }
 
@@ -59,7 +59,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view("pages.register");
+        return view("pages.info.register");
     }
 
     /**

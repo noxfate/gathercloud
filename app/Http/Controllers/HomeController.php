@@ -43,7 +43,7 @@ class HomeController extends Controller
             // All in One without Ajax Request
             if (empty($_GET['path'])){
                 $par = $this->navbarDataByPath("All","");
-                return view('pages.index',[
+                return view('pages.master-index',[
                 'data' => $data,
                 "cname" => "all",
                 'cmail' => $email,
@@ -52,7 +52,7 @@ class HomeController extends Controller
             }else{
                 $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
                 $par = $this->navbarDataByPath("All",$_GET['path']);
-                return view('pages.board',[
+                return view('components.cloud-board',[
                     'data' => $data,
                     "cname" => "all",
                     'cmail' => $email,
@@ -147,7 +147,7 @@ class HomeController extends Controller
             $cac->data = json_encode($data);
             // $cac->save();
 
-            return view('pages.index', [
+            return view('pages.master-index', [
 //            "data" => null,
                 "data" => $data,
                 "cname" => $id,
@@ -164,7 +164,7 @@ class HomeController extends Controller
             }
             $data = $this->normalizeMetaData($data, $provider);
 
-            return view('pages.board', [
+            return view('components.cloud-board', [
 //            "data" => null,
                 "data" => $data,
                 "cname" => $id . $_GET['path'],
@@ -233,7 +233,7 @@ class HomeController extends Controller
         // All in One without Ajax Request
         if (empty($_GET['path'])){
             $par = $this->navbarDataByPath("All","");
-            return view('pages.index',[
+            return view('pages.master-index',[
             'data' => $result,
             "cname" => "All",
             'cmail' => $email,
@@ -242,7 +242,7 @@ class HomeController extends Controller
         }else{
             $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
             $par = $this->navbarDataByPath("All",$_GET['path']);
-            return view('pages.board',[
+            return view('components.cloud-board',[
                 'data' => $result,
                 "cname" => "All",
                 'cmail' => $email,
