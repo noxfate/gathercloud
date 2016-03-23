@@ -65,6 +65,48 @@ class HomeController extends Controller
             return Redirect::to('/');
     }
 
+    public function getAllItems()
+    {
+        if (Auth::check()) {
+
+            $que = Cache::where('user_id',Auth::user()->id)->get();
+
+            $data = array();
+            foreach ($que as $d ) {
+                $inside_json = json_decode($d->data, true);
+                foreach ($inside_json as $in){
+                    array_push($data, $in);
+                }
+            }
+            $email = User::find(Auth::user()->id)->email;
+
+
+            $fmap = new FileMapping($data);
+
+            // All in One without Ajax Request
+            if (empty($_GET['path'])){
+                $par = $this->navbarDataByPath("All","");
+                return view('pages.cloud.index',[
+                    'data' => $data,
+                    "cname" => "all",
+                    'cmail' => $email,
+                    'parent' => $par
+                ]);
+            }else{
+                $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
+                $par = $this->navbarDataByPath("All",$_GET['path']);
+                return view('pages.cloud.components.index-board',[
+                    'data' => $data,
+                    "cname" => "all",
+                    'cmail' => $email,
+                    'parent' => $par
+                ]);
+            }
+
+
+        } else
+            return Redirect::to('/');
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -242,7 +284,7 @@ class HomeController extends Controller
         }else{
             $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
             $par = $this->navbarDataByPath("All",$_GET['path']);
-            return view('pages.cloud.components.cloud-board',[
+            return view('pages.cloud.components.index-board',[
                 'data' => $result,
                 "cname" => "All",
                 'cmail' => $email,

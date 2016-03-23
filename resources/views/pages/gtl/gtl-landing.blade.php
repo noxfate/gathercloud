@@ -2,7 +2,7 @@
 
 @section('content')
     <div id="board" class="board">
-blah balh
+        blahh
 <button onclick="goToSelect()">Continue</button>
     <script>
         document.getElementById('add-gtl').style.backgroundColor = "white";
@@ -13,4 +13,5 @@ blah balh
         }
     </script>
     </div>
+
 @endsection
