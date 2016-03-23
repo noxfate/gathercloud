@@ -39,9 +39,6 @@
 <div id="board-body" class="board-body">
     <table class="table-body table-hover table-striped">
         @if (!empty($data))
-            <script>
-                document.getElementById('side-bar-select-{{$cname}}').className = "withSelect";
-            </script>
             @foreach($data as $d => $val)
                 <tr class="withItemMenu" value="{{ $val['path'] }}">
                     <td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>

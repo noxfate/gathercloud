@@ -64,11 +64,7 @@
         </div>
 
         <div class="itemMenu-separator"></div>
-        <div id="add-cloud" class="add-cloud">
-                <button class="btn btn-primary" id="gtl-btn">
-                    <span class="glyphicon glyphicon-plus"></span>
-                    Create new GatherLink
-                </button>
+        <div id="add-gtl" class="add-cloud">
             <a href="{{ url('/gtl') }}">
                 <button class="btn btn-primary" >
                     {{--id="gtl-btn"--}}

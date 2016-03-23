@@ -43,7 +43,7 @@ class HomeController extends Controller
             // All in One without Ajax Request
             if (empty($_GET['path'])){
                 $par = $this->navbarDataByPath("All","");
-                return view('pages.cloud.master-index',[
+                return view('pages.cloud.index',[
                 'data' => $data,
                 "cname" => "all",
                 'cmail' => $email,
@@ -147,7 +147,7 @@ class HomeController extends Controller
             $cac->data = json_encode($data);
             // $cac->save();
 
-            return view('pages.cloud.master-index', [
+            return view('pages.cloud.index', [
 //            "data" => null,
                 "data" => $data,
                 "cname" => $id,
@@ -233,7 +233,7 @@ class HomeController extends Controller
         // All in One without Ajax Request
         if (empty($_GET['path'])){
             $par = $this->navbarDataByPath("All","");
-            return view('pages.cloud.master-index',[
+            return view('pages.cloud.index',[
             'data' => $result,
             "cname" => "All",
             'cmail' => $email,

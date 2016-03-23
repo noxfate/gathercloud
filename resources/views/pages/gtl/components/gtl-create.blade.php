@@ -1,6 +1,4 @@
-@extends('layouts.master-index')
 
-@section('content')
 	<h1>GatherLinks</h1>
 	<pre>GatherLinks is a simple feature from GatherCloud allows you to compose a simple view to share to others.</pre>
 	<form action="{{ url('/gtl') }}" method="POST">
@@ -21,11 +19,10 @@
 	</form>
 
 	<script>
-		
 		$.ajaxSetup({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}});
 		$.ajax({
 			type: 'GET',
-			url: 'create',
+			url: 'gtl/create',
 			data: {'selected-item': sessionStorage.getItem("selected")},
 			success: function(result){
 				var table = document.getElementById("gtl-table");
@@ -42,4 +39,4 @@
 		});
 
 	</script>
-@endsection
+	<script src="{{ URL::asset('js/jquery.min.js') }}"></script>

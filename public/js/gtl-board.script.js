@@ -4,14 +4,14 @@ $("body").css("cursor", "default");
 $.ajaxSetup({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}});
 
 
-$(".gtl-chkbox").hide();
-$("#gtl-btn-cancel").hide();
-$("#gtl-btn-save").hide();
-$("#gtl-btn").click(function(){
-    $("#gtl-btn-cancel").show();
-    $("#gtl-btn-save").show();
-    $(".gtl-chkbox").show();
-});
+//$(".gtl-chkbox").hide();
+//$("#gtl-btn-cancel").hide();
+//$("#gtl-btn-save").hide();
+//$("#gtl-btn").click(function(){
+//    $("#gtl-btn-cancel").show();
+//    $("#gtl-btn-save").show();
+//    $(".gtl-chkbox").show();
+//});
 $(".gtl-chkbox").click(function(){
     if (typeof Storage !== "undefined") { // Support Web Storage
         if (sessionStorage.getItem("selected") === null){
@@ -36,16 +36,19 @@ $("#gtl-btn-save").click(function(e){
     if (selected_ids === null){
         alert("Please Selected at least 1 item");
     }else{
-        window.location.href = window.location.pathname.replace('/home','/gtl/create');;
+        var url = window.location.pathname + '/create';
+        $("#board").load(url);
+        //window.location.href = window.location.pathname + '/create';
     }
+    //alert('fff');
 });
-$("#gtl-btn-cancel").click(function(e){
-    $(".gtl-chkbox").attr('checked',false);
-    sessionStorage.removeItem("selected");
-    $(".gtl-chkbox").hide();
-    $("#gtl-btn-cancel").hide();
-    $("#gtl-btn-save").hide();
-});
+//$("#gtl-btn-cancel").click(function(e){
+//    $(".gtl-chkbox").attr('checked',false);
+//    sessionStorage.removeItem("selected");
+//    $(".gtl-chkbox").hide();
+//    $("#gtl-btn-cancel").hide();
+//    $("#gtl-btn-save").hide();
+//});
 
 
 // handlers
@@ -53,6 +56,7 @@ function onGetClick(event) {
     // we're not passing any data with the get route, though you can if you want
     var dir = $(this).attr('value');
     var prov = $(this).attr('alt');
+
     if (window.location.pathname.search("search") == -1){
         var url = window.location.pathname + "?path=" + encodeURIComponent(dir)
             + "&provider=" + encodeURIComponent(prov);
@@ -60,6 +64,8 @@ function onGetClick(event) {
         var path = window.location.pathname.replace('/search','');
         var url = path + "?path=" + encodeURIComponent(dir) + "&provider=" + encodeURIComponent(prov);
     }
+    url = url.replace('/gtl','/gtl/select');
+    alert(url);
     $("body").css("cursor", "progress");
     $("#board").load(url);
 }

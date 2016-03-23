@@ -44,6 +44,7 @@ Route::post('/upload', 'CloudController@store');
 
 // GatherLink Ver. 1
 Route::get('/gtl/shared', 'GatherLinkController@showFromToken');
+Route::get('/gtl/select', 'GatherLinkController@select');
 Route::resource('/gtl','GatherlinkController');
 
 
