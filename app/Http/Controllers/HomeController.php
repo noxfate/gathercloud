@@ -45,7 +45,7 @@ class HomeController extends Controller
                 $par = $this->navbarDataByPath("All","");
                 return view('pages.index',[
                 'data' => $data,
-                "cname" => "All",
+                "cname" => "all",
                 'cmail' => $email,
                 'parent' => $par
                 ]);
@@ -54,7 +54,7 @@ class HomeController extends Controller
                 $par = $this->navbarDataByPath("All",$_GET['path']);
                 return view('pages.board',[
                     'data' => $data,
-                    "cname" => "All",
+                    "cname" => "all",
                     'cmail' => $email,
                     'parent' => $par
                     ]);

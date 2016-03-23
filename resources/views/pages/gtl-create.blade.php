@@ -1,4 +1,4 @@
-@extends('layout.layout-of-index')
+@extends('layouts.master-index')
 
 @section('content')
 	<h1>GatherLinks</h1>

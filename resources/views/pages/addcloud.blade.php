@@ -1,4 +1,4 @@
-@extends('layout.layout-of-index')
+@extends('layouts.master-index')
 
 @section('content')
     <div id="board" class="board">

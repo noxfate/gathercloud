@@ -1,6 +1,6 @@
 
-<!-- Change to layout.layout-of-setting bar -->
-@extends('layout.layout-of-index')
+<!-- Change to layouts.layouts-of-setting bar -->
+@extends('layouts.master-index')
 @section('content')
 	<div id="board-setting">
 		<h1>Profile Setting</h1>

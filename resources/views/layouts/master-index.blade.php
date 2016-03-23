@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>Gathercloud</title>
-    <link rel="stylesheet" type="text/css" href="{{URL::asset('css/bootstrap.min.css')}}">
-    <link rel="stylesheet" href="{{URL::asset('css/cloud-index.css')}}">
-    <link rel="stylesheet" href="{{URL::asset('css/cloud-add.css')}}">
-    <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
-    <script src="{{ URL::asset('js/jquery.contextmenu.js') }}"></script>
+    @include('components.main_script')
+    {{--<link rel="stylesheet" type="text/css" href="{{URL::asset('css/bootstrap.min.css')}}">--}}
+    {{--<link rel="stylesheet" href="{{URL::asset('css/cloud-index.css')}}">--}}
+    {{--<link rel="stylesheet" href="{{URL::asset('css/cloud-add.css')}}">--}}
+    {{--<script src="{{ URL::asset('js/jquery.min.js') }}"></script>--}}
 </head>
 <body>
 
@@ -43,7 +43,7 @@
         <div class="itemMenu-separator"></div>
         <div id="my-cloud" class="my-cloud">
             <ul id="list-cloud" class="list-cloud">
-                <li>
+                <li id="side-bar-select-all">
                     <a href="{{ url('/home') }}">
                         <div>
                             <span class="glyphicon glyphicon-cloud"></span>
@@ -52,7 +52,7 @@
                     </a>
                 </li>
                 @foreach ($conn as $c)
-                    <li id="side-bar-select-{{ $c->id }}">
+                    <li id="side-bar-select-{{ $c->connection_name }}">
                         <a href="{{ url("/home/{$c->connection_name}") }}">
                             <div><span class="glyphicon glyphicon-cloud"></span>
                                 {{ $c->connection_name }}
@@ -93,8 +93,5 @@
     @yield("content")
 
 </div>
-
-@extends("components.contextmenu")
-@extends("components.script")
 </body>
 </html>

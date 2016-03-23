@@ -1,5 +1,5 @@
-<!-- Change to layout.layout-of-setting bar -->
-@extends('layout.layout-of-index')
+<!-- Change to layouts.layouts-of-setting bar -->
+@extends('layouts.master-index')
 @section('content')
     <h1>Cloud Connection Setting</h1>
     E-mail: {{ $user->email }} <br><br>
