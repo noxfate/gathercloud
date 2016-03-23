@@ -24,7 +24,7 @@ class GatherlinkController extends Controller
      */
     public function index()
     {
-        return "hello World";
+        return view('pages.gtl.gtl-landing');
     }
 
     /**
@@ -35,7 +35,7 @@ class GatherlinkController extends Controller
     public function create()
     {
         if (empty($_GET['selected-item'])){
-            return view('pages.gtl-create');
+            return view('pages.gtl.gtl-create');
         }
         else{
             $que = Cache::where('user_id',Auth::user()->id)->get();
@@ -83,7 +83,7 @@ class GatherlinkController extends Controller
     {
         if (Auth::check()){
             $link = Link::find($id);
-            return view("pages.gtl-index")->with('link', $link);
+            return view("pages.gtl.gtl-index")->with('link', $link);
         }
         return Redirect::to('/');
     }

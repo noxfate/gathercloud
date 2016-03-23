@@ -27,7 +27,7 @@ class CloudController extends Controller
         if (Auth::check()){
             $user = User::find(Auth::user()->id);
             $conn = $user->tokens;
-            return view('pages.setting-cloud',[
+            return view('pages.setting.setting-cloud',[
                 "conn" => $conn,
                 "user" => $user
             ]);
@@ -43,7 +43,7 @@ class CloudController extends Controller
     public function create()
     {
         if (Auth::check())
-            return view('pages.addcloud');
+            return view('pages.cloud.addcloud');
         return Redirect::to('/');
     }
 

@@ -1,7 +1,7 @@
 @extends('layouts.master-index')
 @section('content')
     <div id="board" class="board">
-        @include('components.cloud-board')
+        @include('pages.cloud.components.index-board')
         {{--<div id="box-nav-bar" class="box-nav-bar">--}}
             {{--<div id="nav-bar" class="nav-bar">--}}
                 {{--@if (!empty($parent))--}}

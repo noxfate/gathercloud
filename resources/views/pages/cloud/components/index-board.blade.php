@@ -83,5 +83,5 @@
     <button id="gtl-btn-save">Save</button>  <button id="gtl-btn-cancel">Cancel</button>
 </div>
 
-<script src="{{ URL::asset('js/board.script.js') }}"></script>
+<script src="{{ URL::asset('js/index-board.script.js') }}"></script>
 @include("components.contextmenu")

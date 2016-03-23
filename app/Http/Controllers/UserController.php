@@ -22,7 +22,7 @@ class UserController extends Controller
     {
         if (Auth::check()){
             $user = User::find(Auth::user()->id);
-            return view('pages.setting-profile')->with('user',$user);
+            return view('pages.setting.setting-profile')->with('user',$user);
         }
         return Redirect::to('/');
     }
