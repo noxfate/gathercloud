@@ -42,7 +42,7 @@
 <table id="table-header" class="table-header">
     <tr>
         <th class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></th>
-        <th class="th-icon-cloud"></th>
+        {{--<th class="th-icon-cloud"></th>--}}
         <th class="th-name">Name</th>
         <th class="th-size">Size</th>
         <th class="th-last-mo">Last modified</th>
@@ -59,7 +59,7 @@
                 <tr class="withItemMenu" value="{{ $val['path'] }}">
                     <td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>
 
-                    <td class="th-icon-cloud"><input class="gtl-chkbox" id="{{ $d }}" type="checkbox"></td>
+                    {{--<td class="th-icon-cloud"><input class="gtl-chkbox" id="{{ $d }}" type="checkbox"></td>--}}
 
                     <td class="th-name">
                         @if ($val['is_dir']  or ($val['size'] == 0))
@@ -80,7 +80,7 @@
             @endforeach
         @endif
     </table>
-    <button id="gtl-btn-save">Save</button>  <button id="gtl-btn-cancel">Cancel</button>
+    {{--<button id="gtl-btn-save">Save</button>  <button id="gtl-btn-cancel">Cancel</button>--}}
 </div>
 
 <script src="{{ URL::asset('js/index-board.script.js') }}"></script>
