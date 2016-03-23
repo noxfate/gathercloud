@@ -52,7 +52,7 @@ class HomeController extends Controller
             }else{
                 $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
                 $par = $this->navbarDataByPath("All",$_GET['path']);
-                return view('components.index-board',[
+                return view('pages.cloud.components.index-board',[
                     'data' => $data,
                     "cname" => "all",
                     'cmail' => $email,
@@ -164,7 +164,7 @@ class HomeController extends Controller
             }
             $data = $this->normalizeMetaData($data, $provider);
 
-            return view('components.index-board', [
+            return view('pages.cloud.components.index-board', [
 //            "data" => null,
                 "data" => $data,
                 "cname" => $id . $_GET['path'],
@@ -242,7 +242,7 @@ class HomeController extends Controller
         }else{
             $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
             $par = $this->navbarDataByPath("All",$_GET['path']);
-            return view('components.cloud-board',[
+            return view('pages.cloud.components.cloud-board',[
                 'data' => $result,
                 "cname" => "All",
                 'cmail' => $email,
