@@ -94,6 +94,7 @@ class GatherlinkController extends Controller
         return $link;
     }
 
+
     /**
      * Show the form for editing the specified resource.
      *
