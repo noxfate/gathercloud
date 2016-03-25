@@ -209,7 +209,7 @@ class HomeController extends Controller
             return view('pages.cloud.components.index-board', [
 //            "data" => null,
                 "data" => $data,
-                "cname" => $id . $_GET['path'],
+                "cname" => $id,
                 "cmail" => $que[0]->id,
                 "parent" => $parent
             ]);
