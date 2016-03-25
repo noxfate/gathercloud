@@ -83,6 +83,6 @@ function onSuccess(data, status, xhr) {
 }
 
 // listeners
-//                $('button#get').on('click', onGetClick);
+// $('button#get').on('click', onGetClick);
 $('span#dir').on('click', onGetClick);
 $('button#post').on('click', onPostClick);
