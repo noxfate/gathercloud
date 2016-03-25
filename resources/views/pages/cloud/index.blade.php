@@ -1,7 +1,7 @@
 @extends('layouts.master-index')
 @section('content')
+    <div id="let-in-folder-progress"></div>
     <div id="board" class="board">
-        <div id="process">
         @include('pages.cloud.components.index-board')
         {{--<div id="box-nav-bar" class="box-nav-bar">--}}
             {{--<div id="nav-bar" class="nav-bar">--}}
@@ -86,10 +86,9 @@
             {{--</table>--}}
             {{--<button id="gtl-btn-save">Save</button>  <button id="gtl-btn-cancel">Cancel</button>--}}
         {{--</div>--}}
-        </div>
     </div>
 
-    
+
 
     {{--<tr class="withItemMenu">--}}
     {{--<td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>--}}

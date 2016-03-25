@@ -1,5 +1,6 @@
 
 $("body").css("cursor", "default");
+document.getElementById('let-in-folder-progress').className = "";
 // set up jQuery with the CSRF token, or else post routes will fail
 $.ajaxSetup({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}});
 
@@ -62,7 +63,7 @@ function onGetClick(event) {
     }
     //alert(url);
     $("body").css("cursor", "progress");
-    //document.getElementById('process').className = "process";
+    document.getElementById('let-in-folder-progress').className = "let-in-folder-progress";
     $("#board").load(url);
 }
 
