@@ -179,8 +179,8 @@ class HomeController extends Controller
             }else if ($cac->count() == 1){
                 $cac = $cac->first();
             }
-            $job = (new CreateFileMapping($obj,$provider,$cac));
-            $this->dispatch($job);
+            // $job = (new CreateFileMapping($obj,$provider,$cac));
+            // $this->dispatch($job);
 
             $data = $obj->getFiles();
             $parent = $this->navbarDataByPath($id,"");
@@ -198,14 +198,13 @@ class HomeController extends Controller
             ]);
         } else {
             $data = $obj->getFiles($_GET['path']);
-//            $parent = $this->navbarDataByPath($id.$_GET['path']);
+            // dd($data)
             if ($provider == 'dropbox' || $provider == 'copy') {
                 $parent = $this->navbarDataByPath($id,$_GET['path']);
             } elseif(($provider == 'box' || $provider == 'onedrive')) {
                 $parent = $this->navbarDataById($id, $_GET['path'], $obj,$provider);
             }
             $data = $this->normalizeMetaData($data, $provider);
-
             return view('pages.cloud.components.index-board', [
 //            "data" => null,
                 "data" => $data,
