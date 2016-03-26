@@ -55,7 +55,7 @@ class Provider
 
 	function downloadFile($file, $destination = null)
 	{
-        //
+        $this->connObj->downloadFile($file, $destination);
 	}
 	function uploadFile($file, $destination = null)
 	{

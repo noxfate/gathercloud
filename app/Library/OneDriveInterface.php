@@ -93,8 +93,14 @@ class OneDriveInterface implements ModelInterface
             'state' => $this->state
         ));
 
-        $objects = $onedrive->fetchObject($file);
-        return $objects->getSource();
+        $objects = $onedrive->apiDownload($file);
+        var_dump($objects);
+        header("Location: " . $objects->location);
+        die();
+//        var_dump($objects->fetchProperties()->source);
+//        header("Content-Type: application/download");
+//        header("Location: " . $objects->fetchProperties()->source);
+//        die();
 
     }
 

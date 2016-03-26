@@ -110,7 +110,11 @@ Class DropboxInterface implements ModelInterface
 	// @params $file = String of File Paths on Dropbox
 	public function downloadFile($file, $destination = null)
 	{
-		return $this->dbxObj->DownloadFile($file,$destination);
+		$this->dbxObj->DownloadFile($file,$destination);
+        header("Content-Type: application/download");
+        header("Content-disposition: attachment; filename=". basename($_GET['file']));
+        readfile(basename($_GET['file']));
+        unlink(basename($_GET['file']));
 	}
 	public function uploadFile($file, $destination = null)
 	{

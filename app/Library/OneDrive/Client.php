@@ -308,6 +308,16 @@ class Client {
 		return $this->_processResult($curl);
 	}
 
+
+	public function apiDownload($path) {
+		$options = array();
+		$url = self::API_URL . $path
+			. '/content?download=true&suppress_redirects=true&access_token=' . urlencode($this->_state->token->data->access_token);
+		$curl = self::_createCurl($path, $options);
+		curl_setopt($curl, CURLOPT_URL, $url);
+		return $this->_processResult($curl);
+	}
+
 	/**
 	 * Performs a call to the OneDrive API using the POST method.
 	 *

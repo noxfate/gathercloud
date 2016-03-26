@@ -79,18 +79,19 @@ class BoxInterface implements ModelInterface
 
     public function downloadFile($file, $destination = null)
     {
+        $file = substr($file,5);
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
         $er = new ExtendedRequest();
         $command = new Content\File\DownloadFile($file, $er);
         $response = ResponseFactory::getResponse($contentClient, $command);
-        // var_dump($response);
-        echo "<br>";
+//        dd($response->getHeaders()["Location"][0]);
         if ($response instanceof SuccessResponse) {
-            echo (string)$response->getStatusCode();
-            echo "<br>";
-            echo (string)$response->getReasonPhrase();
-            echo "<br>";
+//            echo (string)$response->getStatusCode();
+//            echo "<br>";
+//            echo (string)$response->getReasonPhrase();
+//            echo "<br>";
             header("Location: " . $response->getHeaders()["Location"][0]);
+            die();
         } elseif ($response instanceof ErrorResponse) {
             # ...
         }
