@@ -179,8 +179,8 @@ class HomeController extends Controller
             }else if ($cac->count() == 1){
                 $cac = $cac->first();
             }
-            $job = (new CreateFileMapping($obj,$provider,$cac));
-            $this->dispatch($job);
+//            $job = (new CreateFileMapping($obj,$provider,$cac));
+//            $this->dispatch($job);
 
             $data = $obj->getFiles();
             $parent = $this->navbarDataByPath($id,"");

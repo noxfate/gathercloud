@@ -60,6 +60,7 @@ function onGetClick(event) {
         var path = window.location.pathname.replace('/search','');
         var url = path + "?path=" + encodeURIComponent(dir) + "&provider=" + encodeURIComponent(prov);
     }
+    alert(url);
     $("body").css("cursor", "progress");
     $("#board").load(url);
 }
