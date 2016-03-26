@@ -1,4 +1,3 @@
-
 <div id="box-nav-bar" class="box-nav-bar">
     <div id="nav-bar" class="nav-bar">
         @if (!empty($parent))
@@ -22,7 +21,8 @@
              File Upload
          </bitton> -->
 
-        <a href="{{ url('upload') }}" id="file-upload" class="btn btn-default"><span class="glyphicon glyphicon-cloud-upload"></span>
+        <a href="{{ url('upload') }}" id="file-upload" class="btn btn-default"><span
+                    class="glyphicon glyphicon-cloud-upload"></span>
             File Upload
         </a>
 
@@ -65,7 +65,8 @@
                         @if ($val['is_dir']  or ($val['size'] == 0))
                             <span class="glyphicon glyphicon-folder-close"></span>
                             {{--<a id="dir" href="{{ Request::url()."/".$val['name'] }}">{{ $val['name'] }}</a></td>--}}
-                            <span id="dir" class="dir" alt="{{ $val['provider'] }}" value="{{ $val['path'] }}">{{ $val['name'] }}</span></td>
+                            <span id="dir" class="dir" alt="{{ $val['provider'] }}"
+                                  value="{{ $val['path'] }}">{{ $val['name'] }}</span></td>
                     @else
                         <a href="#">{{ $val['name'] }}</a></td>
                     @endif
@@ -82,6 +83,7 @@
     </table>
     {{--<button id="gtl-btn-save">Save</button>  <button id="gtl-btn-cancel">Cancel</button>--}}
 </div>
+
 
 <script src="{{ URL::asset('js/index-board.script.js') }}"></script>
 @include("components.contextmenu")

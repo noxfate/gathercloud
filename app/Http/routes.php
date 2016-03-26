@@ -59,13 +59,10 @@ Route::post('/ajax/post', function () {
     return  Response::json($data);
 });
 
-// Route::get('/test', function(){
-// 	$job = new App\Jobs\SendRemiderEmail;
-// 	dispatch($job);
-
-// 	return 'Done!';
-// });
-Route::get('/test', "PagesController@test");
+Route::get('/test', function(){
+    $p = new \App\AppModels\Provider('copy','gtc_copy');
+    dd($p->getAccountInfo());
+});
 
 
 Route::get("set",function(){

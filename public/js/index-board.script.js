@@ -1,5 +1,6 @@
 
 $("body").css("cursor", "default");
+document.getElementById('let-in-folder-progress').className = "";
 // set up jQuery with the CSRF token, or else post routes will fail
 $.ajaxSetup({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}});
 
@@ -60,8 +61,9 @@ function onGetClick(event) {
         var path = window.location.pathname.replace('/search','');
         var url = path + "?path=" + encodeURIComponent(dir) + "&provider=" + encodeURIComponent(prov);
     }
-    alert(url);
+    //alert(url);
     $("body").css("cursor", "progress");
+    document.getElementById('let-in-folder-progress').className = "let-in-folder-progress";
     $("#board").load(url);
 }
 
@@ -81,6 +83,6 @@ function onSuccess(data, status, xhr) {
 }
 
 // listeners
-//                $('button#get').on('click', onGetClick);
+// $('button#get').on('click', onGetClick);
 $('span#dir').on('click', onGetClick);
 $('button#post').on('click', onPostClick);

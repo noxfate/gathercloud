@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Mockery\Exception;
 
-require_once '../vendor/autoload.php';
+require_once base_path('vendor/autoload.php');
 
 
 Class CopyInterface implements ModelInterface
@@ -242,6 +242,9 @@ Class CopyInterface implements ModelInterface
     public function getFiles($file = '/')
     {
         // TODO: Implement getFiles() method.
+        if ($file == null){
+            $file = '/';
+        }
         return $this->cpyobj->listPath($file);
     }
 

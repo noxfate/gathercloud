@@ -86,6 +86,7 @@ return array(
     'AdammBalogh\\KeyValueStore\\Implementation\\ServerTrait' => $vendorDir . '/adammbalogh/key-value-store/src/Implementation/ServerTrait.php',
     'AdammBalogh\\KeyValueStore\\Implementation\\ValueTrait' => $vendorDir . '/adammbalogh/key-value-store/src/Implementation/ValueTrait.php',
     'AdammBalogh\\KeyValueStore\\KeyValueStore' => $vendorDir . '/adammbalogh/key-value-store/src/KeyValueStore.php',
+    'App\\AppModels\\Provider' => $baseDir . '/app/AppModels/Provider.php',
     'App\\Cache' => $baseDir . '/app/Cache.php',
     'App\\Console\\Commands\\Inspire' => $baseDir . '/app/Console/Commands/Inspire.php',
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
