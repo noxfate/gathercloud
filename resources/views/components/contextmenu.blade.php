@@ -189,7 +189,23 @@
             var file = $(t).attr('value');
 //                    $.get(window.location.href+"?path="+dir, onSuccess);
 //            var url = window.location.pathname + "?path=" + encodeURIComponent(file);
-            alert(window.location.pathname + "?path=" + encodeURIComponent(file));
+            alert(window.location.pathname + "/download/" + encodeURIComponent(file));
+            var indOf = window.location.pathname.indexOf("/home",1);
+            var myStr = window.location.pathname.substr(0,indOf+5 );
+            var url = myStr + "/download"
+            alert( url );  // gives you what you want;
+            window.open(
+                    url + '?connection_name=' + 'db1' + '&file=' + file,
+                    '_blank' // <- This is what makes it open in a new window.
+            );
+//            $.get(url,{
+//                        connection_name: "db1",
+//                        file: file
+//                    }
+//                    , function(data, status){
+//                alert("Status: " + status);
+//            });
+
         }
 //        alert('Trigger was ' + t.id + '\nAction was ' + a + "\nHtml is " + $(t).html());
 

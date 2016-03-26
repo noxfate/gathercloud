@@ -458,7 +458,41 @@ class HomeController extends Controller
     }
 
 
-    public function download($service, $file){
+    public function download(){
+
+        $que = Token::where('connection_name',  $_GET['connection_name'])
+            ->where('user_id', Auth::user()->id)
+            ->get();
+        if ($que->count() == 1) {
+            $provider = $que[0]->provider;
+        } else if ($_GET['connection_name'] == "All"){
+            return Redirect::to('/home');
+        } else {
+            return "Error: Connection_name is " + $_GET['connection_name'] +", COUNT : " . $que->count();
+        }
+
+        switch ($provider) {
+            case "dropbox":
+                $obj = new \App\Library\DropboxInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
+                break;
+            case "copy":
+                $obj = new \App\Library\CopyInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
+                break;
+            case "box":
+                $obj = new \App\Library\BoxInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
+                break;
+            case "onedrive":
+                $obj = new \App\Library\OneDriveInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
+                break;
+            default:
+                return "Error!! Provider: $provider";
+        }
+
+        $meta = $obj->downloadFile($_GET['file']);
+        header("Content-Type: application/download");
+        header("Content-disposition: attachment; filename=". basename($_GET['file']));
+        readfile(basename($_GET['file']));
+        unlink(basename($_GET['file']));
 
     }
 
