@@ -195,6 +195,7 @@
             var url = myStr + "/download"
             alert( url );  // gives you what you want;
             window.open(
+                    url + '?connection_name=' + '{{$cname}}' + '&file=' + file,
                     '_blank' // <- This is what makes it open in a new window.
             );
 
