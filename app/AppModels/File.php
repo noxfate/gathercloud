@@ -2,7 +2,7 @@
 
 namespace App\AppModels;
 
-abstract File
+abstract class File
 {
 	private $name;
 	private $path;

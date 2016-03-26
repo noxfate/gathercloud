@@ -42,8 +42,8 @@ Route::get('/upload',function(){
 Route::post('/upload', 'CloudController@store');
 
 // GatherLink Ver. 1
-Route::get('/gtl/shared', 'GatherLinkController@showFromToken');
-Route::get('/gtl/select', 'GatherLinkController@select');
+Route::get('/gtl/shared', 'GatherlinkController@showFromToken');
+Route::get('/gtl/select', 'GatherlinkController@select');
 Route::resource('/gtl','GatherlinkController');
 
 
@@ -58,13 +58,10 @@ Route::post('/ajax/post', function () {
     return  Response::json($data);
 });
 
-// Route::get('/test', function(){
-// 	$job = new App\Jobs\SendRemiderEmail;
-// 	dispatch($job);
-
-// 	return 'Done!';
-// });
-Route::get('/test', "PagesController@test");
+Route::get('/test', function(){
+    $p = new \App\AppModels\Provider('copy','gtc_copy');
+    dd($p->getAccountInfo());
+});
 
 
 Route::get("set",function(){
