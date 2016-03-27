@@ -4,8 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4828e8247299a912b9f1fde65ed04d6c",
-    "content-hash": "b35aec8169de185a1fd7659cf045cfd6",
+    "hash": "b6343c18e4027a61330998d5391c1a16",
     "packages": [
         {
             "name": "adammbalogh/box-sdk",

@@ -27,14 +27,18 @@ class HomeController extends Controller
     {
         if (Auth::check()) {
 
-            $que = Cache::where('user_id',Auth::user()->id)->get();
+            $que = User::find(Auth::user()->id)->tokens;
 
             $data = array();
             foreach ($que as $d ) {
-                $inside_json = json_decode($d->data, true);
-                foreach ($inside_json as $in){
-                    array_push($data, $in);
-                }   
+                if ($d->cache === null){
+                    break;
+                }else{
+                    $inside_json = json_decode($d->cache->data, true);
+                    foreach ($inside_json as $in){
+                        array_push($data, $in);
+                    }
+                }
             }
             $email = User::find(Auth::user()->id)->email;
 
@@ -143,27 +147,24 @@ class HomeController extends Controller
 
         // if at 1st level Folder, No Ajax request.
         if (empty($_GET['path'])) {
-             $cac = Cache::where('user_id',Auth::user()->id)
-            ->where('provider',$provider)
-            ->where('user_connection_name',$id)
-            ->get();
-            if ($cac->count() == 0){
-                $cac = new Cache();
-                $cac->user_id = Auth::user()->id;
-                $cac->provider = $provider;
-                $cac->user_connection_name = $id;
-            }else if ($cac->count() == 1){
-                $cac = $cac->first();
-            }
+//            $cac = Token::where('connection_name', $id)
+//                ->where('provider', $provider)
+//                ->firstOrFail()->cache;
+//
+//            if ($cac === null){
+//                $cac = new Cache();
+//                $cac->user_id = Auth::user()->id;
+//                $cac->provider = $provider;
+//                $cac->user_connection_name = $id;
+//            }else if ($cac->count() == 1){
+//                $cac = $cac->first();
+//            }
 
-//             $job = (new CreateFileMapping($obj,$provider,$cac));
+//             $job = (new CreateFileMapping());
 //             $this->dispatch($job);
 
             $data = $proObj->getFiles();
             $parent = $this->navbarDataByPath($id,"");
-
-            $cac->data = json_encode($data);
-            // $cac->save();
 
             return view('pages.cloud.index', [
 //            "data" => null,

@@ -26,4 +26,9 @@ class Cache extends Model
      * @var array
      */
 //    protected $hidden = ['password', 'remember_token'];
+
+    public function token()
+    {
+        return $this->belongsTo(Token::class);
+    }
 }
