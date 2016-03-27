@@ -70,49 +70,6 @@ class HomeController extends Controller
             return Redirect::to('/');
     }
 
-    public function getAllItems()
-    {
-        if (Auth::check()) {
-
-            $que = Cache::where('user_id',Auth::user()->id)->get();
-
-            $data = array();
-            foreach ($que as $d ) {
-                $inside_json = json_decode($d->data, true);
-                foreach ($inside_json as $in){
-                    array_push($data, $in);
-                }
-            }
-            $email = User::find(Auth::user()->id)->email;
-
-
-            $fmap = new FileMapping($data);
-
-            // All in One without Ajax Request
-            if (empty($_GET['path'])){
-                $par = $this->navbarDataByPath("All","");
-                return view('pages.cloud.index',[
-                    'data' => $data,
-                    "cname" => "all",
-                    'cmail' => $email,
-                    'parent' => $par
-                ]);
-            }else{
-                $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
-                $par = $this->navbarDataByPath("All",$_GET['path']);
-                return view('pages.cloud.components.index-board',[
-                    'data' => $data,
-                    "cname" => "all",
-                    'cmail' => $email,
-                    'parent' => $par
-                ]);
-            }
-
-
-        } else
-            return Redirect::to('/');
-    }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -335,39 +292,41 @@ class HomeController extends Controller
 
     public function download(){
 
-        $que = Token::where('connection_name',  $_GET['connection_name'])
-            ->where('user_id', Auth::user()->id)
-            ->get();
-        if ($que->count() == 1) {
-            $provider = $que[0]->provider;
-        } else if ($_GET['connection_name'] == "All"){
-            return Redirect::to('/home');
-        } else {
-            return "Error: Connection_name is " + $_GET['connection_name'] +", COUNT : " . $que->count();
-        }
+//        $que = Token::where('connection_name',  $_GET['connection_name'])
+//            ->where('user_id', Auth::user()->id)
+//            ->get();
+//        if ($que->count() == 1) {
+//            $provider = $que[0]->provider;
+//        } else if ($_GET['connection_name'] == "All"){
+//            return Redirect::to('/home');
+//        } else {
+//            return "Error: Connection_name is " + $_GET['connection_name'] +", COUNT : " . $que->count();
+//        }
+//
+//        switch ($provider) {
+//            case "dropbox":
+//                $obj = new \App\Library\DropboxInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
+//                break;
+//            case "copy":
+//                $obj = new \App\Library\CopyInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
+//                break;
+//            case "box":
+//                $obj = new \App\Library\BoxInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
+//                break;
+//            case "onedrive":
+//                $obj = new \App\Library\OneDriveInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
+//                break;
+//            default:
+//                return "Error!! Provider: $provider";
+//        }
 
-        switch ($provider) {
-            case "dropbox":
-                $obj = new \App\Library\DropboxInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
-                break;
-            case "copy":
-                $obj = new \App\Library\CopyInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
-                break;
-            case "box":
-                $obj = new \App\Library\BoxInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
-                break;
-            case "onedrive":
-                $obj = new \App\Library\OneDriveInterface((array)\GuzzleHttp\json_decode($que[0]->access_token));
-                break;
-            default:
-                return "Error!! Provider: $provider";
-        }
-
-        $meta = $obj->downloadFile($_GET['file']);
-        header("Content-Type: application/download");
-        header("Content-disposition: attachment; filename=". basename($_GET['file']));
-        readfile(basename($_GET['file']));
-        unlink(basename($_GET['file']));
+        $proObj = new Provider($_GET['connection_name']);
+        $proObj->downloadFile($_GET['file']);
+//        $obj->downloadFile($_GET['file']);
+//        header("Content-Type: application/download");
+//        header("Content-disposition: attachment; filename=". basename($_GET['file']));
+//        readfile(basename($_GET['file']));
+//        unlink(basename($_GET['file']));
 
     }
 
