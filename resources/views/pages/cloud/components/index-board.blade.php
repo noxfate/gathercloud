@@ -7,7 +7,7 @@
                 @else
                     <span class="glyphicon glyphicon-menu-right"></span>
                     <span class="glyphicon glyphicon-folder-open"></span>
-                    <span id="dir" class="dir" value="{{$parent->ppath[$i]}}">{{ $parent->pname[$i] }}</span>
+                    <span id="dir" class="dir" alt="{{ $parent->pprovider }}" value="{{$parent->ppath[$i]}}">{{ $parent->pname[$i] }}</span>
                 @endif
             @endfor
         @endif
@@ -65,7 +65,7 @@
                         @if ($val['is_dir']  or ($val['size'] == 0))
                             <span class="glyphicon glyphicon-folder-close"></span>
                             {{--<a id="dir" href="{{ Request::url()."/".$val['name'] }}">{{ $val['name'] }}</a></td>--}}
-                            <span id="dir" class="dir" alt="{{ $val['provider'] }}"
+                            <span id="dir" class="dir" alt="{{ $val['token_id'] }}"
                                   value="{{ $val['path'] }}">{{ $val['name'] }}</span></td>
                     @else
                         <a href="#">{{ $val['name'] }}</a></td>
