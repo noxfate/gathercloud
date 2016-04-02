@@ -146,7 +146,6 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
-        Baum\Providers\BaumServiceProvider::class
 
     ],
 

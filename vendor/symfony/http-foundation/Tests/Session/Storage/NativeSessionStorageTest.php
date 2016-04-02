@@ -83,16 +83,6 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
         $storage->getBag('non_existing');
     }
 
-    /**
-     * @expectedException \LogicException
-     */
-    public function testRegisterBagForAStartedSessionThrowsException()
-    {
-        $storage = $this->getStorage();
-        $storage->start();
-        $storage->registerBag(new AttributeBag());
-    }
-
     public function testGetId()
     {
         $storage = $this->getStorage();

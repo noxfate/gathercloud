@@ -14,8 +14,10 @@ class Cache extends Model
      * @var array
      */
     protected $fillable = [
-        'token_id',
-        'data'
+        'user_id',
+        'provider',
+        'user_connection_name',
+        'data',
     ];
 
     /**
