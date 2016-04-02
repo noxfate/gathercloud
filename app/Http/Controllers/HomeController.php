@@ -6,10 +6,12 @@ use App\AppModels\Provider;
 use Illuminate\Http\Request;
 
 use Auth;
+use App\File;
 use App\User;
 use App\Token;
 use App\Cache;
 use App\Jobs\CreateFileMapping;
+use Carbon\Carbon;
 use App\Library\FileMapping;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -28,25 +30,26 @@ class HomeController extends Controller
         if (Auth::check()) {
 
             $que = User::find(Auth::user()->id)->tokens;
-
-            $data = array();
-            foreach ($que as $d ) {
-                if ($d->cache === null){
-                    break;
-                }else{
-                    $inside_json = json_decode($d->cache->data, true);
-                    foreach ($inside_json as $in){
-                        array_push($data, $in);
-                    }
-                }
-            }
             $email = User::find(Auth::user()->id)->email;
 
-
-            $fmap = new FileMapping($data);
+            $fmap = new FileMapping(Auth::user()->id);
 
             // All in One without Ajax Request
             if (empty($_GET['path'])){
+
+//                Create Cache when enter /home at All in One
+//                foreach( $que as $d){
+//                    if ($d->cache === null){
+//                        $job = (new CreateFileMapping($d->connection_name));
+//                        $this->dispatch($job);
+//                    }elseif (Carbon::now() >= $d->cache->updated_at->addMinutes(24*60)){
+//                        $job = (new CreateFileMapping($d->connection_name));
+//                        $this->dispatch($job);
+//                    }
+//                }
+
+                $data = $fmap->getFirstLevel();
+//                dd($data);
                 $par = $this->navbarDataByPath("All","");
                 return view('pages.cloud.index',[
                 'data' => $data,
@@ -55,7 +58,7 @@ class HomeController extends Controller
                 'parent' => $par
                 ]);
             }else{
-                $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
+                $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['connid']);
                 $par = $this->navbarDataByPath("All",$_GET['path']);
                 return view('pages.cloud.components.index-board',[
                     'data' => $data,
@@ -104,21 +107,6 @@ class HomeController extends Controller
 
         // if at 1st level Folder, No Ajax request.
         if (empty($_GET['path'])) {
-//            $cac = Token::where('connection_name', $id)
-//                ->where('provider', $provider)
-//                ->firstOrFail()->cache;
-//
-//            if ($cac === null){
-//                $cac = new Cache();
-//                $cac->user_id = Auth::user()->id;
-//                $cac->provider = $provider;
-//                $cac->user_connection_name = $id;
-//            }else if ($cac->count() == 1){
-//                $cac = $cac->first();
-//            }
-
-//             $job = (new CreateFileMapping());
-//             $this->dispatch($job);
 
             $data = $proObj->getFiles();
             $parent = $this->navbarDataByPath($id,"");
@@ -186,19 +174,8 @@ class HomeController extends Controller
     public
     function search()
     {
-        $que = Cache::where('user_id',Auth::user()->id)->get();
-
-        $data = array();
-        foreach ($que as $d ) {
-            $inside_json = json_decode($d->data, true);
-            foreach ($inside_json as $in){
-                array_push($data, $in);
-            }   
-        }
-
-        $fmap = new FileMapping($data);
-        $result = array();
-        $result = $fmap->searchFiles($data, $_GET['keyword'], $result);
+        $fmap = new FileMapping(Auth::user()->id);
+        $result = $fmap->searchFiles($_GET['keyword']);
 
         $email = User::find(Auth::user()->id)->email;
 
@@ -212,10 +189,10 @@ class HomeController extends Controller
             'parent' => $par
             ]);
         }else{
-            $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
+            $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['connid']);
             $par = $this->navbarDataByPath("All",$_GET['path']);
             return view('pages.cloud.components.index-board',[
-                'data' => $result,
+                'data' => $data,
                 "cname" => "All",
                 'cmail' => $email,
                 'parent' => $par
@@ -231,8 +208,8 @@ class HomeController extends Controller
             'ppath' => array(),
             'pprovider' => array()
         );
-        if (!empty($_GET['provider'])){
-            $parent->pprovider = $_GET['provider'];
+        if (!empty($_GET['connid'])){
+            $parent->pprovider = $_GET['connid'];
         }
         $parent->pname = explode("/", $path);
         $temp = '/';
@@ -328,6 +305,47 @@ class HomeController extends Controller
 //        readfile(basename($_GET['file']));
 //        unlink(basename($_GET['file']));
 
+    }
+
+    public function test()
+    {
+//        $root = File::create(['fname'=> 'Root Node 2', 'token_id' => 1 ]);
+//        $c1 = $root->children()->create(['fname' => 'Child #1', 'token_id' => 1]);
+//        $c2 = File::create(['fname'=> 'Child #2', 'token_id' => 1 ]);
+//        $c2->makeChildOf($root);
+
+
+//        $r = File::roots()->where('token_id', 1)->firstOrFail();
+
+//        $root = File::create(['name' => 'The Root of All Evil', 'token_id'=> 1]);
+//
+//        $dragons = File::create(['name' => 'Here Be Dragons', 'token_id'=>1]);
+//        $dragons->makeChildOf($root);
+//
+////        File::allLeaves()->delete();
+//
+//        $monsters = new File(['name' => 'Horrible Monsters', 'token_id'=>1]);
+//        $monsters->save();
+////
+//        $monsters->makeChildOf($dragons);
+//
+//        $demons = Creatures::where('name', '=', 'demons')->first();
+//        $demons->moveToLeftOf($dragons);
+
+//        $root = File::root();
+//        $root->delete();
+//        $des = $root->children()->get();
+//        foreach ($des as $d) {
+//            if ($d->isLeaf()){
+//                echo "File!! : ". $d['name'];
+//            }else{
+//                echo $d->getImmediateDescendants();
+//            }
+//            echo "<br>";
+//
+//        }
+//
+//        dd($des);
     }
 
 }
