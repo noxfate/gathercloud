@@ -16,9 +16,9 @@
             <th class="th-size">Size</th>
             <th class="th-last-mo">Last modified</th>
         </tr>
-        @foreach(json_decode($link->data) as $l)
+        @foreach($data as $l)
         <tr>
-        	<td>{{ $l->provider }}</td>
+        	<td>{{ $l->token_id }}</td>
         	<td>{{ $l->name }}</td>
         	<td>{{ $l->size }}</td>
         	<td>{{ $l->modified }}</td>

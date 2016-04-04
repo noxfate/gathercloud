@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Auth;
 use App\User;
 use App\Token;
-use App\Cache;
+use App\File;
 use App\Link;
 use App\Jobs\CreateFileMapping;
 use App\Library\FileMapping;
@@ -24,7 +24,10 @@ class GatherlinkController extends Controller
      */
     public function index()
     {
-        return view('pages.gtl.gtl-landing');
+        if (Auth::check()){
+            return view('pages.gtl.gtl-landing');
+        }
+        return Redirect::to("/");
     }
 
     /**
@@ -34,23 +37,17 @@ class GatherlinkController extends Controller
      */
     public function create()
     {
+        if (!Auth::check())
+            return Redirect::to('/');
         if (empty($_GET['selected-item'])){
             return view('pages.gtl.components.gtl-create');
         }
         else{
-            $que = Cache::where('user_id',Auth::user()->id)->get();
-
-            $data = array();
-            foreach ($que as $d ) {
-                $inside_json = json_decode($d->data, true);
-                foreach ($inside_json as $in){
-                    array_push($data, $in);
-                }   
-            }
             $selected = json_decode($_GET['selected-item']);
-            $response_arr = array();
+            $response_arr = collect();
             foreach ($selected as $key) {
-                array_push($response_arr, $data[$key]);
+                $file = File::find($key);
+                $response_arr = $response_arr->push($file);
             }
             return $response_arr;
         }
@@ -69,6 +66,7 @@ class GatherlinkController extends Controller
         $link->user_id = Auth::user()->id;
         $link->url = substr(base64_encode(sha1(mt_rand())), 0, 16);
         $link->data = $request->input('items');
+//        dd($link->data);
         $link->save();
         return Redirect::to('/home');
     }
@@ -82,16 +80,34 @@ class GatherlinkController extends Controller
     public function show($id)
     {
         if (Auth::check()){
-            $link = Link::find($id);
-            return view("pages.gtl.gtl-index")->with('link', $link);
+            $link = Link::findOrFail($id);
+            if ($link->user_id == Auth::user()->id){
+                $data = collect();
+                foreach(json_decode($link->data) as $d){
+                    $data = $data->push(File::find($d));
+                }
+                return view("pages.gtl.gtl-index",[
+                    "link" => $link,
+                    "data" => $data
+                ]);
+            }else{
+                // Access Someone else GatherLink
+                return "Error, your selected GatherLinks is not available";
+            }
+
         }
         return Redirect::to('/');
     }
 
     public function showFromToken()
     {
-        $link = Link::where("url",$_GET['tokens'])->get();
-        return $link;
+        $link = Link::where("url",$_GET['tokens'])->firstOrFail();
+        $data = collect();
+        foreach(json_decode($link->data) as $d){
+            $data = $data->push(File::find($d));
+        }
+        dd($data);
+        return $data;
     }
 
 
@@ -126,8 +142,10 @@ class GatherlinkController extends Controller
      */
     public function destroy($id)
     {
-        if(Link::find($id)->delete()){
-            return Redirect::to('/home');
+        if (Link::findOrFail($id)->id == Auth::user()->id ){
+            if(Link::find($id)->delete()){
+                return Redirect::to('/home');
+            }
         }
     }
 
@@ -135,21 +153,15 @@ class GatherlinkController extends Controller
     {
         if (Auth::check()) {
 
-            $que = Cache::where('user_id',Auth::user()->id)->get();
-
-            $data = array();
-            foreach ($que as $d ) {
-                $inside_json = json_decode($d->data, true);
-                foreach ($inside_json as $in){
-                    array_push($data, $in);
-                }
-            }
+            $que = User::find(Auth::user()->id)->tokens;
             $email = User::find(Auth::user()->id)->email;
 
+            $fmap = new FileMapping(Auth::user()->id);
 
-            $fmap = new FileMapping($data);
             // All in One without Ajax Request
             if (empty($_GET['path'])){
+                $data = $fmap->getFirstLevel();
+//                dd($data);
                 $par = $this->navbarDataByPath("All","");
                 return view('pages.gtl.components.gtl-board',[
                     'data' => $data,
@@ -158,7 +170,7 @@ class GatherlinkController extends Controller
                     'parent' => $par
                 ]);
             }else{
-                $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
+                $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['provider']);
                 $par = $this->navbarDataByPath("All",$_GET['path']);
                 return view('pages.gtl.components.gtl-board',[
                     'data' => $data,

@@ -58,7 +58,7 @@ Route::post('/ajax/post', function () {
 });
 
 Route::get('/test', function(){
-    $job = (new \App\Jobs\CreateFileMapping('gtc_copy'));
+    $job = (new \App\Jobs\CreateFileMapping('gtc_dropbox'));
     dispatch($job);
 });
 

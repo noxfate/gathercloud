@@ -36,13 +36,15 @@ class CreateFileMapping extends Job implements SelfHandling, ShouldQueue
         $query = File::roots()->where('token_id', $this->connObj->getTokenId())->first();
         if ($query !== null){
             $this->root = $query;
-            $this->root->delete();
+//            $this->root->delete();
+        }else{
+            $this->root = File::create([
+                'name' => 'root',
+                'path' => 'root',
+                'token_id' => $this->connObj->getTokenId()
+            ]);
         }
-        $this->root = File::create([
-            'name' => 'root',
-            'path' => 'root',
-            'token_id' => $this->connObj->getTokenId()
-        ]);
+
     }
 
     /**
@@ -57,7 +59,7 @@ class CreateFileMapping extends Job implements SelfHandling, ShouldQueue
         $f = $this->processData();
         printf("Finish Processing...: %u seconds\n", $now->diffInSeconds());
         $this->root->makeTree($f);
-        printf("Successfully Saved! : %s \nTotal Time: %u seconds\n", $this->connName, $now->diffInSeconds());
+        printf("Successfully Saved! : %s \nTotal Time: %u seconds\n\n", $this->connName, $now->diffInSeconds());
 
         
     }

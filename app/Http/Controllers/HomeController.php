@@ -38,18 +38,16 @@ class HomeController extends Controller
             if (empty($_GET['path'])){
 
 //                Create Cache when enter /home at All in One
-//                foreach( $que as $d){
-//                    if ($d->cache === null){
-//                        $job = (new CreateFileMapping($d->connection_name));
-//                        $this->dispatch($job);
-//                    }elseif (Carbon::now() >= $d->cache->updated_at->addMinutes(24*60)){
-//                        $job = (new CreateFileMapping($d->connection_name));
-//                        $this->dispatch($job);
-//                    }
-//                }
+                $token = User::find(Auth::user()->id)->tokens;
+                foreach( $token as $tk){
+                    $root = File::roots()->where('token_id', $tk->id)->first();
+                    if (Carbon::now() >= $root->updated_at->addMinutes(24*60)){
+                        $job = (new CreateFileMapping($tk->connection_name));
+                        $this->dispatch($job);
+                    }
+                }
 
                 $data = $fmap->getFirstLevel();
-//                dd($data);
                 $par = $this->navbarDataByPath("All","");
                 return view('pages.cloud.index',[
                 'data' => $data,

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\File;
+use App\Jobs\CreateFileMapping;
 use Illuminate\Http\Request;
 
 use Auth;
@@ -199,7 +201,6 @@ class CloudController extends Controller
 
             if ($exist)
             {
-
                 $tk =  User::find(Auth::user()->id)->tokens
                     ->where('connection_email',$connEmail)
                     ->where('provider',$service)
@@ -219,6 +220,9 @@ class CloudController extends Controller
             }
 
             $tk->save();
+            // After Saving Connection, Create a FileMapping Job immediately
+            $job = (new CreateFileMapping($conname));
+            $this->dispatch($job);
 
         }
 //
@@ -239,36 +243,30 @@ class CloudController extends Controller
         // ============== Redundancy Check! ==========================
         if ($request->hasFile('file') && $request->file('file')->isvalid()){
             // return "Last modified: ".date("F d Y H:i:s.",filemtime($_FILES['file']['name']));
-
-            // .. 1. Search the similar FileName
-            $que = Cache::where('user_id', Auth::user()->id)->get();
-
-            $data = array();
-            foreach ($que as $d ) {
-                $inside_json = json_decode($d->data, true);
-                foreach ($inside_json as $in){
-                    array_push($data, $in);
-                }   
+            $fname = $_FILES['file']['name'];
+            // .. 1. Search the same FileName, size, mime_type
+            $tk = User::find(Auth::user()->id)->tokens;
+            $result = collect();
+            foreach($tk as $t){
+                $files = $t->files;
+                $search = $files->where('name', $_FILES['file']['name'])
+                    ->where('bytes', $_FILES['file']['size'])
+                    ->where('mime_type', $_FILES['file']['type']);
+                $result = $result->merge($search);
             }
-            $fmp = new FileMapping();
-            $result = array();
-            $result = $fmp->searchFiles($data, $_FILES['file']['name'], $result);
-            if (empty($result)){
+            if ($result->count() == 0){
                 return "No file with the same name";
             }else{
                 // .. 2. Search in $result for similar Size and File Type
-                $same_file = array();
-                foreach ($result as $d){
-                    if (($d['bytes'] == $_FILES['file']['size'])
-                        && ($d['mime_type'] == $_FILES['file']['type'])){
-                        array_push($same_file, $d);
-                    }
-                }
-                if (empty($same_file)){
-                    return "No file Matching. Ok to upload!";
-                }else{
-                    return $same_file;
-                }
+//                $sameFile = $sameFile->where('bytes', $_FILES['file']['size'])
+//                    ->where('mime_type', $_FILES['file']['type'])
+//                    ->get();
+//                if ($sameFile->count() == 0){
+//                    return "No file Matching. Ok to upload!";
+//                }else{
+//                    return $sameFile;
+//                }
+                return $result;
 
             }
         // ============================================================
