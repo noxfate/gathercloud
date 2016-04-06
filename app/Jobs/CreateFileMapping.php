@@ -40,7 +40,7 @@ class CreateFileMapping extends Job implements SelfHandling, ShouldQueue
         }else{
             $this->root = File::create([
                 'name' => 'root',
-                'path' => 'root',
+                'path' => $this->connObj->getProvider(),
                 'token_id' => $this->connObj->getTokenId()
             ]);
         }

@@ -77,11 +77,11 @@
          <div class="itemMenu-separator"></div>
         <div id="my-cloud" class="my-cloud">
             <ul id="list-cloud" class="list-cloud">
-                @foreach ($link as $l)
-                    <li id="side-bar-select-{{ $l->id }}">
-                        <a href="{{ url("/gtl/{$l->id}") }}">
+                @foreach ($link as $key => $val)
+                    <li id="side-bar-select-{{ $key }}">
+                        <a href="{{ url("/gtl/{$key}") }}">
                             <div><span class="glyphicon glyphicon-cloud"></span>
-                                {{ $l->link_name }}
+                                {{ $key }}
                             </div>
                         </a>
                     </li>

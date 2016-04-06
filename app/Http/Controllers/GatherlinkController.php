@@ -61,13 +61,17 @@ class GatherlinkController extends Controller
      */
     public function store(Request $request)
     {
-        $link = new Link();
-        $link->link_name = $request->input('lkname');
-        $link->user_id = Auth::user()->id;
-        $link->url = substr(base64_encode(sha1(mt_rand())), 0, 16);
-        $link->data = $request->input('items');
+        $selected = json_decode($request->input('items'));
+        $tmp_url = substr(base64_encode(sha1(mt_rand())), 0, 16);
+        foreach ($selected as $s){
+            $link = new Link();
+            $link->link_name = $request->input('lkname');
+            $link->user_id = Auth::user()->id;
+            $link->url = $tmp_url;
+            $link->file_id = $s;
 //        dd($link->data);
-        $link->save();
+            $link->save();
+        }
         return Redirect::to('/home');
     }
 
@@ -80,20 +84,16 @@ class GatherlinkController extends Controller
     public function show($id)
     {
         if (Auth::check()){
-            $link = Link::findOrFail($id);
-            if ($link->user_id == Auth::user()->id){
-                $data = collect();
-                foreach(json_decode($link->data) as $d){
-                    $data = $data->push(File::find($d));
-                }
-                return view("pages.gtl.gtl-index",[
-                    "link" => $link,
-                    "data" => $data
-                ]);
-            }else{
-                // Access Someone else GatherLink
-                return "Error, your selected GatherLinks is not available";
+            $link = Link::where('link_name',$id)->where('user_id', Auth::user()->id)->get();
+            $data = collect();
+            foreach($link as $d){
+                $data = $data->push(File::find($d->file_id));
             }
+//            dd($data);
+            return view("pages.gtl.gtl-index",[
+                "link" => $link,
+                "data" => $data
+            ]);
 
         }
         return Redirect::to('/');
@@ -101,10 +101,10 @@ class GatherlinkController extends Controller
 
     public function showFromToken()
     {
-        $link = Link::where("url",$_GET['tokens'])->firstOrFail();
+        $link = Link::where("url",$_GET['tokens'])->get();
         $data = collect();
-        foreach(json_decode($link->data) as $d){
-            $data = $data->push(File::find($d));
+        foreach($link as $d){
+            $data = $data->push(File::find($d->file_id));
         }
         dd($data);
         return $data;
@@ -142,11 +142,11 @@ class GatherlinkController extends Controller
      */
     public function destroy($id)
     {
-        if (Link::findOrFail($id)->id == Auth::user()->id ){
-            if(Link::find($id)->delete()){
-                return Redirect::to('/home');
-            }
+        $link = Link::where('link_name',$id)->where('user_id', Auth::user()->id)->get();
+        foreach($link as $d){
+            $d->delete();
         }
+        return "Delete!";
     }
 
     public function select()

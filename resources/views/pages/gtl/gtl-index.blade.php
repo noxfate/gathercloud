@@ -4,9 +4,9 @@
 	<h1>GatherLinks</h1>
 	<br>
 
-	Links name: {{ $link->link_name }} <br>
+	Links name: {{ $link[0]->link_name }} <br>
 
-	<button id="geturl-btn" value="{{ url('gtl/shared').'?tokens='.$link->url }}">Get Shareable URL</button>
+	<button id="geturl-btn" value="{{ url('gtl/shared').'?tokens='.$link[0]->url }}">Get Shareable URL</button>
 	<br><br>
 
 	<table border="1">
