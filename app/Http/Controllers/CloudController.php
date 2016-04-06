@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\AppModels\Provider;
 use App\File;
 use App\Jobs\CreateFileMapping;
 use Illuminate\Http\Request;
@@ -220,11 +221,11 @@ class CloudController extends Controller
             }
 
             $tk->save();
-            // After Saving Connection, Create a FileMapping Job immediately
-            $job = (new CreateFileMapping($conname));
-            $this->dispatch($job);
 
         }
+        // After Saving Connection, Create a FileMapping Job immediately
+        $job = (new CreateFileMapping(Session::get('new_conname')));
+        $this->dispatch($job);
 //
         return Redirect::to('/add');
     }
@@ -238,13 +239,11 @@ class CloudController extends Controller
      */
     public function store(Request $request)
     {
-        $file = $request->file('file');
-
+//        $file = $request->file('file');
         // ============== Redundancy Check! ==========================
         if ($request->hasFile('file') && $request->file('file')->isvalid()){
-            // return "Last modified: ".date("F d Y H:i:s.",filemtime($_FILES['file']['name']));
-            $fname = $_FILES['file']['name'];
             // .. 1. Search the same FileName, size, mime_type
+            // .. 2. Search in $result for similar Size and File Type
             $tk = User::find(Auth::user()->id)->tokens;
             $result = collect();
             foreach($tk as $t){
@@ -255,21 +254,26 @@ class CloudController extends Controller
                 $result = $result->merge($search);
             }
             if ($result->count() == 0){
-                return "No file with the same name";
-            }else{
-                // .. 2. Search in $result for similar Size and File Type
-//                $sameFile = $sameFile->where('bytes', $_FILES['file']['size'])
-//                    ->where('mime_type', $_FILES['file']['type'])
-//                    ->get();
-//                if ($sameFile->count() == 0){
-//                    return "No file Matching. Ok to upload!";
-//                }else{
-//                    return $sameFile;
-//                }
-                return $result;
 
+                // ============== Priorities Upload! ==========================
+                $priority = array();
+                $space = array();
+                foreach ($tk as $t){
+                    $prov = new Provider($t->connection_name);
+                    $space += [ $t->connection_name => $prov->getStorage()['remain']];
+                }
+                dd($space);
+
+                // ============================================================
+
+            }else{
+                return $result;
             }
         // ============================================================
+
+
+
+
         }
         return "Error";
     }
@@ -327,11 +331,12 @@ class CloudController extends Controller
     public function destroy($id)
     {
         $token = User::find(Auth::user()->id)->tokens->find($id);
-        $connName = $token->connection_name;
+        $connId = $token->id;
         $token->delete();
 
-        $cac = User::find(Auth::user()->id)->caches->where("user_connection_name", $connName)->first();
-        $cac->delete();
+//        $root = File::roots()->where('token_id',$connId)->first();
+//        $root->delete();
+
         return "Delete!";
     }
 }

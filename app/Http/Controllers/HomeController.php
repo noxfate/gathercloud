@@ -307,43 +307,22 @@ class HomeController extends Controller
 
     public function test()
     {
-//        $root = File::create(['fname'=> 'Root Node 2', 'token_id' => 1 ]);
-//        $c1 = $root->children()->create(['fname' => 'Child #1', 'token_id' => 1]);
-//        $c2 = File::create(['fname'=> 'Child #2', 'token_id' => 1 ]);
-//        $c2->makeChildOf($root);
-
-
-//        $r = File::roots()->where('token_id', 1)->firstOrFail();
-
-//        $root = File::create(['name' => 'The Root of All Evil', 'token_id'=> 1]);
-//
-//        $dragons = File::create(['name' => 'Here Be Dragons', 'token_id'=>1]);
-//        $dragons->makeChildOf($root);
-//
-////        File::allLeaves()->delete();
-//
-//        $monsters = new File(['name' => 'Horrible Monsters', 'token_id'=>1]);
-//        $monsters->save();
-////
-//        $monsters->makeChildOf($dragons);
-//
-//        $demons = Creatures::where('name', '=', 'demons')->first();
-//        $demons->moveToLeftOf($dragons);
-
-//        $root = File::root();
-//        $root->delete();
-//        $des = $root->children()->get();
-//        foreach ($des as $d) {
-//            if ($d->isLeaf()){
-//                echo "File!! : ". $d['name'];
-//            }else{
-//                echo $d->getImmediateDescendants();
-//            }
+//        $prov = new Provider(Token::find(7)->connection_name);
+////        $prov = new Provider(Token::find(3)->connection_name);
+//        $s = json_decode($prov->getAccountInfo());
+//        dd($s);
+//        foreach( $s->storage as $key => $val){
+//            echo $key. " : ". $val;
 //            echo "<br>";
-//
 //        }
-//
-//        dd($des);
+
+        $tk = User::find(Auth::user()->id)->tokens;
+//        foreach ($tk as $t){
+//            $pro = new Provider($t->connection_name);
+//            dd($pro->getStorage(true));
+//        }
+        $pro = new Provider($tk[1]->connection_name);
+        dd($pro->getStorage(true));
     }
 
 }

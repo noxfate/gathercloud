@@ -62,7 +62,7 @@
                     {{--<td class="th-icon-cloud"><input class="gtl-chkbox" id="{{ $d }}" type="checkbox"></td>--}}
 
                     <td class="th-name">
-                        @if ($val['is_dir']  or ($val['size'] == 0))
+                        @if ($val['is_dir'])
                             <span class="glyphicon glyphicon-folder-close"></span>
                             {{--<a id="dir" href="{{ Request::url()."/".$val['name'] }}">{{ $val['name'] }}</a></td>--}}
                             <span id="dir" class="dir" alt="{{ $val['token_id'] }}"

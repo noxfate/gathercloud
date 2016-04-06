@@ -12,6 +12,7 @@ class Provider
     private $owner;
     private $connObj;
     private $token_id;
+    private $storage;
 
 	function __construct($conName)
 	{
@@ -71,6 +72,48 @@ class Provider
     public function getConnObj()
     {
         return $this->connObj;
+    }
+    /**
+     * @return mixed
+     */
+    public function getStorage($readable = false)
+    {
+        $this->storage = array(
+            'quota' => 0,
+            'used' => 0,
+            'remain' => 0
+        );
+        $st = $this->connObj->getAccountInfo();
+        switch($this->provider){
+            case "dropbox":
+                $st = $st->quota_info;
+                $this->storage['quota'] = $st->quota;
+                $this->storage['used'] = $st->shared + $st->normal;
+                $this->storage['remain'] = $st->quota - ($st->shared + $st->normal);
+                break;
+            case "copy":
+                $st = json_decode($st);
+                $this->storage['quota'] = $st->storage->quota;
+                $this->storage['used'] = $st->storage->used;
+                $this->storage['remain'] = $st->storage->quota - $st->storage->used;
+                break;
+            case "onedrive":
+                break;
+            case "box":
+                break;
+            case "googledrive":
+                break;
+            default:
+                return "Error!! Provider: $this->provider";
+        }
+
+        if ($readable){
+            foreach ($this->storage as $key => $val){
+                $this->storage[$key] = $this->humanFileSize($val);
+            }
+        }
+
+        return $this->storage;
     }
 
 	function downloadFile($file, $destination = null)

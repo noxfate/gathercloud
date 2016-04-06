@@ -40,7 +40,8 @@ class CreateFilesTable extends Migration {
       $table->timestamps();
 
       $table->foreign('token_id')
-          ->references('id')->on('tokens');
+          ->references('id')->on('tokens')
+          ->onDelete('cascade');
 
 
     });

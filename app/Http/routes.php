@@ -57,12 +57,12 @@ Route::post('/ajax/post', function () {
     return  Response::json($data);
 });
 
-Route::get('/test', function(){
-    $job = (new \App\Jobs\CreateFileMapping('gtc_dropbox'));
+Route::get('/job', function(){
+    $job = (new \App\Jobs\CreateFileMapping($_GET['name']));
     dispatch($job);
 });
 
-Route::get('/test2', 'HomeController@test');
+Route::get('/test', 'HomeController@test');
 
 Route::get("set",function(){
     Session::put("test","test");

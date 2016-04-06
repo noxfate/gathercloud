@@ -30,7 +30,7 @@
 
     $(".disBtn").click(function(){
 
-        alert("This Connection will be Disconnect. Are you sure?");
+        confirm("This Connection will be Disconnect. Are you sure?");
         var connId = $(this).attr("id");
         connId = connId.substr(3);
         var url = window.location.pathname + "/" + connId;

@@ -69,11 +69,11 @@ class CreateFileMapping extends Job implements SelfHandling, ShouldQueue
         $files = array();
         $rec_data = $this->connObj->getFiles($path);
         foreach ($rec_data as $d) {
-//            unset($d['provider']);
             $d += [
-                'token_id' => $this->connObj->getTokenId(),
+//                'token_id' => $this->connObj->getTokenId(),
                 'updated_at' => Carbon::now()
             ];
+
             if (!$d['is_dir']){
                 array_push($files, $d);
             }else{
