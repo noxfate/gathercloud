@@ -56,12 +56,12 @@ function onGetClick(event) {
     var prov = $(this).attr('alt');
     if (window.location.pathname.search("search") == -1){
         var url = window.location.pathname + "?path=" + encodeURIComponent(dir)
-            + "&provider=" + encodeURIComponent(prov);
+            + "&connid=" + encodeURIComponent(prov);
     }else{
         var path = window.location.pathname.replace('/search','');
-        var url = path + "?path=" + encodeURIComponent(dir) + "&provider=" + encodeURIComponent(prov);
+        var url = path + "?path=" + encodeURIComponent(dir) + "&connid=" + encodeURIComponent(prov);
     }
-    //alert(url);
+    // alert(url);
     $("body").css("cursor", "progress");
     document.getElementById('let-in-folder-progress').className = "let-in-folder-progress";
     $("#board").load(url);

@@ -6,10 +6,12 @@ use App\AppModels\Provider;
 use Illuminate\Http\Request;
 
 use Auth;
+use App\File;
 use App\User;
 use App\Token;
 use App\Cache;
 use App\Jobs\CreateFileMapping;
+use Carbon\Carbon;
 use App\Library\FileMapping;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -27,22 +29,25 @@ class HomeController extends Controller
     {
         if (Auth::check()) {
 
-            $que = Cache::where('user_id',Auth::user()->id)->get();
-
-            $data = array();
-            foreach ($que as $d ) {
-                $inside_json = json_decode($d->data, true);
-                foreach ($inside_json as $in){
-                    array_push($data, $in);
-                }   
-            }
+            $que = User::find(Auth::user()->id)->tokens;
             $email = User::find(Auth::user()->id)->email;
 
-
-            $fmap = new FileMapping($data);
+            $fmap = new FileMapping(Auth::user()->id);
 
             // All in One without Ajax Request
             if (empty($_GET['path'])){
+
+//                Create Cache when enter /home at All in One
+                $token = User::find(Auth::user()->id)->tokens;
+                foreach( $token as $tk){
+                    $root = File::roots()->where('token_id', $tk->id)->first();
+                    if (Carbon::now() >= $root->updated_at->addMinutes(24*60)){
+                        $job = (new CreateFileMapping($tk->connection_name));
+                        $this->dispatch($job);
+                    }
+                }
+
+                $data = $fmap->getFirstLevel();
                 $par = $this->navbarDataByPath("All","");
                 return view('pages.cloud.index',[
                 'data' => $data,
@@ -51,7 +56,7 @@ class HomeController extends Controller
                 'parent' => $par
                 ]);
             }else{
-                $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
+                $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['connid']);
                 $par = $this->navbarDataByPath("All",$_GET['path']);
                 return view('pages.cloud.components.index-board',[
                     'data' => $data,
@@ -100,27 +105,9 @@ class HomeController extends Controller
 
         // if at 1st level Folder, No Ajax request.
         if (empty($_GET['path'])) {
-             $cac = Cache::where('user_id',Auth::user()->id)
-            ->where('provider',$provider)
-            ->where('user_connection_name',$id)
-            ->get();
-            if ($cac->count() == 0){
-                $cac = new Cache();
-                $cac->user_id = Auth::user()->id;
-                $cac->provider = $provider;
-                $cac->user_connection_name = $id;
-            }else if ($cac->count() == 1){
-                $cac = $cac->first();
-            }
-
-//             $job = (new CreateFileMapping($obj,$provider,$cac));
-//             $this->dispatch($job);
 
             $data = $proObj->getFiles();
             $parent = $this->navbarDataByPath($id,"");
-
-            $cac->data = json_encode($data);
-            // $cac->save();
 
             return view('pages.cloud.index', [
 //            "data" => null,
@@ -185,19 +172,8 @@ class HomeController extends Controller
     public
     function search()
     {
-        $que = Cache::where('user_id',Auth::user()->id)->get();
-
-        $data = array();
-        foreach ($que as $d ) {
-            $inside_json = json_decode($d->data, true);
-            foreach ($inside_json as $in){
-                array_push($data, $in);
-            }   
-        }
-
-        $fmap = new FileMapping($data);
-        $result = array();
-        $result = $fmap->searchFiles($data, $_GET['keyword'], $result);
+        $fmap = new FileMapping(Auth::user()->id);
+        $result = $fmap->searchFiles($_GET['keyword']);
 
         $email = User::find(Auth::user()->id)->email;
 
@@ -211,10 +187,10 @@ class HomeController extends Controller
             'parent' => $par
             ]);
         }else{
-            $data = $fmap->traverseInsideFolder($data, $_GET['path'], $_GET['provider']);
+            $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['connid']);
             $par = $this->navbarDataByPath("All",$_GET['path']);
             return view('pages.cloud.components.index-board',[
-                'data' => $result,
+                'data' => $data,
                 "cname" => "All",
                 'cmail' => $email,
                 'parent' => $par
@@ -230,8 +206,8 @@ class HomeController extends Controller
             'ppath' => array(),
             'pprovider' => array()
         );
-        if (!empty($_GET['provider'])){
-            $parent->pprovider = $_GET['provider'];
+        if (!empty($_GET['connid'])){
+            $parent->pprovider = $_GET['connid'];
         }
         $parent->pname = explode("/", $path);
         $temp = '/';
@@ -331,6 +307,26 @@ class HomeController extends Controller
     public function upload(){
         $proObj = new Provider($_GET['connection_name']);
         $proObj->uploadFile($_GET['file']);
+    }
+
+    public function test()
+    {
+//        $prov = new Provider(Token::find(7)->connection_name);
+////        $prov = new Provider(Token::find(3)->connection_name);
+//        $s = json_decode($prov->getAccountInfo());
+//        dd($s);
+//        foreach( $s->storage as $key => $val){
+//            echo $key. " : ". $val;
+//            echo "<br>";
+//        }
+
+        $tk = User::find(Auth::user()->id)->tokens;
+//        foreach ($tk as $t){
+//            $pro = new Provider($t->connection_name);
+//            dd($pro->getStorage(true));
+//        }
+        $pro = new Provider($tk[1]->connection_name);
+        dd($pro->getStorage(true));
     }
 
 }

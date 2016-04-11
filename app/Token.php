@@ -30,4 +30,24 @@ class Token extends Model
      * @var array
      */
 //    protected $hidden = ['password', 'remember_token'];
+
+//    public function cache()
+//    {
+//        return $this->hasOne(Cache::class);
+//    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function cache()
+    {
+        return $this->hasOne(Cache::class);
+    }
+
+    public function files()
+    {
+        return $this->hasMany(File::class);
+    }
 }

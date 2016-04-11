@@ -42,11 +42,6 @@ class User extends Model implements AuthenticatableContract,
         return $this->hasMany(Token::class);
     }
 
-    public function caches()
-    {
-        return $this->hasMany(Cache::class);
-    }
-
     public function links()
     {
         return $this->hasMany(Link::class);

@@ -14,15 +14,12 @@ class CreateCachesTable extends Migration
     {
         Schema::create('caches', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('user_connection_name');
-            $table->integer('user_id')->unsigned();
-            $table->string('provider');
+            $table->integer('token_id')->unsigned();
             $table->longText('data');
             $table->timestamps();
 
-            $table->foreign('user_id')
-                ->references('id')->on('users')
-                ->onDelete('cascade');
+            $table->foreign('token_id')
+                ->references('id')->on('tokens');
         });
     }
 

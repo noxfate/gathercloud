@@ -4,9 +4,9 @@
 	<h1>GatherLinks</h1>
 	<br>
 
-	Links name: {{ $link->link_name }} <br>
+	Links name: {{ $link[0]->link_name }} <br>
 
-	<button id="geturl-btn" value="{{ url('gtl/shared').'?tokens='.$link->url }}">Get Shareable URL</button>
+	<button id="geturl-btn" value="{{ url('gtl/shared').'?tokens='.$link[0]->url }}">Get Shareable URL</button>
 	<br><br>
 
 	<table border="1">
@@ -16,9 +16,9 @@
             <th class="th-size">Size</th>
             <th class="th-last-mo">Last modified</th>
         </tr>
-        @foreach(json_decode($link->data) as $l)
+        @foreach($data as $l)
         <tr>
-        	<td>{{ $l->provider }}</td>
+        	<td>{{ $l->token_id }}</td>
         	<td>{{ $l->name }}</td>
         	<td>{{ $l->size }}</td>
         	<td>{{ $l->modified }}</td>

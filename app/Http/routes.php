@@ -50,7 +50,6 @@ Route::resource('/gtl','GatherlinkController');
 
 // =========== FOR TESTING ==================
 Route::post('/ajax/post', function () {
-
     // pass back some data, along with the original data, just to prove it was received
     $data   = array('value' => 'some data', 'input' => Request::input());
 
@@ -58,11 +57,12 @@ Route::post('/ajax/post', function () {
     return  Response::json($data);
 });
 
-Route::get('/test', function(){
-    $p = new \App\AppModels\Provider('copy','gtc_copy');
-    dd($p->getAccountInfo());
+Route::get('/job', function(){
+    $job = (new \App\Jobs\CreateFileMapping($_GET['name']));
+    dispatch($job);
 });
 
+Route::get('/test', 'HomeController@test');
 
 Route::get("set",function(){
     Session::put("test","test");

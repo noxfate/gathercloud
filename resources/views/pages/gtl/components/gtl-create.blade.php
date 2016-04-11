@@ -5,38 +5,63 @@
 		GatherLinks Name: <input type="text" name="lkname" required><br><br>
 		Yours Selected items
 		<table id="gtl-table" border="1">
-			<tr>
+			<thead>
+            <tr>
                 <th class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></th>
                 <th class="th-name">Name</th>
                 <th class="th-size">Size</th>
                 <th class="th-last-mo">Last modified</th>
             </tr>
+            </thead>
+            <tfoot>
+
+            </tfoot>
 		</table>
 		<br>
 		<input type="hidden" name="items" id="post-data">
 		<input type="hidden" name="_token" value="{{ csrf_token() }}">
-		<input type="Submit" id="gtl-create-btn" value="Confirm">
+		<input type="Submit" onclick="sessionStorage.removeItem('selected')" id="gtl-create-btn" value="Confirm">
 	</form>
 
 	<script>
 		$.ajaxSetup({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}});
-		$.ajax({
-			type: 'GET',
-			url: 'gtl/create',
-			data: {'selected-item': sessionStorage.getItem("selected")},
-			success: function(result){
+        $.ajax({
+            type: 'GET',
+            url: 'gtl/create',
+            data: {'selected-item': sessionStorage.getItem("selected")},
+            success: function(result){
 				var table = document.getElementById("gtl-table");
+                var ids = [];
 				for (r in result){
 					var row = table.insertRow(-1);
-					row.insertCell(0).innerHTML = result[r]['provider'];
+					row.insertCell(0).innerHTML = result[r]['token_id'];
 					row.insertCell(1).innerHTML = result[r]['name'];
 					row.insertCell(2).innerHTML = result[r]['size'];
 					row.insertCell(3).innerHTML = result[r]['modified'];
+                    ids.push(result[r]['id']);
 				}
-				$("#post-data").attr("value",JSON.stringify(result));
-				sessionStorage.removeItem("selected");
-			}
-		});
+//                alert(ids);
+                $("#post-data").attr("value",JSON.stringify(ids));
+            }
+        });
+//        $("#gtl-table").DataTable({
+//            ajax: {
+//                type: 'GET',
+//                url: 'gtl/create',
+//                data: {'selected-item': sessionStorage.getItem("selected")},
+//                success: function(result){
+//                    $("#post-data").attr("value",JSON.stringify(result));
+//                    sessionStorage.removeItem("selected");
+//                }
+//            },
+//            columns: [
+//                {data: '0.token_id'},
+//                {data: '0.name'},
+//                {data: '0.size'},
+//                {data: '0.modified'}
+//            ]
+//        });
+
 
 	</script>
 	<script src="{{ URL::asset('js/jquery.min.js') }}"></script>

@@ -3,20 +3,20 @@ $("body").css("cursor", "default");
 // set up jQuery with the CSRF token, or else post routes will fail
 $.ajaxSetup({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}});
 
+$(".gtl-chkbox").ready(function(){
+    if (sessionStorage.getItem("selected") !== null){
+        var ids = JSON.parse(sessionStorage.getItem("selected"));
+        for (id in ids){
+            $(".gtl-chkbox#"+ids[id]).prop("checked",true);
+        }
+    }
 
-//$(".gtl-chkbox").hide();
-//$("#gtl-btn-cancel").hide();
-//$("#gtl-btn-save").hide();
-//$("#gtl-btn").click(function(){
-//    $("#gtl-btn-cancel").show();
-//    $("#gtl-btn-save").show();
-//    $(".gtl-chkbox").show();
-//});
+});
+
 $(".gtl-chkbox").click(function(){
     if (typeof Storage !== "undefined") { // Support Web Storage
         if (sessionStorage.getItem("selected") === null){
             sessionStorage.setItem("selected",JSON.stringify([$(this).attr("id")]));
-            // alert("Created");
         }else{
             var ids = JSON.parse(sessionStorage.getItem("selected"));
             var index = ids.indexOf($(this).attr("id"));
@@ -27,10 +27,11 @@ $(".gtl-chkbox").click(function(){
             }
             ids.sort();
             sessionStorage.setItem("selected",JSON.stringify(ids));
-            // alert(ids);
+            //alert(ids);
         }
     }
 });
+
 $("#gtl-btn-save").click(function(e){
     var selected_ids = JSON.parse(sessionStorage.getItem("selected"));
     if (selected_ids === null){
@@ -40,15 +41,12 @@ $("#gtl-btn-save").click(function(e){
         $("#board").load(url);
         //window.location.href = window.location.pathname + '/create';
     }
-    //alert('fff');
 });
-//$("#gtl-btn-cancel").click(function(e){
-//    $(".gtl-chkbox").attr('checked',false);
-//    sessionStorage.removeItem("selected");
-//    $(".gtl-chkbox").hide();
-//    $("#gtl-btn-cancel").hide();
-//    $("#gtl-btn-save").hide();
-//});
+$("#gtl-btn-cancel").click(function(e){
+    $(".gtl-chkbox").attr('checked',false);
+    sessionStorage.removeItem("selected");
+    alert("Reset");
+});
 
 
 // handlers
@@ -65,7 +63,7 @@ function onGetClick(event) {
         var url = path + "?path=" + encodeURIComponent(dir) + "&provider=" + encodeURIComponent(prov);
     }
     url = url.replace('/gtl','/gtl/select');
-    alert(url);
+    //alert(url);
     $("body").css("cursor", "progress");
     $("#board").load(url);
 }
@@ -86,6 +84,5 @@ function onSuccess(data, status, xhr) {
 }
 
 // listeners
-//                $('button#get').on('click', onGetClick);
 $('span#dir').on('click', onGetClick);
 $('button#post').on('click', onPostClick);

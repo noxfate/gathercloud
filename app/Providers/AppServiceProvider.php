@@ -17,7 +17,9 @@ class AppServiceProvider extends ServiceProvider
 //        $conn = User::find(auth()->user()->id)->tokens->all();
         view()->composer('layouts.master-index', function($view) {
             $conn = User::find(auth()->user()->id)->tokens->all();
-            $link = User::find(auth()->user()->id)->links->all(); 
+            $link = User::find(auth()->user()->id)->links
+                ->groupBy('link_name')
+                ->all();
             $view->with([
                 'conn'=> $conn,
                 'link' => $link

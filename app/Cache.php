@@ -14,10 +14,8 @@ class Cache extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id',
-        'provider',
-        'user_connection_name',
-        'data',
+        'token_id',
+        'data'
     ];
 
     /**
@@ -26,4 +24,9 @@ class Cache extends Model
      * @var array
      */
 //    protected $hidden = ['password', 'remember_token'];
+
+    public function token()
+    {
+        return $this->belongsTo(Token::class);
+    }
 }

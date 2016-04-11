@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\AppModels\Provider;
+use App\File;
+use App\Jobs\CreateFileMapping;
 use Illuminate\Http\Request;
 
 use Auth;
@@ -199,7 +202,6 @@ class CloudController extends Controller
 
             if ($exist)
             {
-
                 $tk =  User::find(Auth::user()->id)->tokens
                     ->where('connection_email',$connEmail)
                     ->where('provider',$service)
@@ -221,6 +223,9 @@ class CloudController extends Controller
             $tk->save();
 
         }
+        // After Saving Connection, Create a FileMapping Job immediately
+        $job = (new CreateFileMapping(Session::get('new_conname')));
+        $this->dispatch($job);
 //
         return Redirect::to('/add');
     }
@@ -234,44 +239,41 @@ class CloudController extends Controller
      */
     public function store(Request $request)
     {
-        $file = $request->file('file');
-
+//        $file = $request->file('file');
         // ============== Redundancy Check! ==========================
         if ($request->hasFile('file') && $request->file('file')->isvalid()){
-            // return "Last modified: ".date("F d Y H:i:s.",filemtime($_FILES['file']['name']));
-
-            // .. 1. Search the similar FileName
-            $que = Cache::where('user_id', Auth::user()->id)->get();
-
-            $data = array();
-            foreach ($que as $d ) {
-                $inside_json = json_decode($d->data, true);
-                foreach ($inside_json as $in){
-                    array_push($data, $in);
-                }   
+            // .. 1. Search the same FileName, size, mime_type
+            // .. 2. Search in $result for similar Size and File Type
+            $tk = User::find(Auth::user()->id)->tokens;
+            $result = collect();
+            foreach($tk as $t){
+                $files = $t->files;
+                $search = $files->where('name', $_FILES['file']['name'])
+                    ->where('bytes', $_FILES['file']['size'])
+                    ->where('mime_type', $_FILES['file']['type']);
+                $result = $result->merge($search);
             }
-            $fmp = new FileMapping();
-            $result = array();
-            $result = $fmp->searchFiles($data, $_FILES['file']['name'], $result);
-            if (empty($result)){
-                return "No file with the same name";
-            }else{
-                // .. 2. Search in $result for similar Size and File Type
-                $same_file = array();
-                foreach ($result as $d){
-                    if (($d['bytes'] == $_FILES['file']['size'])
-                        && ($d['mime_type'] == $_FILES['file']['type'])){
-                        array_push($same_file, $d);
-                    }
-                }
-                if (empty($same_file)){
-                    return "No file Matching. Ok to upload!";
-                }else{
-                    return $same_file;
-                }
+            if ($result->count() == 0){
 
+                // ============== Priorities Upload! ==========================
+                $priority = array();
+                $space = array();
+                foreach ($tk as $t){
+                    $prov = new Provider($t->connection_name);
+                    $space += [ $t->connection_name => $prov->getStorage()['remain']];
+                }
+                dd($space);
+
+                // ============================================================
+
+            }else{
+                return $result;
             }
         // ============================================================
+
+
+
+
         }
         return "Error";
     }
@@ -329,11 +331,12 @@ class CloudController extends Controller
     public function destroy($id)
     {
         $token = User::find(Auth::user()->id)->tokens->find($id);
-        $connName = $token->connection_name;
+        $connId = $token->id;
         $token->delete();
 
-        $cac = User::find(Auth::user()->id)->caches->where("user_connection_name", $connName)->first();
-        $cac->delete();
+//        $root = File::roots()->where('token_id',$connId)->first();
+//        $root->delete();
+
         return "Delete!";
     }
 }

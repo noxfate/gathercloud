@@ -8,7 +8,7 @@
                 @else
                     <span class="glyphicon glyphicon-menu-right"></span>
                     <span class="glyphicon glyphicon-folder-open"></span>
-                    <span id="dir" class="dir" value="{{$parent->ppath[$i]}}">{{ $parent->pname[$i] }}</span>
+                    <span id="dir" class="dir" alt="{{ $parent->pprovider }}" value="{{$parent->ppath[$i]}}">{{ $parent->pname[$i] }}</span>
                 @endif
             @endfor
         @endif
@@ -43,13 +43,13 @@
                 <tr class="withItemMenu" value="{{ $val['path'] }}">
                     <td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>
 
-                    <td class="th-icon-cloud"><input class="gtl-chkbox" id="{{ $d }}" type="checkbox"></td>
+                    <td class="th-icon-cloud"><input class="gtl-chkbox" id="{{ $val['id'] }}" type="checkbox"></td>
 
                     <td class="th-name">
-                        @if ($val['is_dir']  or ($val['size'] == 0))
+                        @if ($val['is_dir'])
                             <span class="glyphicon glyphicon-folder-close"></span>
                             {{--<a id="dir" href="{{ Request::url()."/".$val['name'] }}">{{ $val['name'] }}</a></td>--}}
-                            <span id="dir" class="dir" alt="{{ $val['provider'] }}" value="{{ $val['path'] }}">{{ $val['name'] }}</span></td>
+                            <span id="dir" class="dir" alt="{{ $val['token_id'] }}" value="{{ $val['path'] }}">{{ $val['name'] }}</span></td>
                     @else
                         <a href="#">{{ $val['name'] }}</a></td>
                     @endif

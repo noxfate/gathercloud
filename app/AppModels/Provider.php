@@ -9,33 +9,54 @@ use App\Cache;
 class Provider
 {
 	private $provider;
+    private $owner;
     private $connObj;
+    private $token_id;
+    private $storage;
 
 	function __construct($conName)
 	{
         $tk = Token::where('connection_name', $conName)
             ->where('user_id', Auth::user()->id)
-            ->get();
-        $this->provider = $tk[0]->provider;
+            ->firstOrFail();
+        $this->provider = $tk->provider;
+        $this->owner = $tk->user_id;
+        $this->token_id  = $tk->id;
 
         switch ($this->provider) {
             case "dropbox":
-                $this->connObj = new \App\Library\DropboxInterface((array)\GuzzleHttp\json_decode($tk[0]->access_token));
+                $this->connObj = new \App\Library\DropboxInterface((array)\GuzzleHttp\json_decode($tk->access_token));
                 break;
             case "copy":
-                $this->connObj = new \App\Library\CopyInterface((array)\GuzzleHttp\json_decode($tk[0]->access_token));
+                $this->connObj = new \App\Library\CopyInterface((array)\GuzzleHttp\json_decode($tk->access_token));
                 break;
             case "box":
-                $this->connObj = new \App\Library\BoxInterface((array)\GuzzleHttp\json_decode($tk[0]->access_token));
+                $this->connObj = new \App\Library\BoxInterface((array)\GuzzleHttp\json_decode($tk->access_token));
                 break;
             case "onedrive":
-                $this->connObj = new \App\Library\OneDriveInterface((array)\GuzzleHttp\json_decode($tk[0]->access_token));
+                $this->connObj = new \App\Library\OneDriveInterface((array)\GuzzleHttp\json_decode($tk->access_token));
                 break;
             default:
                 return "Error!! Provider: $this->provider";
         }
 		
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getOwner()
+    {
+        return $this->owner;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTokenId()
+    {
+        return $this->token_id;
+    }
 
     /**
      * @return mixed
@@ -51,6 +72,48 @@ class Provider
     public function getConnObj()
     {
         return $this->connObj;
+    }
+    /**
+     * @return mixed
+     */
+    public function getStorage($readable = false)
+    {
+        $this->storage = array(
+            'quota' => 0,
+            'used' => 0,
+            'remain' => 0
+        );
+        $st = $this->connObj->getAccountInfo();
+        switch($this->provider){
+            case "dropbox":
+                $st = $st->quota_info;
+                $this->storage['quota'] = $st->quota;
+                $this->storage['used'] = $st->shared + $st->normal;
+                $this->storage['remain'] = $st->quota - ($st->shared + $st->normal);
+                break;
+            case "copy":
+                $st = json_decode($st);
+                $this->storage['quota'] = $st->storage->quota;
+                $this->storage['used'] = $st->storage->used;
+                $this->storage['remain'] = $st->storage->quota - $st->storage->used;
+                break;
+            case "onedrive":
+                break;
+            case "box":
+                break;
+            case "googledrive":
+                break;
+            default:
+                return "Error!! Provider: $this->provider";
+        }
+
+        if ($readable){
+            foreach ($this->storage as $key => $val){
+                $this->storage[$key] = $this->humanFileSize($val);
+            }
+        }
+
+        return $this->storage;
     }
 
 	function downloadFile($file, $destination = null)
@@ -85,8 +148,7 @@ class Provider
 //        $path = '';
 //        $size = '';
 //        $bytes = 0;
-//        $mime_type = '';
-//        $file_type = '';
+//        $mime_type = '';  ** NULLABLE **
 //        $last_modified = '';
 //        $shared = false;
 //        $provider = '';
@@ -108,7 +170,7 @@ class Provider
                             'is_dir' => $val->is_dir, // 1 == Folder, 0 = File
                             'modified' => $val->modified,
                             'shared' => $sh,
-                            'provider' => $provider
+                            'token_id' => $this->token_id
                         ));
                 }
                 break;
@@ -127,7 +189,7 @@ class Provider
                             'is_dir' => $is, // 1 == Folder, 0 = File
                             'modified' => date('Y m d H:i:s', $val->modified_time),
                             'shared' => $sh,
-                            'provider' => $provider
+                            'token_id' => $this->token_id
                         ));
                 }
                 break;
@@ -146,7 +208,7 @@ class Provider
                             'is_dir' => $val['is_dir'],
                             'modified' => date('Y m d H:i:s', strtotime($val['modified'])),
                             'shared' => $val['shared'],
-                            'provider' => $provider
+                            'token_id' => $this->token_id
                         ));
                 }
                 break;
@@ -165,7 +227,7 @@ class Provider
                             'is_dir' => $is, // 1 == Folder, 0 = File
                             'modified' => date('Y m d H:i:s', $val->getUpdatedTime()),
                             'shared' => false, // dafuq is this?
-                            'provider' => $provider
+                            'token_id' => $this->token_id
                         ));
                 }
                 break;
