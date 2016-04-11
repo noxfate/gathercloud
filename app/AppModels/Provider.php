@@ -59,7 +59,7 @@ class Provider
 	}
 	function uploadFile($file, $destination = null)
 	{
-        //
+        $this->connObj->uploadFile($file, $destination);
 	}
 	function getFiles($file = null)
 	{

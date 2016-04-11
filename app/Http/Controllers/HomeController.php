@@ -326,7 +326,11 @@ class HomeController extends Controller
 //        header("Content-disposition: attachment; filename=". basename($_GET['file']));
 //        readfile(basename($_GET['file']));
 //        unlink(basename($_GET['file']));
+    }
 
+    public function upload(){
+        $proObj = new Provider($_GET['connection_name']);
+        $proObj->uploadFile($_GET['file']);
     }
 
 }
