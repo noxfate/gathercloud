@@ -66,6 +66,11 @@ class CreateFileMapping extends Job implements SelfHandling, ShouldQueue
 
     private function processData($path = '/')
     {
+        /*
+         * if provider for set path val
+         * dropbox "/"
+         * onedrive, box ""
+         * */
         $files = array();
         $rec_data = $this->connObj->getFiles($path);
         foreach ($rec_data as $d) {
