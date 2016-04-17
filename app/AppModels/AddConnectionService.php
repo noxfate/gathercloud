@@ -26,172 +26,174 @@ class AddConnectionService
     }
 
     public function add(){
-        if ($this->service == "dropbox"){
 
-            $dbxInterface = new \App\Library\DropboxInterface();
-            $token = $dbxInterface->getAccessToken();
+        switch ($this->service) {
+            case "dropbox":
+                $dbxInterface = new \App\Library\DropboxInterface();
+                $token = $dbxInterface->getAccessToken();
 
-            $exist = false;
-            $query = User::find(Auth::user()->id)->tokens->where("provider","dropbox");
-            $conname = Session::get('new_conname');
-            $connEmail = $dbxInterface->getAccountInfo()->email;
-            foreach($query as $val){
-                if ($connEmail == $val->connection_email){
-                    $exist = true;
-                    break;
+                $exist = false;
+                $query = User::find(Auth::user()->id)->tokens->where("provider","dropbox");
+                $conname = Session::get('new_conname');
+                $connEmail = $dbxInterface->getAccountInfo()->email;
+                foreach($query as $val){
+                    if ($connEmail == $val->connection_email){
+                        $exist = true;
+                        break;
+                    }
                 }
-            }
 
-            if ($exist)
-            {
+                if ($exist)
+                {
 
-                $tk =  User::find(Auth::user()->id)->tokens
-                    ->where('connection_email',$connEmail)
-                    ->where('provider',$this->service)
-                    ->first();
-                $tk->access_token = json_encode($token);
+                    $tk =  User::find(Auth::user()->id)->tokens
+                        ->where('connection_email',$connEmail)
+                        ->where('provider',$this->service)
+                        ->first();
+                    $tk->access_token = json_encode($token);
 
-            }else{
-                $tk = new Token();
+                }else{
+                    $tk = new Token();
 
-                $tk->connection_name = $conname;
-                $tk->connection_email = $connEmail;
-                $tk->access_token = json_encode($token);
-                $tk->access_token_expired = "";
-                $tk->refresh_token = "";
-                $tk->refresh_token_expired = "";
-                $tk->user_id = Auth::user()->id;
-                $tk->provider = $this->service;
-            }
-
-            $tk->save();
-        }
-        elseif ($this->service == "copy"){
-            $cpyInterface = new \App\Library\CopyInterface();
-            $token = $cpyInterface->getAccessToken();
-            $exist = false;
-
-            $conname = Session::get('new_conname');
-            $connEmail = \GuzzleHttp\json_decode($cpyInterface->getAccountInfo())->email;
-            $query = User::find(Auth::user()->id)->tokens->where("provider","copy");
-
-            foreach($query as $val){
-                if ($connEmail == $val->connection_email){
-                    $exist = true;
-                    break;
+                    $tk->connection_name = $conname;
+                    $tk->connection_email = $connEmail;
+                    $tk->access_token = json_encode($token);
+                    $tk->access_token_expired = "";
+                    $tk->refresh_token = "";
+                    $tk->refresh_token_expired = "";
+                    $tk->user_id = Auth::user()->id;
+                    $tk->provider = $this->service;
                 }
-            }
 
-            if ($exist)
-            {
+                $tk->save();
+                break;
+            case "copy":
+                $cpyInterface = new \App\Library\CopyInterface();
+                $token = $cpyInterface->getAccessToken();
+                $exist = false;
 
-                $tk =  User::find(Auth::user()->id)->tokens
-                    ->where('connection_email',$connEmail)
-                    ->where('provider',$this->service)
-                    ->first();
-                $tk->access_token = json_encode($token);
+                $conname = Session::get('new_conname');
+                $connEmail = \GuzzleHttp\json_decode($cpyInterface->getAccountInfo())->email;
+                $query = User::find(Auth::user()->id)->tokens->where("provider","copy");
 
-            }else{
-                $tk = new Token();
-                $tk->connection_name = $conname;
-                $tk->connection_email = $connEmail;
-                $tk->access_token = json_encode($token);
-                $tk->access_token_expired = "";
-                $tk->refresh_token = "";
-                $tk->refresh_token_expired = "";
-                $tk->user_id = Auth::user()->id;
-                $tk->provider = $this->service;
-            }
-
-            $tk->save();
-
-
-        }
-        elseif ($this->service == "box"){
-            $boxInterface = new \App\Library\BoxInterface();
-            $token = $boxInterface->getAccessToken();
-            $userInfo = $boxInterface->getAccountInfo();
-
-            $exist = false;
-
-            $conname = Session::get('new_conname');
-            $connEmail = $userInfo["login"];
-            $query = User::find(Auth::user()->id)->tokens->where("provider","box");
-
-            foreach($query as $val){
-                if ($connEmail == $val->connection_email){
-                    $exist = true;
-                    break;
+                foreach($query as $val){
+                    if ($connEmail == $val->connection_email){
+                        $exist = true;
+                        break;
+                    }
                 }
-            }
 
-            if ($exist)
-            {
+                if ($exist)
+                {
 
-                $tk =  User::find(Auth::user()->id)->tokens
-                    ->where('connection_email',$connEmail)
-                    ->where('provider',$this->service)
-                    ->first();
-                $tk->access_token = json_encode($token);
+                    $tk =  User::find(Auth::user()->id)->tokens
+                        ->where('connection_email',$connEmail)
+                        ->where('provider',$this->service)
+                        ->first();
+                    $tk->access_token = json_encode($token);
 
-            }else{
-                $tk = new Token();
-                $tk->connection_name = $conname;
-                $tk->connection_email = $connEmail;
-                $tk->access_token = json_encode($token);
-                $tk->access_token_expired = "";
-                $tk->refresh_token = "";
-                $tk->refresh_token_expired = "";
-                $tk->user_id = Auth::user()->id;
-                $tk->provider = $this->service;
-            }
-
-            $tk->save();
-
-        }
-        elseif ($this->service == "onedrive"){
-            $ondInterface = new \App\Library\OneDriveInterface();
-            $token = $ondInterface->getAccessToken();
-            $userInfo = $ondInterface->getAccountInfo();
-
-            $exist = false;
-
-            $conname = Session::get('new_conname');
-            $connEmail = $userInfo->id;
-            $query = User::find(Auth::user()->id)->tokens->where("provider","onedrive");
-
-            foreach($query as $val){
-                if ($connEmail == $val->connection_email){
-                    $exist = true;
-                    break;
+                }else{
+                    $tk = new Token();
+                    $tk->connection_name = $conname;
+                    $tk->connection_email = $connEmail;
+                    $tk->access_token = json_encode($token);
+                    $tk->access_token_expired = "";
+                    $tk->refresh_token = "";
+                    $tk->refresh_token_expired = "";
+                    $tk->user_id = Auth::user()->id;
+                    $tk->provider = $this->service;
                 }
-            }
 
-            if ($exist)
-            {
-                $tk =  User::find(Auth::user()->id)->tokens
-                    ->where('connection_email',$connEmail)
-                    ->where('provider',$this->service)
-                    ->first();
-                $tk->access_token = json_encode($token);
+                $tk->save();
+                break;
+            case "box":
+                $boxInterface = new \App\Library\BoxInterface();
+                $token = $boxInterface->getAccessToken();
+                $userInfo = $boxInterface->getAccountInfo();
 
-            }else{
-                $tk = new Token();
-                $tk->connection_name = $conname;
-                $tk->connection_email = $connEmail;
-                $tk->access_token = json_encode($token);
-                $tk->access_token_expired = "";
-                $tk->refresh_token = "";
-                $tk->refresh_token_expired = "";
-                $tk->user_id = Auth::user()->id;
-                $tk->provider = $this->service;
-            }
+                $exist = false;
 
-            $tk->save();
+                $conname = Session::get('new_conname');
+                $connEmail = $userInfo["login"];
+                $query = User::find(Auth::user()->id)->tokens->where("provider","box");
 
-        }elseif ($this->service == "googledrive"){
-            $ggInterface = new \App\Library\GoogleInterface();
+                foreach($query as $val){
+                    if ($connEmail == $val->connection_email){
+                        $exist = true;
+                        break;
+                    }
+                }
+
+                if ($exist)
+                {
+
+                    $tk =  User::find(Auth::user()->id)->tokens
+                        ->where('connection_email',$connEmail)
+                        ->where('provider',$this->service)
+                        ->first();
+                    $tk->access_token = json_encode($token);
+
+                }else{
+                    $tk = new Token();
+                    $tk->connection_name = $conname;
+                    $tk->connection_email = $connEmail;
+                    $tk->access_token = json_encode($token);
+                    $tk->access_token_expired = "";
+                    $tk->refresh_token = "";
+                    $tk->refresh_token_expired = "";
+                    $tk->user_id = Auth::user()->id;
+                    $tk->provider = $this->service;
+                }
+
+                $tk->save();
+                break;
+            case "onedrive":
+                $ondInterface = new \App\Library\OneDriveInterface();
+                $token = $ondInterface->getAccessToken();
+                $userInfo = $ondInterface->getAccountInfo();
+
+                $exist = false;
+
+                $conname = Session::get('new_conname');
+                $connEmail = $userInfo->id;
+                $query = User::find(Auth::user()->id)->tokens->where("provider","onedrive");
+
+                foreach($query as $val){
+                    if ($connEmail == $val->connection_email){
+                        $exist = true;
+                        break;
+                    }
+                }
+
+                if ($exist)
+                {
+                    $tk =  User::find(Auth::user()->id)->tokens
+                        ->where('connection_email',$connEmail)
+                        ->where('provider',$this->service)
+                        ->first();
+                    $tk->access_token = json_encode($token);
+
+                }else{
+                    $tk = new Token();
+                    $tk->connection_name = $conname;
+                    $tk->connection_email = $connEmail;
+                    $tk->access_token = json_encode($token);
+                    $tk->access_token_expired = "";
+                    $tk->refresh_token = "";
+                    $tk->refresh_token_expired = "";
+                    $tk->user_id = Auth::user()->id;
+                    $tk->provider = $this->service;
+                }
+
+                $tk->save();
+                break;
+            case "googledrive":
+                $ggInterface = new \App\Library\GoogleInterface();
+                break;
+            default:
+                return "Error!! Provider: $this->provider";
         }
+
     }
 
 }
