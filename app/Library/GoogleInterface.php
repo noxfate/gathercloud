@@ -22,40 +22,37 @@ class GoogleInterface implements ModelInterface
     private $client_id = '1098750327371-fmvl4jm6qrsb7ii76vlrku5sii1ivijb.apps.googleusercontent.com';
     private $client_secret = 'aBQwOX3KYK7ujJzjLKXxgNNL';
     private $redirect_uri = 'http://localhost/gathercloud/public/add/googledrive';
+    private $client;
+    private $drive_service;
 
     function __construct($access_token = null){
+
+        $this->client = new Google_Client();
+        $this->client->setClientId($this->client_id);
+        $this->client->setClientSecret($this->client_secret);
+        $this->client->setRedirectUri($this->redirect_uri);
+        $this->client->setApprovalPrompt('force');
+        $this->client->setAccessType("offline");
+        $this->client->addScope("https://www.googleapis.com/auth/drive");
+
         if($access_token != null){
             $this->access_token = $access_token[0];
+            $this->client->setAccessToken($this->access_token);
+            $this->drive_service = new Google_Service_Drive($this->client);
         } else {
-            $client = new Google_Client();
-            $client->setClientId($this->client_id);
-            $client->setClientSecret($this->client_secret);
-            $client->setRedirectUri($this->redirect_uri);
-            $client->setApprovalPrompt('force');
-            $client->setAccessType("offline");
-            $client->addScope("https://www.googleapis.com/auth/drive");
-
             if (isset($_GET['code'])) {
-                $client->authenticate($_GET['code']);
-                $this->access_token = $client->getAccessToken();
-                $this->access_token = (array)json_decode($this->access_token);
-                dd($this->access_token);
-                //$_SESSION['googledriveToken'] = substr($_SESSION['access_token'], strpos($_SESSION['access_token'], "access_token")+15, strlen($_SESSION['access_token']) - strpos($_SESSION['access_token'], "token_type") + 13);
-//                $redirect = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
-////                $redirect = 'http://localhost/gathercloud/public/add/googledrive';
-//                header('Location: ' . filter_var($redirect, FILTER_SANITIZE_URL));
-//                die();
+                $this->client->authenticate($_GET['code']);
+                $token = $this->client->getAccessToken();
+                $token = (array)json_decode($token);
+                $this->access_token = $token['access_token'];
+                $this->refresh_token = $token['refresh_token'];
             }
             else{
-                $authUrl = $client->createAuthUrl();
+                $authUrl = $this->client->createAuthUrl();
 //                dd($authUrl);
                 header('Location: ' . $authUrl);
                 die();
             }
-//            dd($authUrl);
-
-//            $service = new Google_Service_Urlshortener($client);
-//
         }
     }
 
@@ -91,6 +88,10 @@ class GoogleInterface implements ModelInterface
 
     public function getAccessToken()
     {
-        // TODO: Implement getAccessToken() method.
+        return $this->access_token;
+    }
+    public function getRefreshToken()
+    {
+        return $this->refresh_token;
     }
 }
