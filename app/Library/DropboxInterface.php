@@ -93,7 +93,7 @@ Class DropboxInterface implements ModelInterface
     /**
      * @return mixed
      */
-    public function getToken()
+    public function getAccessToken()
     {
         return $this->token;
     }

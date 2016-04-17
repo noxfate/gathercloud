@@ -62,7 +62,7 @@ class CloudController extends Controller
         if ($service == "dropbox"){
 
             $dbxInterface = new \App\Library\DropboxInterface();
-            $token = $dbxInterface->getToken();
+            $token = $dbxInterface->getAccessToken();
 
             $exist = false;
             $query = User::find(Auth::user()->id)->tokens->where("provider","dropbox");
@@ -222,11 +222,15 @@ class CloudController extends Controller
 
             $tk->save();
 
+        } elseif ($service == "googledrive") {
+            $ggInterface = new \App\Library\GoogleInterface();
+
         }
+
         // After Saving Connection, Create a FileMapping Job immediately
         $job = (new CreateFileMapping(Session::get('new_conname')));
         $this->dispatch($job);
-//
+
         return Redirect::to('/add');
     }
 

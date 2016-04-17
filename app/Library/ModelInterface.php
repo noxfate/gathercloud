@@ -17,4 +17,5 @@ interface ModelInterface
     public function deleteFile($file);
     public function getLink($file);
     public function getAccountInfo();
+    public function getAccessToken();
 }
