@@ -36,6 +36,9 @@ class Provider
             case "onedrive":
                 $this->connObj = new \App\Library\OneDriveInterface((array)\GuzzleHttp\json_decode($tk->access_token));
                 break;
+            case "googledrive":
+                $this->connObj = new \App\Library\GoogleInterface((array)\GuzzleHttp\json_decode($tk->access_token));
+                break;
             default:
                 return "Error!! Provider: $this->provider";
         }
