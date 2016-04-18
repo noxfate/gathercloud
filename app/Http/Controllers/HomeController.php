@@ -41,18 +41,13 @@ class HomeController extends Controller
 //                Create Cache when enter /home at All in One
                 $token = User::find(Auth::user()->id)->tokens;
                 foreach( $token as $tk){
-
-//                    $job = (new UpdateFileMapping($tk->connection_name));
-                    $job = (new CreateFileMapping($tk->connection_name));
-                    $this->dispatch($job);
-
-
-
+//                    $job = (new CreateFileMapping($tk->connection_name));
+//                    $this->dispatch($job);
                     $root = File::roots()->where('token_id', $tk->id)->first();
-//                    if (Carbon::now() >= $root->updated_at->addMinutes(24*60)){
-//                        $job = (new CreateFileMapping($tk->connection_name));
-//                        $this->dispatch($job);
-//                    }
+                    if (Carbon::now() >= $root->updated_at->addMinutes(24*60)){
+                        $job = (new CreateFileMapping($tk->connection_name));
+                        $this->dispatch($job);
+                    }
                 }
 
                 $data = $fmap->getFirstLevel();
