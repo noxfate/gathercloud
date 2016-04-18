@@ -37,7 +37,12 @@ class Provider
                 $this->connObj = new \App\Library\OneDriveInterface((array)\GuzzleHttp\json_decode($tk->access_token));
                 break;
             case "googledrive":
-                $this->connObj = new \App\Library\GoogleInterface((array)\GuzzleHttp\json_decode($tk->access_token));
+                $token = array(
+                    'access_token' => json_decode($tk->access_token),
+                    'refresh_token' => json_decode($tk->refresh_token),
+                    'expires_in' => ""
+                );
+                $this->connObj = new \App\Library\GoogleInterface($token);
                 break;
             default:
                 return "Error!! Provider: $this->provider";
@@ -119,9 +124,9 @@ class Provider
         return $this->storage;
     }
 
-	function downloadFile($file, $destination = null)
+	function downloadFile($file)
 	{
-        $this->connObj->downloadFile($file, $destination);
+        $this->connObj->downloadFile($file);
 	}
 	function uploadFile($file, $destination = null)
 	{
@@ -132,10 +137,14 @@ class Provider
         $data = $this->connObj->getFiles($file);
         return $this->normalizeMetaData($data, $this->provider);
 	}
-	function deleteFile($file)
-	{
+    function deleteFile($file)
+    {
+        $this->connObj->deleteFile($file);
+    }
 
-	}
+    function rename($file, $new_name){
+        return $this->connObj->rename($file,$new_name);
+    }
 	function getLink($file)
 	{
 

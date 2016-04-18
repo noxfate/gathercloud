@@ -11,11 +11,12 @@ namespace App\Library;
 
 interface ModelInterface
 {
-    public function downloadFile($file, $destination = null);
+    public function downloadFile($file);
     public function uploadFile($file, $destination = null);
     public function getFiles($file = null);
     public function deleteFile($file);
     public function getLink($file);
     public function getAccountInfo();
+    public function rename($file, $new_name);
     public function getAccessToken();
 }

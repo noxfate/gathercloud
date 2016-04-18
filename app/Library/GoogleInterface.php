@@ -11,7 +11,7 @@ namespace App\Library;
 require_once __DIR__ . '../../../vendor/autoload.php';
 
 use Google_Client;
-use Google_Service_Urlshortener;
+use Google_Service_Drive;
 
 
 class GoogleInterface implements ModelInterface
@@ -25,7 +25,7 @@ class GoogleInterface implements ModelInterface
     private $client;
     private $drive_service;
 
-    function __construct($access_token = null){
+    function __construct($token = null){
 
         $this->client = new Google_Client();
         $this->client->setClientId($this->client_id);
@@ -35,9 +35,10 @@ class GoogleInterface implements ModelInterface
         $this->client->setAccessType("offline");
         $this->client->addScope("https://www.googleapis.com/auth/drive");
 
-        if($access_token != null){
-            $this->access_token = $access_token[0];
-            $this->client->setAccessToken($this->access_token);
+        if($token != null){
+            $this->access_token = $token['access_token'];
+            $this->refresh_token = $token['refresh_token'];
+            $this->client->setAccessToken(json_encode($token));
             $this->drive_service = new Google_Service_Drive($this->client);
         } else {
             if (isset($_GET['code'])) {
@@ -46,6 +47,7 @@ class GoogleInterface implements ModelInterface
                 $token = (array)json_decode($token);
                 $this->access_token = $token['access_token'];
                 $this->refresh_token = $token['refresh_token'];
+                $this->drive_service = new Google_Service_Drive($this->client);
             }
             else{
                 $authUrl = $this->client->createAuthUrl();
@@ -56,7 +58,7 @@ class GoogleInterface implements ModelInterface
         }
     }
 
-    public function downloadFile($file, $destination = null)
+    public function downloadFile($file)
     {
         // TODO: Implement downloadFile() method.
     }
@@ -69,6 +71,7 @@ class GoogleInterface implements ModelInterface
     public function getFiles($file = null)
     {
         // TODO: Implement getFiles() method.
+        return $this->drive_service->files->listFiles(array())->getItems();
     }
 
     public function deleteFile($file)
@@ -83,7 +86,7 @@ class GoogleInterface implements ModelInterface
 
     public function getAccountInfo()
     {
-        // TODO: Implement getAccountInfo() method.
+        return $this->drive_service->about->get();
     }
 
     public function getAccessToken()

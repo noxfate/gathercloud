@@ -24,8 +24,6 @@ use AdammBalogh\Box\Exception\ExitException;
 use AdammBalogh\Box\Exception\OAuthException;
 use GuzzleHttp\Exception\ClientException;
 
-session_start();
-
 class BoxInterface implements ModelInterface
 {
     private $access_token;
@@ -79,7 +77,7 @@ class BoxInterface implements ModelInterface
 
     public function downloadFile($file, $destination = null)
     {
-        $file = substr($file,5);
+        $file = substr($file, 5);
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
         $er = new ExtendedRequest();
         $command = new Content\File\DownloadFile($file, $er);
@@ -158,7 +156,7 @@ class BoxInterface implements ModelInterface
                             'mime_type' => null,
                             'is_dir' => ($entity->type == "folder") ? 1 : 0, // 1 == Folder, 0 = File
                             'modified' => $entity->modified_at,
-                            'shared' => null
+                            'shared' => false
                         ));
                 }
             }
@@ -173,14 +171,22 @@ class BoxInterface implements ModelInterface
 
     public function deleteFile($file)
     {
+        if (strpos($file, 'folder') !== false) {
+            $file = substr($file, 7);
+        } elseif (strpos($file, 'file') !== false) {
+            $file = substr($file, 5);
+        } else {
+            echo "LOL";
+        }
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
         $er = new ExtendedRequest();
         $command = new Content\File\DeleteFile($file);
         $response = ResponseFactory::getResponse($contentClient, $command);
         if ($response instanceof SuccessResponse) {
-            echo (string)$response->getStatusCode();
-            echo "<br>";
-            echo (string)$response->getReasonPhrase();
+//            echo (string)$response->getStatusCode();
+//            echo "<br>";
+//            echo (string)$response->getReasonPhrase();
+            return (string)$response->getStatusCode();
 
         } elseif ($response instanceof ErrorResponse) {
             # ...
@@ -244,4 +250,30 @@ class BoxInterface implements ModelInterface
         }
     }
 
+    public function rename($file, $new_name)
+    {
+        $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
+        $er = new ExtendedRequest();
+        $er->setPostBodyField('name', $new_name);
+
+        if (strpos($file, 'folder') !== false) {
+            $file = substr($file, 7);
+            $command = new Content\Folder\UpdateFolderInfo($file, $er);
+        } elseif (strpos($file, 'file') !== false) {
+            $file = substr($file, 5);
+            $command = new Content\File\UpdateFileInfo($file, $er);
+        } else {
+            echo "LOL";
+        }
+
+        $response = ResponseFactory::getResponse($contentClient, $command);
+
+        if ($response instanceof SuccessResponse) {
+            return $response->getStatusCode();
+        } elseif ($response instanceof ErrorResponse) {
+            return $response->getStatusCode();
+        }
+    }
 }
+
+?>

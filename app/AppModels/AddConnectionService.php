@@ -189,7 +189,44 @@ class AddConnectionService
                 break;
             case "googledrive":
                 $ggInterface = new \App\Library\GoogleInterface();
-                // -- continue implement
+                $token = $ggInterface->getAccessToken();
+                $re_token = $ggInterface->getRefreshToken();
+                $userInfo = $ggInterface->getAccountInfo();
+
+                $exist = false;
+
+                $conname = Session::get('new_conname');
+                $connEmail = $userInfo->getPermissionId();
+                $query = User::find(Auth::user()->id)->tokens->where("provider","googledrive");
+
+                foreach($query as $val){
+                    if ($connEmail == $val->connection_email){
+                        $exist = true;
+                        break;
+                    }
+                }
+
+                if ($exist)
+                {
+                    $tk =  User::find(Auth::user()->id)->tokens
+                        ->where('connection_email',$connEmail)
+                        ->where('provider',$this->service)
+                        ->first();
+                    $tk->access_token = json_encode($token);
+
+                }else{
+                    $tk = new Token();
+                    $tk->connection_name = $conname;
+                    $tk->connection_email = $connEmail;
+                    $tk->access_token = json_encode($token);
+                    $tk->access_token_expired = "";
+                    $tk->refresh_token = json_encode($re_token);
+                    $tk->refresh_token_expired = "";
+                    $tk->user_id = Auth::user()->id;
+                    $tk->provider = $this->service;
+                }
+
+                $tk->save();
                 break;
             default:
                 return "Error!! Provider: $this->provider";

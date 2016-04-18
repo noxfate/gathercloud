@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Redirect;
 require __DIR__ . "/Dropbox/DropboxClient.php";
 
 
-
 Class DropboxInterface implements ModelInterface
 {
     private $token;
@@ -19,10 +18,10 @@ Class DropboxInterface implements ModelInterface
     private $APP_SECRET = "jyzrgispic9cabg";
     private $APP_FULL_ACCESS = true;
 
-	public function __construct($access_token = null)
-	{
+    public function __construct($access_token = null)
+    {
         $this->dbxObj = $this->setDbxObj($access_token);
-	}
+    }
 
     /**
      * @param mixed $dbxObj
@@ -106,68 +105,75 @@ Class DropboxInterface implements ModelInterface
         $this->token = $token;
     }
 
-	// Implements
-	// @params $file = String of File Paths on Dropbox
-	public function downloadFile($file, $destination = null)
-	{
-		$this->dbxObj->DownloadFile($file,$destination);
+    // Implements
+    // @params $file = String of File Paths on Dropbox
+    public function downloadFile($file, $destination = null)
+    {
+        $this->dbxObj->DownloadFile($file,$destination);
         header("Content-Type: application/download");
         header("Content-disposition: attachment; filename=". basename($_GET['file']));
         readfile(basename($_GET['file']));
         unlink(basename($_GET['file']));
-	}
-	public function uploadFile($file, $destination = null)
-	{
-		if (empty($destination)){
-			$destination = $file['name'];
-		} else
-		{
-			$destination = substr($destination, "/".$file['name']);
-		}	
- 		return $this->dbxObj->UploadFile($file['tmp_name'] ,$destination);
-	}
-	public function getFiles($file = null)
-	{
-		return $this->dbxObj->GetFiles($file);
-	}
-	public function deleteFile($file)
-	{
-		return $this->dbxObj->Delete($file);
-	}
+    }
+    public function uploadFile($file, $destination = null)
+    {
+        if (empty($destination)){
+            $destination = $file['name'];
+        } else
+        {
+            $destination = substr($destination, "/".$file['name']);
+        }
+        return $this->dbxObj->UploadFile($file['tmp_name'] ,$destination);
+    }
+    public function getFiles($file = null)
+    {
+        return $this->dbxObj->GetFiles($file);
+    }
+    public function deleteFile($file)
+    {
+        return $this->dbxObj->Delete($file);
+    }
 
-	public function getLink($file)
-	{
-		return $this->dbxObj->GetLink($file);
-	}
+    public function getLink($file)
+    {
+        return $this->dbxObj->GetLink($file);
+    }
 
-	private function store_token($token, $name)
-	{
-		if(!file_put_contents(__DIR__."/Dropbox/".$name.".token", serialize($token)))
-			die('<br />Could not store token! <b>Make sure that the directory `tokens` exists and is writable!</b>');
-	}
+    private function store_token($token, $name)
+    {
+        if(!file_put_contents(__DIR__."/Dropbox/".$name.".token", serialize($token)))
+            die('<br />Could not store token! <b>Make sure that the directory `tokens` exists and is writable!</b>');
+    }
 
-	private function load_token($name)
-	{
-		if(!file_exists(__DIR__."/Dropbox/".$name.".token")) return null;
-		return @unserialize(@file_get_contents(__DIR__."/Dropbox/$name.token"));
-	}
+    private function load_token($name)
+    {
+        if(!file_exists(__DIR__."/Dropbox/".$name.".token")) return null;
+        return @unserialize(@file_get_contents(__DIR__."/Dropbox/$name.token"));
+    }
 
-	private function delete_token($name)
-	{
-		@unlink(__DIR__."/Dropbox/$name.token");
-	}
+    private function delete_token($name)
+    {
+        @unlink(__DIR__."/Dropbox/$name.token");
+    }
 
 
-	private function enable_implicit_flush()
-	{
-		@apache_setenv('no-gzip', 1);
-		@ini_set('zlib.output_compression', 0);
-		@ini_set('implicit_flush', 1);
-		for ($i = 0; $i < ob_get_level(); $i++) { ob_end_flush(); }
-		ob_implicit_flush(1);
-		// echo "<!-- ".str_repeat(' ', 2000)." -->";
-	}
+    private function enable_implicit_flush()
+    {
+        @apache_setenv('no-gzip', 1);
+        @ini_set('zlib.output_compression', 0);
+        @ini_set('implicit_flush', 1);
+        for ($i = 0; $i < ob_get_level(); $i++) { ob_end_flush(); }
+        ob_implicit_flush(1);
+        // echo "<!-- ".str_repeat(' ', 2000)." -->";
+    }
 
+    public function rename($file, $new_name)
+    {
+        $lastIndex = strripos($file, "/");
+        $new_name = substr($file, 0,$lastIndex+1) . $new_name;
+//        return  substr($file, 0,$lastIndex+1) . $new_name;
+        return $this->dbxObj->Move($file,$new_name);
+    }
 }
 
 ?>

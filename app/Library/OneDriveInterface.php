@@ -135,7 +135,7 @@ class OneDriveInterface implements ModelInterface
         } else {
             $object = $onedrive->fetchObject($file);
             return $object;
-		}
+        }
     }
 
     public function deleteFile($file)
@@ -172,5 +172,18 @@ class OneDriveInterface implements ModelInterface
         $folder  = $onedrive->fetchObject($file);
         return  $folder;
 
+    }
+
+
+    public function rename($file, $new_name)
+    {
+        $onedrive = new \App\Library\OneDrive\Client(array(
+            'state' => $this->state
+        ));
+
+        $properties = array();
+        $properties['name'] = $new_name;
+        $onedrive->updateObject($file, $properties);
+        return true;
     }
 }

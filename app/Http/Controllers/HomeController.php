@@ -41,10 +41,10 @@ class HomeController extends Controller
                 $token = User::find(Auth::user()->id)->tokens;
                 foreach( $token as $tk){
                     $root = File::roots()->where('token_id', $tk->id)->first();
-                    if (Carbon::now() >= $root->updated_at->addMinutes(24*60)){
-                        $job = (new CreateFileMapping($tk->connection_name));
-                        $this->dispatch($job);
-                    }
+//                    if (Carbon::now() >= $root->updated_at->addMinutes(24*60)){
+//                        $job = (new CreateFileMapping($tk->connection_name));
+//                        $this->dispatch($job);
+//                    }
                 }
 
                 $data = $fmap->getFirstLevel();
@@ -307,6 +307,21 @@ class HomeController extends Controller
     public function upload(){
         $proObj = new Provider($_GET['connection_name']);
         $proObj->uploadFile($_GET['file']);
+    }
+
+    public function delete(){
+        // Provider(" waiting edit with ALL")
+        $proObj = new Provider($_POST['connection_name']);
+        $proObj->deleteFile($_POST['file']);
+        return "test--";
+    }
+
+    public function rename(){
+        // Provider(" waiting edit with ALL")
+        $proObj = new Provider($_POST['connection_name']);
+        $proObj->rename($_POST['file'], $_POST['new_name']);
+        return "test--";
+//        return $_POST['new_name'] . " + " . $_POST['file'];
     }
 
     public function test()
