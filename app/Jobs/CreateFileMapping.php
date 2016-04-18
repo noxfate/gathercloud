@@ -64,16 +64,19 @@ class CreateFileMapping extends Job implements SelfHandling, ShouldQueue
         
     }
 
-    private function processData($path = '/')
+    private function processData($path = null)
     {
         /*
          * if provider for set path val
          * dropbox "/"
          * onedrive, box ""
          * */
+        printf("Start processData" . "\n");
         $files = array();
         $rec_data = $this->connObj->getFiles($path);
+        printf("test--1" . "\n");
         foreach ($rec_data as $d) {
+            printf("test--2" . "\n");
             $d += [
 //                'token_id' => $this->connObj->getTokenId(),
                 'updated_at' => Carbon::now()
