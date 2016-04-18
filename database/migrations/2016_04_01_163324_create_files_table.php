@@ -35,7 +35,7 @@ class CreateFilesTable extends Migration {
       $table->string('is_dir');
       $table->string('shared');
       $table->string('modified');
-
+      $table->string('conName');
       $table->integer('token_id')->unsigned();
       $table->timestamps();
 

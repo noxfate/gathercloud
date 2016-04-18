@@ -13,9 +13,11 @@ class Provider
     private $connObj;
     private $token_id;
     private $storage;
+    private $conName;
 
 	function __construct($conName)
 	{
+        $this->conName = $conName;
         $tk = Token::where('connection_name', $conName)
             ->where('user_id', Auth::user()->id)
             ->firstOrFail();
@@ -182,7 +184,8 @@ class Provider
                             'is_dir' => $val->is_dir, // 1 == Folder, 0 = File
                             'modified' => $val->modified,
                             'shared' => $sh,
-                            'token_id' => $this->token_id
+                            'token_id' => $this->token_id,
+                            'conName' => $this->conName
                         ));
                 }
                 break;
@@ -201,7 +204,8 @@ class Provider
                             'is_dir' => $is, // 1 == Folder, 0 = File
                             'modified' => date('Y m d H:i:s', $val->modified_time),
                             'shared' => $sh,
-                            'token_id' => $this->token_id
+                            'token_id' => $this->token_id,
+                            'conName' => $this->conName
                         ));
                 }
                 break;
@@ -220,7 +224,8 @@ class Provider
                             'is_dir' => $val['is_dir'],
                             'modified' => date('Y m d H:i:s', strtotime($val['modified'])),
                             'shared' => $val['shared'],
-                            'token_id' => $this->token_id
+                            'token_id' => $this->token_id,
+                            'conName' => $this->conName
                         ));
                 }
                 break;
@@ -239,7 +244,8 @@ class Provider
                             'is_dir' => $is, // 1 == Folder, 0 = File
                             'modified' => date('Y m d H:i:s', $val->getUpdatedTime()),
                             'shared' => false, // dafuq is this?
-                            'token_id' => $this->token_id
+                            'token_id' => $this->token_id,
+                            'conName' => $this->conName
                         ));
                 }
                 break;

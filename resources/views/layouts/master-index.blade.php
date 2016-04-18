@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Gathercloud</title>
     @include('components.main_script')
     {{--<link rel="stylesheet" type="text/css" href="{{URL::asset('css/bootstrap.min.css')}}">--}}
@@ -74,7 +75,7 @@
             </a>
         </div>
 
-         <div class="itemMenu-separator"></div>
+        <div class="itemMenu-separator"></div>
         <div id="my-cloud" class="my-cloud">
             <ul id="list-cloud" class="list-cloud">
                 @foreach ($link as $key => $val)

@@ -53,7 +53,7 @@ $.ajaxSetup({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('conten
 function onGetClick(event) {
     // we're not passing any data with the get route, though you can if you want
     var dir = $(this).attr('value');
-    var prov = $(this).attr('alt');
+    var prov = $(this).attr('data-tokenid');
     if (window.location.pathname.search("search") == -1){
         var url = window.location.pathname + "?path=" + encodeURIComponent(dir)
             + "&connid=" + encodeURIComponent(prov);
