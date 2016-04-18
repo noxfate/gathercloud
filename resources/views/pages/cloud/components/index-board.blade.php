@@ -1,3 +1,4 @@
+<iframe name="hiddenIframe" id="hiddenIframe" style="display: none;" ></iframe>
 <div id="box-nav-bar" class="box-nav-bar">
     <div id="nav-bar" class="nav-bar">
         @if (!empty($parent))
@@ -20,12 +21,38 @@
         <!--  <button id="file-upload" class="btn btn-default"><span class="glyphicon glyphicon-cloud-upload"></span>
              File Upload
          </bitton> -->
-
-        <a href="{{ url('upload') }}" id="file-upload" class="btn btn-default"><span
-                    class="glyphicon glyphicon-cloud-upload"></span>
+        <!-- Btn trigger modal Upload -->
+        <button id="trig-upload" class="btn btn-default" data-toggle="modal" data-target="#modal-upload">
+            <span class="glyphicon glyphicon-cloud-upload"></span>
             File Upload
-        </a>
-
+        </button>
+        <!-- Modal -->
+        <div class="modal fade bs-example-modal-lg" id="modal-upload" tabindex="-1" role="dialog"
+             aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <!-- Modal content-->
+                <form action="{{ url('home/upload') }}" target="hiddenIframe" method="POST" enctype="multipart/form-data">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Upload</h4>
+                        </div>
+                        <div class="modal-body">
+                            <input type="file" name="file">
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-primary" id="btn-upload" value="Upload">
+                            {{--<button class="btn btn-primary" id="create-copy" value="Upload">--}}
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
         <form action=" {{ url("/home/search") }}">
             <div class="input-group">
                 <input type="text" name="keyword" class="form-control" placeholder="Search for...">
@@ -63,12 +90,12 @@
 
                     <td class="th-name">
                         @if ($val['is_dir'])
-                            <span class="glyphicon glyphicon-folder-close"></span>
+                            {{--<span class="glyphicon glyphicon-folder-close"></span>--}}
                             {{--<a id="dir" href="{{ Request::url()."/".$val['name'] }}">{{ $val['name'] }}</a></td>--}}
-                            <span id="dir" class="dir" alt="{{ $val['token_id'] }}"
+                            <span id="dir" class="dir" data-conname="{{ $val['conName'] }}" data-tokenid="{{$val['token_id']}}"
                                   value="{{ $val['path'] }}">{{ $val['name'] }}</span></td>
                     @else
-                        <a href="#">{{ $val['name'] }}</a></td>
+                        <span href="#" alt="{{ $val['conName'] }}">{{ $val['name'] }}</span></td>
                     @endif
                     @if ($val['is_dir']  or ($val['size'] == 0))
                         <td class="th-size"></td>
@@ -84,6 +111,35 @@
     {{--<button id="gtl-btn-save">Save</button>  <button id="gtl-btn-cancel">Cancel</button>--}}
 </div>
 
+<!-- Modal Rename-->
+<div class="modal fade bs-example-modal-lg" id="modal-rename" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <!-- Modal content-->
+        <form action="{{ url('home/rename') }}" target="hiddenIframe" method="POST" enctype="multipart/form-data">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Rename</h4>
+                </div>
+                <div class="modal-body">
+                    <input type='text' id='new_name' name='new_name'>
+                    <input type="hidden" id="rename_file" name="file">
+                    <input type="hidden" id="rename_connection" name="connection_name">
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="btn-rename" >Save</button>
+                    {{--<button class="btn btn-primary" id="create-copy" value="Upload">--}}
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
 
 <script src="{{ URL::asset('js/index-board.script.js') }}"></script>
 @include("components.contextmenu")

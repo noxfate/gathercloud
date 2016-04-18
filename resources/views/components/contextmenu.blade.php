@@ -21,17 +21,18 @@
             </button>
         </li>
         <li class="itemMenu-separator"></li>
-        <li class="itemMenu-item">
+        <li class="itemMenu-item" id="right-delete">
             <button type="button" class="itemMenu-btn">
                 <span class="glyphicon glyphicon-trash"></span>
                 <span class="itemMenu-text">Delete</span>
             </button>
         </li>
-        <li class="itemMenu-item">
+        <li class="itemMenu-item" id="right-rename">
             <button type="button" class="itemMenu-btn">
                 <span class="glyphicon glyphicon-edit"></span>
                 <span class="itemMenu-text">Rename</span>
             </button>
+
         </li>
         <li class="itemMenu-item">
             <button type="button" class="itemMenu-btn">
@@ -46,6 +47,7 @@
             </button>
         </li>
     </ul>
+
 
 
     <style>
@@ -180,28 +182,86 @@
         bindings: {
             'right-download': function(t) {
                 ShowAction(t, "Download");
+            },
+            'right-delete': function(t) {
+                ShowAction(t, "Delete");
+            },
+            'right-rename': function(t) {
+                ShowAction(t, "Rename");
             }
+
         }
     });
 
     function ShowAction(t, a) {
         if(a == "Download"){
             var file = $(t).attr('value');
-//                    $.get(window.location.href+"?path="+dir, onSuccess);
-//            var url = window.location.pathname + "?path=" + encodeURIComponent(file);
+            var connection_name = $(t).find("td:eq(1)").find("span").attr('alt');
+            alert(connection_name);
+            $.get(window.location.href+"?path="+dir, onSuccess);
+            var url = window.location.pathname + "?path=" + encodeURIComponent(file);
             alert(window.location.pathname + "/download/" + encodeURIComponent(file));
             var indOf = window.location.pathname.indexOf("/home",1);
             var myStr = window.location.pathname.substr(0,indOf+5 );
             var url = myStr + "/download"
             alert( url );  // gives you what you want;
             window.open(
-                    url + '?connection_name=' + '{{$cname}}' + '&file=' + file,
+                    url + '?connection_name=' + connection_name + '&file=' + file,
                     '_blank' // <- This is what makes it open in a new window.
             );
 
-        }
-//        alert('Trigger was ' + t.id + '\nAction was ' + a + "\nHtml is " + $(t).html());
+        } else if(a == "Delete"){
+            var file = $(t).attr('value');
+            var connection_name = $(t).find("td:eq(1)").find("span").attr('data-conname');
+            alert(file);
+            $.ajax({
+                type: 'POST',
+                url: 'delete',
+                data: {
+                    file: file,
+                    connection_name: connection_name
+                },
+                success: function(result){
+                    alert(result);
+                }
+            });
 
+        } else if(a == "Rename"){
+            var file = $(t).attr('value');
+            var connection_name = $(t).find("td:eq(1)").find("span").attr('data-conname');
+            var old_name = $(t).find("td:eq(1)").find("span").html();
+            $("#modal-rename").modal();
+            $("#new_name").val(old_name);
+            $("#rename_file").val(file);
+            $("#rename_connection").val(connection_name);
+////            alert(file);
+////            alert(connection_name);
+////            alert($(t).find("td:eq(1)").find("span").html());
+//            var old_name = $(t).find("td:eq(1)").find("span").html();
+//            var span = $(t).find("td:eq(1)").html();
+//            $(t).find("td:eq(1)").html("<input type='text' id='new_name' name='new_name' value='"+ old_name +"'>" +
+//                    "<button id=\"rename_save\">Save</button><button id=\"rename_cancel\">Cancel</button>");
+//            $('#rename_cancel').on('click', test);
+
+        }
+
+    }
+
+
+
+    function renamePost(file,new_name,connection_name){
+        $.ajax({
+            type: 'POST',
+            url: 'rename',
+            data: {
+                file: file,
+                new_name:new_name,
+                connection_name: connection_name
+            },
+            success: function(result){
+                alert(result);
+            }
+        });
     }
 </script>
 

@@ -24,6 +24,9 @@ Route::post('/register', "UserController@store");
 Route::get('/home/search', "HomeController@search");
 Route::post('/home/download',"HomeController@download");
 Route::get('/home/download',"HomeController@download");
+Route::post('/home/upload', 'HomeController@upload');
+Route::post('/home/delete', 'HomeController@delete');
+Route::post('/home/rename', 'HomeController@rename');
 Route::resource('/home',"HomeController");
 
 // Setting
@@ -37,9 +40,8 @@ Route::get('/add/{service}',"CloudController@add");
 
 // Redundancy Checking Ver.1
 Route::get('/upload',function(){
-	return view('pages.upload-temp');
+    return view('pages.upload-temp');
 });
-Route::post('/upload', 'CloudController@store');
 
 // GatherLink Ver. 1
 Route::get('/gtl/shared', 'GatherlinkController@showFromToken');
