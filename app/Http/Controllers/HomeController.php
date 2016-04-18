@@ -47,6 +47,12 @@ class HomeController extends Controller
 //                    }
                 }
 
+                /*
+                 * Test gtl
+                 */
+                $job = (new CreateFileMapping($tk->connection_name));
+                $this->dispatch($job);
+
                 $data = $fmap->getFirstLevel();
                 $par = $this->navbarDataByPath("All","");
                 return view('pages.cloud.index',[
