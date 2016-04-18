@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\AppModels\Provider;
+use App\Jobs\UpdateFileMapping;
 use Illuminate\Http\Request;
 
 use Auth;
@@ -40,6 +41,13 @@ class HomeController extends Controller
 //                Create Cache when enter /home at All in One
                 $token = User::find(Auth::user()->id)->tokens;
                 foreach( $token as $tk){
+
+//                    $job = (new UpdateFileMapping($tk->connection_name));
+                    $job = (new CreateFileMapping($tk->connection_name));
+                    $this->dispatch($job);
+
+
+
                     $root = File::roots()->where('token_id', $tk->id)->first();
 //                    if (Carbon::now() >= $root->updated_at->addMinutes(24*60)){
 //                        $job = (new CreateFileMapping($tk->connection_name));
@@ -47,19 +55,13 @@ class HomeController extends Controller
 //                    }
                 }
 
-                /*
-                 * Test gtl
-                 */
-                $job = (new CreateFileMapping($tk->connection_name));
-                $this->dispatch($job);
-
                 $data = $fmap->getFirstLevel();
                 $par = $this->navbarDataByPath("All","");
                 return view('pages.cloud.index',[
-                'data' => $data,
-                "cname" => "all",
-                'cmail' => $email,
-                'parent' => $par
+                    'data' => $data,
+                    "cname" => "all",
+                    'cmail' => $email,
+                    'parent' => $par
                 ]);
             }else{
                 $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['connid']);
@@ -69,9 +71,9 @@ class HomeController extends Controller
                     "cname" => "all",
                     'cmail' => $email,
                     'parent' => $par
-                    ]);
+                ]);
             }
-          
+
 
         } else
             return Redirect::to('/');
@@ -187,10 +189,10 @@ class HomeController extends Controller
         if (empty($_GET['path'])){
             $par = $this->navbarDataByPath("All","");
             return view('pages.cloud.index',[
-            'data' => $result,
-            "cname" => "All",
-            'cmail' => $email,
-            'parent' => $par
+                'data' => $result,
+                "cname" => "All",
+                'cmail' => $email,
+                'parent' => $par
             ]);
         }else{
             $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['connid']);
@@ -200,7 +202,7 @@ class HomeController extends Controller
                 "cname" => "All",
                 'cmail' => $email,
                 'parent' => $par
-                ]);
+            ]);
         }
     }
 
