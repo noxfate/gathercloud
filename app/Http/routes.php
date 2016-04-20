@@ -21,14 +21,16 @@ Route::get('/register', "UserController@create");
 Route::post('/register', "UserController@store");
 
 // Index Page
-Route::get('/home/search', "HomeController@search");
+Route::get('/home/{id}', ['uses' =>'HomeController@index']);
+Route::get('/home/{id}/{any}', ['uses' =>'HomeController@show'])->where('any', '.*');
+//Route::get('/home/search', "HomeController@search");
 Route::get('/search', "HomeController@search");
 Route::post('/home/download',"HomeController@download");
 Route::get('/home/download',"HomeController@download");
 Route::post('/home/upload', 'HomeController@upload');
 Route::post('/home/delete', 'HomeController@delete');
 Route::post('/home/rename', 'HomeController@rename');
-Route::resource('/home',"HomeController");
+//Route::resource('/home',"HomeController");
 
 //New Index Page=============================================
 Route::get('/test/{id}', ['uses' =>'TestController@index']);

@@ -17,6 +17,7 @@ class TestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index($id)
     {
         if (Auth::check()) {
@@ -56,7 +57,7 @@ class TestController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -67,7 +68,7 @@ class TestController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id,$any)
@@ -95,10 +96,11 @@ class TestController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public
+    function edit($id)
     {
         //
     }
@@ -106,11 +108,12 @@ class TestController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public
+    function update(Request $request, $id)
     {
         //
     }
@@ -118,12 +121,42 @@ class TestController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public
+    function destroy($id)
     {
         //
+    }
+
+    public
+    function search()
+    {
+        $fmap = new FileMapping(Auth::user()->id);
+        $result = $fmap->searchFiles($_GET['keyword']);
+
+        $email = User::find(Auth::user()->id)->email;
+
+        // All in One without Ajax Request
+        if (empty($_GET['path'])){
+            $par = $this->navbarDataByPath("All","");
+            return view('pages.cloud.index',[
+                'data' => $result,
+                "cname" => "All",
+                'cmail' => $email,
+                'parent' => $par
+            ]);
+        }else{
+            $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['connid']);
+            $par = $this->navbarDataByPath("All",$_GET['path']);
+            return view('pages.cloud.components.index-board',[
+                'data' => $data,
+                "cname" => "All",
+                'cmail' => $email,
+                'parent' => $par
+            ]);
+        }
     }
 
     private function getNavbar($id,$pathname,$path)
@@ -151,5 +184,38 @@ class TestController extends Controller
         }
         $parent->par_now = end($parent->par_path);
         return $parent;
+    }
+
+
+    public function download(){
+
+        $proObj = new Provider($_GET['connection_name']);
+        $proObj->downloadFile($_GET['file']);
+
+    }
+
+    public function upload(){
+        $proObj = new Provider($_GET['connection_name']);
+        $proObj->uploadFile($_GET['file']);
+    }
+
+    public function delete(){
+        // Provider(" waiting edit with ALL")
+        $proObj = new Provider($_POST['connection_name']);
+        $proObj->deleteFile($_POST['file']);
+        return "test--";
+    }
+
+    public function rename(){
+        // Provider(" waiting edit with ALL")
+        $proObj = new Provider($_POST['connection_name']);
+        $proObj->rename($_POST['file'], $_POST['new_name']);
+        return "test--";
+//        return $_POST['new_name'] . " + " . $_POST['file'];
+    }
+
+    public function test($id, $any)
+    {
+        echo $id."\n".$any;
     }
 }
