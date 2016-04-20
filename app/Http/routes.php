@@ -22,12 +22,21 @@ Route::post('/register', "UserController@store");
 
 // Index Page
 Route::get('/home/search', "HomeController@search");
+Route::get('/search', "HomeController@search");
 Route::post('/home/download',"HomeController@download");
 Route::get('/home/download',"HomeController@download");
 Route::post('/home/upload', 'HomeController@upload');
 Route::post('/home/delete', 'HomeController@delete');
 Route::post('/home/rename', 'HomeController@rename');
 Route::resource('/home',"HomeController");
+
+//New Index Page=============================================
+Route::get('/test/{id}', ['uses' =>'TestController@index']);
+Route::get('/test/{id}/{any}', ['uses' =>'TestController@show'])->where('any', '.*');
+Route::resource('/test',"TestController");
+//array('as' = > '', 'uses' => '')->where('any', '.*');
+
+//===========================================================
 
 // Setting
 Route::resource('/setting/cloud',"CloudController");
@@ -63,8 +72,6 @@ Route::get('/job', function(){
     $job = (new \App\Jobs\CreateFileMapping($_GET['name']));
     dispatch($job);
 });
-
-Route::get('/test', 'HomeController@test');
 
 Route::get("set",function(){
     Session::put("test","test");

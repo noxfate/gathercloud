@@ -53,7 +53,7 @@
             <!-- /.modal-dialog -->
         </div>
         <!-- /.modal -->
-        <form action=" {{ url("/home/search") }}">
+        <form action=" {{ url("/search") }}">
             <div class="input-group">
                 <input type="text" name="keyword" class="form-control" placeholder="Search for...">
                       <span class="input-group-btn">

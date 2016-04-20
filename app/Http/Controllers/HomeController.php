@@ -181,30 +181,30 @@ class HomeController extends Controller
     public
     function search()
     {
-//        $fmap = new FileMapping(Auth::user()->id);
-//        $result = $fmap->searchFiles($_GET['keyword']);
-//
-//        $email = User::find(Auth::user()->id)->email;
-//
-//        // All in One without Ajax Request
-//        if (empty($_GET['path'])){
-//            $par = $this->navbarDataByPath("All","");
-//            return view('pages.cloud.index',[
-//                'data' => $result,
-//                "cname" => "All",
-//                'cmail' => $email,
-//                'parent' => $par
-//            ]);
-//        }else{
-//            $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['connid']);
-//            $par = $this->navbarDataByPath("All",$_GET['path']);
-//            return view('pages.cloud.components.index-board',[
-//                'data' => $data,
-//                "cname" => "All",
-//                'cmail' => $email,
-//                'parent' => $par
-//            ]);
-//        }
+        $fmap = new FileMapping(Auth::user()->id);
+        $result = $fmap->searchFiles($_GET['keyword']);
+
+        $email = User::find(Auth::user()->id)->email;
+
+        // All in One without Ajax Request
+        if (empty($_GET['path'])){
+            $par = $this->navbarDataByPath("All","");
+            return view('pages.cloud.index',[
+                'data' => $result,
+                "cname" => "All",
+                'cmail' => $email,
+                'parent' => $par
+            ]);
+        }else{
+            $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['connid']);
+            $par = $this->navbarDataByPath("All",$_GET['path']);
+            return view('pages.cloud.components.index-board',[
+                'data' => $data,
+                "cname" => "All",
+                'cmail' => $email,
+                'parent' => $par
+            ]);
+        }
     }
 
     private function navbarDataByPath($id,$path)
@@ -333,24 +333,9 @@ class HomeController extends Controller
 //        return $_POST['new_name'] . " + " . $_POST['file'];
     }
 
-    public function test()
+    public function test($id, $any)
     {
-//        $prov = new Provider(Token::find(7)->connection_name);
-////        $prov = new Provider(Token::find(3)->connection_name);
-//        $s = json_decode($prov->getAccountInfo());
-//        dd($s);
-//        foreach( $s->storage as $key => $val){
-//            echo $key. " : ". $val;
-//            echo "<br>";
-//        }
-
-        $tk = User::find(Auth::user()->id)->tokens;
-//        foreach ($tk as $t){
-//            $pro = new Provider($t->connection_name);
-//            dd($pro->getStorage(true));
-//        }
-        $pro = new Provider($tk[1]->connection_name);
-        dd($pro->getStorage(true));
+        echo $id."\n".$any;
     }
 
 }

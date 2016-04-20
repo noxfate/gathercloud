@@ -61,7 +61,7 @@ function onGetClick(event) {
         var path = window.location.pathname.replace('/search','');
         var url = path + "?path=" + encodeURIComponent(dir) + "&connection_name=" + encodeURIComponent(conname);
     }
-     alert(url);
+     //alert(url);
     $("body").css("cursor", "progress");
     document.getElementById('let-in-folder-progress').className = "let-in-folder-progress";
     $("#board").load(url);
