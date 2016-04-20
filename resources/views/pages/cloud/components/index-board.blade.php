@@ -4,12 +4,12 @@
         @if (!empty($parent))
             @for ($i = 0; $i < count($parent->par_name); $i++)
                 @if ($i == 0)
-                    {{$parent->par_now}}
-                    <a href="{{ url("/test{$parent->par_path[$i]}") }}"><span>{{ $parent->par_name[$i] }}</span></a>
+                    {{--{{$parent->par_now}}--}}
+                    <a href="{{ url("/home{$parent->par_path[$i]}") }}"><span>{{ $parent->par_name[$i] }}</span></a>
                 @else
                     <span class="glyphicon glyphicon-menu-right"></span>
                     <span class="glyphicon glyphicon-folder-open"></span>
-                    <a href="{{ url("/test{$parent->par_path[$i]}?in={$in}") }}"><span>{{ $parent->par_name[$i] }}</span></a>
+                    <a href="{{ url("/home{$parent->par_path[$i]}?in={$in}") }}"><span>{{ $parent->par_name[$i] }}</span></a>
                 @endif
             @endfor
         @endif
@@ -95,7 +95,7 @@
                             {{--<a id="dir" href="{{ Request::url()."/".$val['name'] }}">{{ $val['name'] }}</a></td>--}}
                             {{--<form action="{{url($cname . $val['path'])}}" method="POST">--}}
                                 {{--<input type="hidden" name="_token" value="{{ csrf_token() }}">--}}
-                            <a href="{{ Request::getBaseUrl() . "/test/" .$cname . $val['path'] . ($cname == 'all' ? '?in='.$val['conName'] : '')}}">
+                            <a href="{{ Request::getBaseUrl() . "/home/" .$cname . $val['path'] . ($cname == 'all' ? '?in='.$val['conName'] : '')}}">
                             <span id="dir" class="dir"
                                   data-conname="{{ $val['conName'] }}" data-tokenid="{{$val['token_id']}}"
                                   value="{{ $val['path'] }}">{{ $val['name'] }}</span></a>

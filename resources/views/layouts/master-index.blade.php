@@ -45,7 +45,7 @@
         <div id="my-cloud" class="my-cloud">
             <ul id="list-cloud" class="list-cloud">
                 <li id="side-bar-select-all">
-                    <a href="{{ url('/test/all') }}">
+                    <a href="{{ url('/home/all') }}">
                         <div>
                             <span class="glyphicon glyphicon-cloud"></span>
                             All in one
@@ -54,7 +54,7 @@
                 </li>
                 @foreach ($conn as $c)
                     <li id="side-bar-select-{{ $c->connection_name }}">
-                        <a href="{{ url("/test/{$c->connection_name}") }}">
+                        <a href="{{ url("/home/{$c->connection_name}") }}">
                             <div><span class="glyphicon glyphicon-cloud"></span>
                                 {{ $c->connection_name }}
                             </div>

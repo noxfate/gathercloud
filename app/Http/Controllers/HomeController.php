@@ -44,33 +44,6 @@ class HomeController extends Controller
         } else return Redirect::to('/');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id,$any)
     {
         $cname = $id;
@@ -91,43 +64,6 @@ class HomeController extends Controller
             'parent' => $parent,
             'in' => $id
         ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public
-    function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public
-    function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public
-    function destroy($id)
-    {
-        //
     }
 
     private function getNavbar($id,$pathname,$path)
@@ -155,6 +91,60 @@ class HomeController extends Controller
         }
         $parent->par_now = end($parent->par_path);
         return $parent;
+    }
+
+    public function download(){
+
+        $proObj = new Provider($_GET['connection_name']);
+        $proObj->downloadFile($_GET['file']);
+
+    }
+
+    public function upload(){
+        $proObj = new Provider($_GET['connection_name']);
+        $proObj->uploadFile($_GET['file']);
+    }
+
+    public function delete(){
+        // Provider(" waiting edit with ALL")
+        $proObj = new Provider($_POST['connection_name']);
+        $proObj->deleteFile($_POST['file']);
+        return "test--";
+    }
+
+    public function rename(){
+        // Provider(" waiting edit with ALL")
+        $proObj = new Provider($_POST['connection_name']);
+        $proObj->rename($_POST['file'], $_POST['new_name']);
+        return "test--";
+    }
+
+    public function search()
+    {
+        $fmap = new FileMapping(Auth::user()->id);
+        $result = $fmap->searchFiles($_GET['keyword']);
+
+        $email = User::find(Auth::user()->id)->email;
+
+        // All in One without Ajax Request
+        if (empty($_GET['path'])){
+            $par = $this->navbarDataByPath("All","");
+            return view('pages.cloud.index',[
+                'data' => $result,
+                "cname" => "All",
+                'cmail' => $email,
+                'parent' => $par
+            ]);
+        }else{
+            $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['connid']);
+            $par = $this->navbarDataByPath("All",$_GET['path']);
+            return view('pages.cloud.components.index-board',[
+                'data' => $data,
+                "cname" => "All",
+                'cmail' => $email,
+                'parent' => $par
+            ]);
+        }
     }
 
 }

@@ -189,10 +189,10 @@ class TestController extends Controller
 
     public function download(){
 
-        $proObj = new Provider($_GET['connection_name']);
-        $proObj->downloadFile($_GET['file']);
+    $proObj = new Provider($_GET['connection_name']);
+    $proObj->downloadFile($_GET['file']);
 
-    }
+}
 
     public function upload(){
         $proObj = new Provider($_GET['connection_name']);
@@ -211,7 +211,6 @@ class TestController extends Controller
         $proObj = new Provider($_POST['connection_name']);
         $proObj->rename($_POST['file'], $_POST['new_name']);
         return "test--";
-//        return $_POST['new_name'] . " + " . $_POST['file'];
     }
 
     public function test($id, $any)

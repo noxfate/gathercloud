@@ -21,11 +21,9 @@ Route::get('/register', "UserController@create");
 Route::post('/register', "UserController@store");
 
 // Index Page
-Route::get('/home/{id}', ['uses' =>'HomeController@index']);
-Route::get('/home/{id}/{any}', ['uses' =>'HomeController@show'])->where('any', '.*');
-//Route::get('/home/search', "HomeController@search");
-Route::get('/search', "HomeController@search");
-Route::post('/home/download',"HomeController@download");
+Route::get('/home/{id}', 'HomeController@index');
+Route::get('/home/{id}/{any}', 'HomeController@show')->where('any', '.*');
+Route::get('/search/{id}', "HomeController@search");
 Route::get('/home/download',"HomeController@download");
 Route::post('/home/upload', 'HomeController@upload');
 Route::post('/home/delete', 'HomeController@delete');
