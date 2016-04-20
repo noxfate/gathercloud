@@ -2,13 +2,14 @@
 <div id="box-nav-bar" class="box-nav-bar">
     <div id="nav-bar" class="nav-bar">
         @if (!empty($parent))
-            @for ($i = 0; $i < count($parent->pname); $i++)
+            @for ($i = 0; $i < count($parent->par_name); $i++)
                 @if ($i == 0)
-                    <a href="{{ url("/home{$parent->ppath[$i]}") }}"><span>{{ $parent->pname[$i] }}</span></a>
+                    {{$parent->par_now}}
+                    <a href="{{ url("/test{$parent->par_path[$i]}") }}"><span>{{ $parent->par_name[$i] }}</span></a>
                 @else
                     <span class="glyphicon glyphicon-menu-right"></span>
                     <span class="glyphicon glyphicon-folder-open"></span>
-                    <span id="dir" class="dir" alt="{{ $parent->pprovider }}" value="{{$parent->ppath[$i]}}">{{ $parent->pname[$i] }}</span>
+                    <a href="{{ url("/test{$parent->par_path[$i]}?in={$in}") }}"><span>{{ $parent->par_name[$i] }}</span></a>
                 @endif
             @endfor
         @endif
@@ -53,7 +54,7 @@
             <!-- /.modal-dialog -->
         </div>
         <!-- /.modal -->
-        <form action=" {{ url("/search") }}">
+        <form action="{{ url("/search") }}">
             <div class="input-group">
                 <input type="text" name="keyword" class="form-control" placeholder="Search for...">
                       <span class="input-group-btn">
@@ -80,7 +81,7 @@
     <table class="table-body table-hover table-striped">
         @if (!empty($data))
             <script>
-                document.getElementById('side-bar-select-{{$cname}}').className = "withSelect";
+                document.getElementById('side-bar-select-{{ $cname }}').className = "withSelect";
             </script>
             @foreach($data as $d => $val)
                 <tr class="withItemMenu" value="{{ $val['path'] }}">
@@ -90,10 +91,16 @@
 
                     <td class="th-name">
                         @if ($val['is_dir'])
-                            {{--<span class="glyphicon glyphicon-folder-close"></span>--}}
+                            <span class="glyphicon glyphicon-folder-close"></span>
                             {{--<a id="dir" href="{{ Request::url()."/".$val['name'] }}">{{ $val['name'] }}</a></td>--}}
-                            <span id="dir" class="dir" data-conname="{{ $val['conName'] }}" data-tokenid="{{$val['token_id']}}"
-                                  value="{{ $val['path'] }}">{{ $val['name'] }}</span></td>
+                            {{--<form action="{{url($cname . $val['path'])}}" method="POST">--}}
+                                {{--<input type="hidden" name="_token" value="{{ csrf_token() }}">--}}
+                            <a href="{{ Request::getBaseUrl() . "/test/" .$cname . $val['path'] . ($cname == 'all' ? '?in='.$val['conName'] : '')}}">
+                            <span id="dir" class="dir"
+                                  data-conname="{{ $val['conName'] }}" data-tokenid="{{$val['token_id']}}"
+                                  value="{{ $val['path'] }}">{{ $val['name'] }}</span></a>
+                            </form>
+                        </td>
                     @else
                         <span href="#" alt="{{ $val['conName'] }}">{{ $val['name'] }}</span></td>
                     @endif

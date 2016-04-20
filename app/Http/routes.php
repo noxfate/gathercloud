@@ -33,7 +33,6 @@ Route::resource('/home',"HomeController");
 //New Index Page=============================================
 Route::get('/test/{id}', ['uses' =>'TestController@index']);
 Route::get('/test/{id}/{any}', ['uses' =>'TestController@show'])->where('any', '.*');
-Route::resource('/test',"TestController");
 //array('as' = > '', 'uses' => '')->where('any', '.*');
 
 //===========================================================

@@ -133,6 +133,11 @@ abstract class Object {
 		return $this->_id;
 	}
 
+	public function setId($id) {
+		$this->_id = $id . $this->_id;
+	}
+
+
 	/**
 	 * Gets the unique ID of the parent folder of the OneDrive object referenced
 	 * by this Object instance.

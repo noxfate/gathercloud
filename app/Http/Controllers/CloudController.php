@@ -65,8 +65,8 @@ class CloudController extends Controller
         $addConObj->add();
 
         // After Saving Connection, Create a FileMapping Job immediately
-        $job = (new CreateFileMapping(Session::get('new_conname')));
-        $this->dispatch($job);
+//        $job = (new CreateFileMapping(Session::get('new_conname')));
+//        $this->dispatch($job);
 
         return Redirect::to('/add');
     }

@@ -18,5 +18,6 @@ interface ModelInterface
     public function getLink($file);
     public function getAccountInfo();
     public function rename($file, $new_name);
+    public function getPathName($file);
     public function getAccessToken();
 }

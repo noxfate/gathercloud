@@ -156,16 +156,12 @@ class Provider
         return $this->connObj->getAccountInfo();
 	}
 
+    function getPathName($file){
+        return $this->connObj->getPathName($file);
+    }
+
     private function normalizeMetaData($data, $provider)
     {
-//        $name = '';
-//        $path = '';
-//        $size = '';
-//        $bytes = 0;
-//        $mime_type = '';  ** NULLABLE **
-//        $last_modified = '';
-//        $shared = false;
-//        $provider = '';
 
         $format = array();
 

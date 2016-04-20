@@ -124,6 +124,12 @@ class BoxInterface implements ModelInterface
 
     public function getFiles($file = null)
     {
+        $full_path = "/";
+        if ($file != null){
+            $full_path = $file . $full_path;
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
         if (null === $file) {
             $id = '0';
@@ -151,7 +157,7 @@ class BoxInterface implements ModelInterface
                     array_push($format,
                         array(
                             'name' => $entity->name,
-                            'path' => ($entity->id == "0") ? null : ($entity->type == "folder") ? "folder." . $entity->id : "file." . $entity->id,
+                            'path' => $full_path . (($entity->id == "0") ? null : ($entity->type == "folder") ? "folder." . $entity->id : "file." . $entity->id),
                             'size' => $entity->size,
                             'mime_type' => null,
                             'is_dir' => ($entity->type == "folder") ? 1 : 0, // 1 == Folder, 0 = File
@@ -273,6 +279,17 @@ class BoxInterface implements ModelInterface
         } elseif ($response instanceof ErrorResponse) {
             return $response->getStatusCode();
         }
+    }
+
+    public function getPathName($file)
+    {
+        $path = "";
+        $list_file = explode("/", $file);
+        foreach($list_file as $f){
+            $entity = $this->getEntity($f);
+            $path = $path . $entity->name . "/";
+        }
+        return substr($path,0,-1);
     }
 }
 

@@ -174,6 +174,11 @@ Class DropboxInterface implements ModelInterface
 //        return  substr($file, 0,$lastIndex+1) . $new_name;
         return $this->dbxObj->Move($file,$new_name);
     }
+
+    public function getPathName($file)
+    {
+        return $file;
+    }
 }
 
 ?>

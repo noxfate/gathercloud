@@ -211,9 +211,9 @@ class HomeController extends Controller
     {
         $path = $id . $path;
         $parent = (object)array(
-            'pname' => array(),
-            'ppath' => array(),
-            'pprovider' => array()
+            'par_name' => array(),
+            'par_path' => array(),
+            'par_provider' => array()
         );
 //        if (!empty($_GET['connid'])){
 //            $parent->pprovider = $_GET['connid'];

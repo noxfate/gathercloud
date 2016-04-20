@@ -19,34 +19,27 @@ class TestController extends Controller
      */
     public function index($id)
     {
-        if (Auth::check())
-        {
-            if($id == 'all')
-            {
+        if (Auth::check()) {
+            $cname = $id;
+            if ($id == 'all') {
                 $token = User::find(Auth::user()->id)->tokens;
                 $data = array();
-                foreach($token as $tk)
-                {
+                foreach ($token as $tk) {
                     $proObj = new Provider($tk->connection_name);
                     $temp = $proObj->getFiles();
-                    $data = array_merge($data,$temp);
+                    $data = array_merge($data, $temp);
                 }
-                $par = (object)array(
-                    'pname' => array(),
-                    'ppath' => array(),
-                    'pprovider' => array()
-                );
-                return view('pages.cloud.index',[
-                    'data' => $data,
-                    "cname" => "all",
-                    'cmail' => 'eiei',
-                    'parent' => $par
-                ]);
+            } else {
+                $proObj = new Provider($id);
+                $data = $proObj->getFiles();
             }
-            else
-            {
-
-            }
+            $parent = $this->getNavbar($cname,"","");
+            return view('pages.cloud.index', [
+                'data' => $data,
+                "cname" => $cname,
+                'parent' => $parent,
+                'in' => $id
+            ]);
         } else return Redirect::to('/');
     }
 
@@ -79,7 +72,24 @@ class TestController extends Controller
      */
     public function show($id,$any)
     {
-
+        $cname = $id;
+        if($id == 'all') {
+            $id = $_GET['in'];
+        }
+        $proObj = new Provider($id);
+        $data = $proObj->getFiles("/" . $any);
+        $par = (object)array(
+            'pname' => array(),
+            'ppath' => array(),
+            'pprovider' => array()
+        );
+        $parent = $this->getNavbar($cname,$proObj->getPathName($any),$any);
+        return view('pages.cloud.index',[
+            'data' => $data,
+            "cname" => $cname,
+            'parent' => $parent,
+            'in' => $id
+        ]);
     }
 
     /**
@@ -114,5 +124,32 @@ class TestController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    private function getNavbar($id,$pathname,$path)
+    {
+        $pathname = $id . (($pathname == "")? "" : "/".$pathname);
+        $path = $id . (($pathname == "")? "" : "/".$path);
+        $parent = (object)array(
+            'par_now' => "",
+            'par_name' => array(),
+            'par_path' => array()
+        );
+        $parent->par_name = explode("/", $pathname);
+        $paths = explode("/", $path);
+        $temp = '/';
+        for ($i = 0; $i < count($parent->par_name); $i++) {
+            if ($i == 0) {
+                $temp = $temp . $paths[$i];
+                $parent->par_path[] = $temp;
+                $temp = '/' . $id . '/';
+            } else {
+                $temp = $temp . $paths[$i];
+                $parent->par_path[] = $temp;
+                $temp = $temp . '/';
+            }
+        }
+        $parent->par_now = end($parent->par_path);
+        return $parent;
     }
 }
