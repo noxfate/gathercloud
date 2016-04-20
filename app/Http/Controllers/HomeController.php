@@ -114,6 +114,9 @@ class HomeController extends Controller
 
     public function rename(){
         // Provider(" waiting edit with ALL")
+        dump($_POST['connection_name']);
+        dump($_POST['file']);
+        dump($_POST['new_name']);
         $proObj = new Provider($_POST['connection_name']);
         $proObj->rename($_POST['file'], $_POST['new_name']);
         return "test--";

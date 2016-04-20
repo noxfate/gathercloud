@@ -75,8 +75,12 @@ class BoxInterface implements ModelInterface
     }
 
 
-    public function downloadFile($file, $destination = null)
+    public function downloadFile($file)
     {
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
         $file = substr($file, 5);
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
         $er = new ExtendedRequest();
@@ -98,6 +102,10 @@ class BoxInterface implements ModelInterface
 
     public function uploadFile($file, $destination = null)
     {
+        if ($destination != null){
+            $list_destination = explode("/", $destination);
+            $destination = end($list_destination);
+        }
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
 
         if (null === $destination) {
@@ -177,6 +185,10 @@ class BoxInterface implements ModelInterface
 
     public function deleteFile($file)
     {
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
         if (strpos($file, 'folder') !== false) {
             $file = substr($file, 7);
         } elseif (strpos($file, 'file') !== false) {
@@ -258,6 +270,10 @@ class BoxInterface implements ModelInterface
 
     public function rename($file, $new_name)
     {
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
         $er = new ExtendedRequest();
         $er->setPostBodyField('name', $new_name);

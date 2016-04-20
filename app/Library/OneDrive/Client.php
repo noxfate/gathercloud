@@ -666,7 +666,7 @@ class Client {
 		$objectId   = $objectId;
 		$properties = (object) $properties;
 		$encoded    = json_encode($properties);
-		$stream     = fopen('php://memory', 'w+b');
+		$stream     = fopen('php://temp', 'w+b');
 
 		if (false === $stream) {
 			throw new \Exception('fopen() failed');

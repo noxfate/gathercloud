@@ -87,8 +87,13 @@ class OneDriveInterface implements ModelInterface
         return $this->refresh_token;
     }
 
-    public function downloadFile($file, $destination = null)
+    public function downloadFile($file)
     {
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
+
         $onedrive = new \App\Library\OneDrive\Client(array(
             'state' => $this->state
         ));
@@ -106,6 +111,10 @@ class OneDriveInterface implements ModelInterface
 
     public function uploadFile($file, $destination = null)
     {
+        if ($destination != null){
+            $list_destination = explode("/", $destination);
+            $destination = end($list_destination);
+        }
         $onedrive = new \App\Library\OneDrive\Client(array(
             'state' => $this->state
         ));
@@ -149,6 +158,10 @@ class OneDriveInterface implements ModelInterface
 
     public function deleteFile($file)
     {
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
         $onedrive = new \App\Library\OneDrive\Client(array(
             'state' => $this->state
         ));
@@ -159,6 +172,10 @@ class OneDriveInterface implements ModelInterface
 
     public function getLink($file)
     {
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
         $onedrive = new \App\Library\OneDrive\Client(array(
             'state' => $this->state
         ));
@@ -186,6 +203,10 @@ class OneDriveInterface implements ModelInterface
 
     public function rename($file, $new_name)
     {
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
         $onedrive = new \App\Library\OneDrive\Client(array(
             'state' => $this->state
         ));

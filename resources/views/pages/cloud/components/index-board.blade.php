@@ -1,4 +1,5 @@
-<iframe name="hiddenIframe" id="hiddenIframe" style="display: none;" ></iframe>
+{{--<iframe name="hiddenIframe" id="hiddenIframe" style="display: none;" ></iframe>--}}
+<iframe name="hiddenIframe" id="hiddenIframe"  ></iframe>
 <div id="box-nav-bar" class="box-nav-bar">
     <div id="nav-bar" class="nav-bar">
         @if (!empty($parent))
@@ -32,7 +33,7 @@
              aria-labelledby="myModalLabel">
             <div class="modal-dialog" role="document">
                 <!-- Modal content-->
-                <form action="{{ url('home/upload') }}" target="hiddenIframe" method="POST" enctype="multipart/form-data">
+                <form action="{{ url('upload') }}" target="hiddenIframe" method="POST" enctype="multipart/form-data">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -70,7 +71,6 @@
 <table id="table-header" class="table-header">
     <tr>
         <th class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></th>
-        {{--<th class="th-icon-cloud"></th>--}}
         <th class="th-name">Name</th>
         <th class="th-size">Size</th>
         <th class="th-last-mo">Last modified</th>
@@ -92,18 +92,20 @@
                     <td class="th-name">
                         @if ($val['is_dir'])
                             <span class="glyphicon glyphicon-folder-close"></span>
-                            {{--<a id="dir" href="{{ Request::url()."/".$val['name'] }}">{{ $val['name'] }}</a></td>--}}
-                            {{--<form action="{{url($cname . $val['path'])}}" method="POST">--}}
-                                {{--<input type="hidden" name="_token" value="{{ csrf_token() }}">--}}
                             <a href="{{ Request::getBaseUrl() . "/home/" .$cname . $val['path'] . ($cname == 'all' ? '?in='.$val['conName'] : '')}}">
-                            <span id="dir" class="dir"
-                                  data-conname="{{ $val['conName'] }}" data-tokenid="{{$val['token_id']}}"
-                                  value="{{ $val['path'] }}">{{ $val['name'] }}</span></a>
-                            </form>
-                        </td>
-                    @else
-                        <span href="#" alt="{{ $val['conName'] }}">{{ $val['name'] }}</span></td>
-                    @endif
+                                <span class="dir"
+                                      data-conname="{{ $val['conName'] }}" data-tokenid="{{$val['token_id']}}"
+                                      value="{{ $val['path'] }}">{{ $val['name'] }}</span>
+                            </a>
+                        @else
+                            <span class="glyphicon glyphicon glyphicon-file"></span>
+                            <a href="#">
+                                <span data-conname="{{ $val['conName'] }}" data-tokenid="{{$val['token_id']}}"
+                                      value="{{ $val['path'] }}">{{ $val['name'] }}</span>
+                            </a>
+
+                        @endif
+                    </td>
                     @if ($val['is_dir']  or ($val['size'] == 0))
                         <td class="th-size"></td>
                     @else
@@ -123,7 +125,7 @@
      aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <!-- Modal content-->
-        <form action="{{ url('home/rename') }}" target="hiddenIframe" method="POST" enctype="multipart/form-data">
+        <form action="{{ url('rename') }}" target="hiddenIframe" method="POST" enctype="multipart/form-data">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>

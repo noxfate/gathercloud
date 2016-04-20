@@ -196,13 +196,13 @@
     function ShowAction(t, a) {
         if(a == "Download"){
             var file = $(t).attr('value');
-            var connection_name = $(t).find("td:eq(1)").find("span").attr('alt');
+            var connection_name = $(t).find("td:eq(1)").find("a").find("span").attr('data-conname');
             alert(connection_name);
-            $.get(window.location.href+"?path="+dir, onSuccess);
             var url = window.location.pathname + "?path=" + encodeURIComponent(file);
             alert(window.location.pathname + "/download/" + encodeURIComponent(file));
             var indOf = window.location.pathname.indexOf("/home",1);
-            var myStr = window.location.pathname.substr(0,indOf+5 );
+            var myStr = window.location.pathname.substr(0,indOf );
+            alert(myStr);
             var url = myStr + "/download"
             alert( url );  // gives you what you want;
             window.open(
@@ -212,7 +212,7 @@
 
         } else if(a == "Delete"){
             var file = $(t).attr('value');
-            var connection_name = $(t).find("td:eq(1)").find("span").attr('data-conname');
+            var connection_name = $(t).find("td:eq(1)").find("a").find("span").attr('data-conname');
             alert(file);
             $.ajax({
                 type: 'POST',
@@ -228,8 +228,8 @@
 
         } else if(a == "Rename"){
             var file = $(t).attr('value');
-            var connection_name = $(t).find("td:eq(1)").find("span").attr('data-conname');
-            var old_name = $(t).find("td:eq(1)").find("span").html();
+            var connection_name = $(t).find("td:eq(1)").find("a").find("span").attr('data-conname');
+            var old_name = $(t).find("td:eq(1)").find("a").find("span").html();
             $("#modal-rename").modal();
             $("#new_name").val(old_name);
             $("#rename_file").val(file);

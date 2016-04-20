@@ -24,10 +24,10 @@ Route::post('/register', "UserController@store");
 Route::get('/home/{id}', 'HomeController@index');
 Route::get('/home/{id}/{any}', 'HomeController@show')->where('any', '.*');
 Route::get('/search/{id}', "HomeController@search");
-Route::get('/home/download',"HomeController@download");
-Route::post('/home/upload', 'HomeController@upload');
-Route::post('/home/delete', 'HomeController@delete');
-Route::post('/home/rename', 'HomeController@rename');
+Route::get('/download',"HomeController@download");
+Route::post('/upload', 'HomeController@upload');
+Route::post('/delete', 'HomeController@delete');
+Route::post('/rename', 'HomeController@rename');
 //Route::resource('/home',"HomeController");
 
 //New Index Page=============================================
