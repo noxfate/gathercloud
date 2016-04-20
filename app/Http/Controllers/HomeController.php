@@ -32,9 +32,8 @@ class HomeController extends Controller
 
             $que = User::find(Auth::user()->id)->tokens;
             $email = User::find(Auth::user()->id)->email;
-
-            $fmap = new FileMapping(Auth::user()->id);
-
+//            $fmap = new FileMapping(Auth::user()->id);
+            $data = array();
             // All in One without Ajax Request
             if (empty($_GET['path'])){
 
@@ -43,14 +42,18 @@ class HomeController extends Controller
                 foreach( $token as $tk){
 //                    $job = (new CreateFileMapping($tk->connection_name));
 //                    $this->dispatch($job);
-                    $root = File::roots()->where('token_id', $tk->id)->first();
-                    if (Carbon::now() >= $root->updated_at->addMinutes(24*60)){
-                        $job = (new CreateFileMapping($tk->connection_name));
-                        $this->dispatch($job);
-                    }
+                    $proObj = new Provider($tk->connection_name);
+                    $temp = $proObj->getFiles();
+                    $data = array_merge($data,$temp);
+//                    $data = $data + $temp;
+//                    $root = File::roots()->where('token_id', $tk->id)->first();
+//                    if (Carbon::now() >= $root->updated_at->addMinutes(24*60)){
+//                        $job = (new CreateFileMapping($tk->connection_name));
+//                        $this->dispatch($job);
+//                    }
                 }
-
-                $data = $fmap->getFirstLevel();
+//                dd($data);
+//                $data = $fmap->getFirstLevel();
                 $par = $this->navbarDataByPath("All","");
                 return view('pages.cloud.index',[
                     'data' => $data,
@@ -59,7 +62,10 @@ class HomeController extends Controller
                     'parent' => $par
                 ]);
             }else{
-                $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['connid']);
+                $proObj = new Provider($_GET['connection_name']);
+                $data = $proObj->getFiles($_GET['path']);
+//                dd($data);
+//                $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['connid']);
                 $par = $this->navbarDataByPath("All",$_GET['path']);
                 return view('pages.cloud.components.index-board',[
                     'data' => $data,
@@ -111,7 +117,7 @@ class HomeController extends Controller
 
             $data = $proObj->getFiles();
             $parent = $this->navbarDataByPath($id,"");
-
+//            dd($data);
             return view('pages.cloud.index', [
 //            "data" => null,
                 "data" => $data,
@@ -175,30 +181,30 @@ class HomeController extends Controller
     public
     function search()
     {
-        $fmap = new FileMapping(Auth::user()->id);
-        $result = $fmap->searchFiles($_GET['keyword']);
-
-        $email = User::find(Auth::user()->id)->email;
-
-        // All in One without Ajax Request
-        if (empty($_GET['path'])){
-            $par = $this->navbarDataByPath("All","");
-            return view('pages.cloud.index',[
-                'data' => $result,
-                "cname" => "All",
-                'cmail' => $email,
-                'parent' => $par
-            ]);
-        }else{
-            $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['connid']);
-            $par = $this->navbarDataByPath("All",$_GET['path']);
-            return view('pages.cloud.components.index-board',[
-                'data' => $data,
-                "cname" => "All",
-                'cmail' => $email,
-                'parent' => $par
-            ]);
-        }
+//        $fmap = new FileMapping(Auth::user()->id);
+//        $result = $fmap->searchFiles($_GET['keyword']);
+//
+//        $email = User::find(Auth::user()->id)->email;
+//
+//        // All in One without Ajax Request
+//        if (empty($_GET['path'])){
+//            $par = $this->navbarDataByPath("All","");
+//            return view('pages.cloud.index',[
+//                'data' => $result,
+//                "cname" => "All",
+//                'cmail' => $email,
+//                'parent' => $par
+//            ]);
+//        }else{
+//            $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['connid']);
+//            $par = $this->navbarDataByPath("All",$_GET['path']);
+//            return view('pages.cloud.components.index-board',[
+//                'data' => $data,
+//                "cname" => "All",
+//                'cmail' => $email,
+//                'parent' => $par
+//            ]);
+//        }
     }
 
     private function navbarDataByPath($id,$path)
@@ -209,23 +215,23 @@ class HomeController extends Controller
             'ppath' => array(),
             'pprovider' => array()
         );
-        if (!empty($_GET['connid'])){
-            $parent->pprovider = $_GET['connid'];
-        }
-        $parent->pname = explode("/", $path);
-        $temp = '/';
-        for ($i = 0; $i < count($parent->pname); $i++) {
-            if ($i == 0) {
-                $temp = $temp . $parent->pname[$i];
-                $parent->ppath[] = $temp;
-                $temp = '/';
-            } else {
-                $temp = $temp . $parent->pname[$i];
-                $parent->ppath[] = $temp;
-                $temp = $temp . '/';
-            }
-
-        }
+//        if (!empty($_GET['connid'])){
+//            $parent->pprovider = $_GET['connid'];
+//        }
+//        $parent->pname = explode("/", $path);
+//        $temp = '/';
+//        for ($i = 0; $i < count($parent->pname); $i++) {
+//            if ($i == 0) {
+//                $temp = $temp . $parent->pname[$i];
+//                $parent->ppath[] = $temp;
+//                $temp = '/';
+//            } else {
+//                $temp = $temp . $parent->pname[$i];
+//                $parent->ppath[] = $temp;
+//                $temp = $temp . '/';
+//            }
+//
+//        }
         return $parent;
     }
 
@@ -237,33 +243,33 @@ class HomeController extends Controller
         );
 
 
-        if ($provider == 'box') {
-
-            $parent->pname[] = $id;
-            $parent->ppath[] = '/' . $id;
-
-            $entity = $obj->getEntity($path);
-            $pcollection = $entity->path_collection;
-            for($i = 1; $i < $pcollection->total_count ; $i++){
-                $parent->pname[] = $pcollection->entries[$i]->name;
-                $parent->ppath[] = ($pcollection->entries[$i]->type == 'folder') ? 'folder.'.$pcollection->entries[$i]->id : 'file.'.$pcollection->entries[$i]->id;
-            }
-            $parent->pname[] = $entity->name;
-            $parent->ppath[] = $entity->type . "." . $entity->id;
-
-        }elseif($provider == 'onedrive'){
-            $entity = $obj->getFolder($path);
-            while($entity->getParentId() != null){
-                $parent->pname[] = $entity->getName();
-                $parent->ppath[] = $entity->getId();
-                $entity = $obj->getFolder($entity->getParentId());
-            }
-            $parent->pname[] = $id;
-            $parent->ppath[] = '/' . $id;
-
-            $parent->pname = array_reverse($parent->pname);
-            $parent->ppath = array_reverse($parent->ppath);
-        }
+//        if ($provider == 'box') {
+//
+//            $parent->pname[] = $id;
+//            $parent->ppath[] = '/' . $id;
+//
+//            $entity = $obj->getEntity($path);
+//            $pcollection = $entity->path_collection;
+//            for($i = 1; $i < $pcollection->total_count ; $i++){
+//                $parent->pname[] = $pcollection->entries[$i]->name;
+//                $parent->ppath[] = ($pcollection->entries[$i]->type == 'folder') ? 'folder.'.$pcollection->entries[$i]->id : 'file.'.$pcollection->entries[$i]->id;
+//            }
+//            $parent->pname[] = $entity->name;
+//            $parent->ppath[] = $entity->type . "." . $entity->id;
+//
+//        }elseif($provider == 'onedrive'){
+//            $entity = $obj->getFolder($path);
+//            while($entity->getParentId() != null){
+//                $parent->pname[] = $entity->getName();
+//                $parent->ppath[] = $entity->getId();
+//                $entity = $obj->getFolder($entity->getParentId());
+//            }
+//            $parent->pname[] = $id;
+//            $parent->ppath[] = '/' . $id;
+//
+//            $parent->pname = array_reverse($parent->pname);
+//            $parent->ppath = array_reverse($parent->ppath);
+//        }
         return $parent;
     }
 
