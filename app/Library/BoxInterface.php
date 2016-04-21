@@ -310,6 +310,39 @@ class BoxInterface implements ModelInterface
         }
         return substr($path,0,-1);
     }
+
+    public function searchFile($keyword)
+    {
+        $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
+        $command = new Content\Search\SearchContent($keyword);
+        $response = ResponseFactory::getResponse($contentClient, $command);
+        if ($response instanceof SuccessResponse) {
+            $response->getStatusCode();
+            $response->getReasonPhrase();
+            $response->getHeaders();
+            $data = (string)$response->getBody();
+            $entries = json_decode($data);
+            $format = array();
+            foreach($entries->entries as $entity){
+                $entity = (object)$entity;
+                array_push($format,
+                    array(
+                        'name' => $entity->name,
+                        'path' => "" . (($entity->id == "0") ? null : ($entity->type == "folder") ? "folder." . $entity->id : "file." . $entity->id),
+                        'size' => $entity->size,
+                        'mime_type' => null,
+                        'is_dir' => ($entity->type == "folder") ? 1 : 0, // 1 == Folder, 0 = File
+                        'modified' => $entity->modified_at,
+                        'shared' => false
+                    ));
+            }
+
+            return $format;
+
+        } elseif ($response instanceof ErrorResponse) {
+            return $response;
+        }
+    }
 }
 
 ?>

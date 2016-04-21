@@ -78,10 +78,6 @@ abstract class Object {
 
 		$this->_updatedTime = property_exists($options, 'updated_time') ?
 			strtotime($options->updated_time) : null;
-
-		//By ray
-		$this->_source = property_exists($options, 'source') ?
-			strtotime($options->source) : null;
 	}
 
 	/**

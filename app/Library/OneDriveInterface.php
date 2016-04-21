@@ -241,4 +241,13 @@ class OneDriveInterface implements ModelInterface
 //            $parent->pname = array_reverse($parent->pname);
 //            $parent->ppath = array_reverse($parent->ppath);
     }
+
+    public function searchFile($keyword)
+    {
+        $onedrive = new \App\Library\OneDrive\Client(array(
+            'state' => $this->state
+        ));
+        $list_data = $onedrive->searchFile($keyword);
+        return $list_data;
+    }
 }

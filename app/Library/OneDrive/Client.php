@@ -308,6 +308,15 @@ class Client {
 		return $this->_processResult($curl);
 	}
 
+	public function apiSearch($query, $options = array()){
+		$url = "https://api.onedrive.com/v1.0/drive/items/root/view.search".
+			'?q=' . $query
+			. '&access_token=' . urlencode($this->_state->token->data->access_token);
+		$curl = self::_createCurl($query, $options);
+		curl_setopt($curl, CURLOPT_URL, $url);
+
+		return $this->_processResult($curl);
+	}
 
 	public function apiDownload($path) {
 		$options = array();
@@ -504,6 +513,29 @@ class Client {
 
 		$link = $this->apiShare($objectId, (object) $properties);
 		return $link;
+	}
+
+	public function searchFile($query){
+		$result =  $this->apiSearch($query);
+		$objects  = array();
+		foreach ($result->value as $d) {
+			$d = (object)$d;
+			$data = array(
+				'name' => $d->name,
+				'parent_id' => 'folder.'.strtolower(substr($d->parentReference->id,0,strpos($d->parentReference->id,"!"))).".".$d->parentReference->id,
+				'description' => "",
+				'size' => $d->size,
+				'created_time' => $d->createdDateTime,
+				'updated_time' => $d->lastModifiedDateTime,
+			);
+			$object = property_exists($d, 'folder') ?
+				new Folder($this, 'folder.'.strtolower(substr($d->id,0,strpos($d->id,"!"))).".".$d->id, $data)
+				: new File($this, 'file.'.strtolower(substr($d->id,0,strpos($d->id,"!"))).".".$d->id, $data);
+
+			$objects[] = $object;
+		}
+
+		return $objects;
 	}
 
 	/**

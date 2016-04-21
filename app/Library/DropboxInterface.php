@@ -164,14 +164,12 @@ Class DropboxInterface implements ModelInterface
         @ini_set('implicit_flush', 1);
         for ($i = 0; $i < ob_get_level(); $i++) { ob_end_flush(); }
         ob_implicit_flush(1);
-        // echo "<!-- ".str_repeat(' ', 2000)." -->";
     }
 
     public function rename($file, $new_name)
     {
         $lastIndex = strripos($file, "/");
         $new_name = substr($file, 0,$lastIndex+1) . $new_name;
-//        return  substr($file, 0,$lastIndex+1) . $new_name;
         return $this->dbxObj->Move($file,$new_name);
     }
 
@@ -180,9 +178,25 @@ Class DropboxInterface implements ModelInterface
         return $file;
     }
 
-    public function SearchFile($keyword)
+    public function searchFile($keyword)
     {
-        return $this->dbxObj->Search("",$keyword);
+        $list_data =  $this->dbxObj->Search("",$keyword);
+        if(!empty($list_data)){
+            $key = array();
+            foreach($list_data as $data){
+                $temp = explode("/",$data->path);
+                $key[] = end($temp);
+            }
+            return $this->array_fill_keys($key,$list_data);
+        } return $list_data;
+    }
+    function array_fill_keys($target, $value = '') {
+        if(is_array($target)) {
+            foreach($target as $key => $val) {
+                $filledArray[$val] = is_array($value) ? $value[$key] : $value;
+            }
+        }
+        return $filledArray;
     }
 }
 

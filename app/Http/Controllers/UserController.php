@@ -31,7 +31,7 @@ class UserController extends Controller
     {
         if (!Auth::check())
             return view('pages.info.login');
-        return Redirect::to('/home');
+        return Redirect::to('/home/all');
     }
 
     // Login

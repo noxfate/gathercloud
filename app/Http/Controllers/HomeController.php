@@ -115,17 +115,19 @@ class HomeController extends Controller
         return "test--";
     }
 
-    public function search()
+    public function search($id)
     {
-        $proObj = new Provider('db2');
-        $cname = $proObj->getProvider();
-        $proObj->SearchFile('with');
-//        return view('pages.cloud.index',[
-//            'data' => $data,
-//            "cname" => $cname,
-//            'parent' => $parent,
-//            'in' => $id
-//        ]);
+//        dump($id);
+//        dd($_GET['keyword']);
+        $proObj = new Provider($id);
+        $data = $proObj->SearchFile($_GET['keyword']);
+        $parent = $this->getNavbar("","","");
+        return view('pages.cloud.index',[
+            'data' => $data,
+            "cname" => $id,
+            'parent' => $parent,
+            'in' => $id
+        ]);
     }
 
 }

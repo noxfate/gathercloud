@@ -149,9 +149,9 @@ class Provider
         return $this->connObj->rename($file,$new_name);
     }
 
-    public function SearchFile($keyword)
+    function searchFile($keyword)
     {
-        $data = $this->connObj->SearchFile($keyword);
+        $data = $this->connObj->searchFile($keyword);
         return $this->normalizeMetaData($data, $this->provider);
     }
 
