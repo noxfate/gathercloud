@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCachesTable extends Migration
+class CreateProvidersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,14 +12,12 @@ class CreateCachesTable extends Migration
      */
     public function up()
     {
-        Schema::create('caches', function (Blueprint $table) {
+        Schema::create('providers', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('token_id')->unsigned();
-            $table->longText('data');
-            $table->timestamps();
-
-            $table->foreign('token_id')
-                ->references('id')->on('tokens');
+            $table->string('provider_name');
+            $table->string('core_color');
+            $table->string('image_path');
+            $table->string('icon_path');
         });
     }
 
@@ -30,7 +28,6 @@ class CreateCachesTable extends Migration
      */
     public function down()
     {
-        //
-        Schema::drop('caches');
+        Schema::drop('providers');
     }
 }

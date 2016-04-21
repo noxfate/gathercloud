@@ -24,7 +24,7 @@ class CreateTokensTable extends Migration
             $table->timestamps();
 
             // Provider supposed to depend on Provider Table
-            $table->string('provider');
+            $table->integer('provider');
             $table->foreign('user_id')
                 ->references('id')->on('users')
                 ->onDelete('cascade');
