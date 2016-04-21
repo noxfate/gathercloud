@@ -76,6 +76,7 @@ class Provider
         return $this->provider;
     }
 
+
     /**
      * @return \App\Library\OneDriveInterface
      */
@@ -132,7 +133,7 @@ class Provider
 	}
 	function uploadFile($file, $destination = null)
 	{
-        $this->connObj->uploadFile($file, $destination);
+       dd($this->connObj->uploadFile($file, $destination));
 	}
 	function getFiles($file = null)
 	{
@@ -147,6 +148,13 @@ class Provider
     function rename($file, $new_name){
         return $this->connObj->rename($file,$new_name);
     }
+
+    public function SearchFile($keyword)
+    {
+        $data = $this->connObj->SearchFile($keyword);
+        return $this->normalizeMetaData($data, $this->provider);
+    }
+
 	function getLink($file)
 	{
 
@@ -156,16 +164,12 @@ class Provider
         return $this->connObj->getAccountInfo();
 	}
 
+    function getPathName($file){
+        return $this->connObj->getPathName($file);
+    }
+
     private function normalizeMetaData($data, $provider)
     {
-//        $name = '';
-//        $path = '';
-//        $size = '';
-//        $bytes = 0;
-//        $mime_type = '';  ** NULLABLE **
-//        $last_modified = '';
-//        $shared = false;
-//        $provider = '';
 
         $format = array();
 

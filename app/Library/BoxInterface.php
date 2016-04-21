@@ -75,8 +75,12 @@ class BoxInterface implements ModelInterface
     }
 
 
-    public function downloadFile($file, $destination = null)
+    public function downloadFile($file)
     {
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
         $file = substr($file, 5);
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
         $er = new ExtendedRequest();
@@ -98,12 +102,18 @@ class BoxInterface implements ModelInterface
 
     public function uploadFile($file, $destination = null)
     {
+        if ($destination != null){
+            $list_destination = explode("/", $destination);
+            $destination = end($list_destination);
+            $destination = substr($destination, 7);
+        }
+
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
 
         if (null === $destination) {
             $destination = '0';
         }
-
+        dump($destination);
         $parentId = $destination;
         $name = $file['name'];
         $content = file_get_contents($file['tmp_name']);
@@ -116,14 +126,21 @@ class BoxInterface implements ModelInterface
             $data = (string)$response->getBody();
             $manage = (array)json_decode($data);
             print_r($manage);
+            return $manage;
         } elseif ($response instanceof ErrorResponse) {
-            # same as above
+            return $response;
         }
 
     }
 
     public function getFiles($file = null)
     {
+        $full_path = "/";
+        if ($file != null){
+            $full_path = $file . $full_path;
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
         if (null === $file) {
             $id = '0';
@@ -151,7 +168,7 @@ class BoxInterface implements ModelInterface
                     array_push($format,
                         array(
                             'name' => $entity->name,
-                            'path' => ($entity->id == "0") ? null : ($entity->type == "folder") ? "folder." . $entity->id : "file." . $entity->id,
+                            'path' => $full_path . (($entity->id == "0") ? null : ($entity->type == "folder") ? "folder." . $entity->id : "file." . $entity->id),
                             'size' => $entity->size,
                             'mime_type' => null,
                             'is_dir' => ($entity->type == "folder") ? 1 : 0, // 1 == Folder, 0 = File
@@ -171,6 +188,10 @@ class BoxInterface implements ModelInterface
 
     public function deleteFile($file)
     {
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
         if (strpos($file, 'folder') !== false) {
             $file = substr($file, 7);
         } elseif (strpos($file, 'file') !== false) {
@@ -252,6 +273,10 @@ class BoxInterface implements ModelInterface
 
     public function rename($file, $new_name)
     {
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
         $er = new ExtendedRequest();
         $er->setPostBodyField('name', $new_name);
@@ -273,6 +298,17 @@ class BoxInterface implements ModelInterface
         } elseif ($response instanceof ErrorResponse) {
             return $response->getStatusCode();
         }
+    }
+
+    public function getPathName($file)
+    {
+        $path = "";
+        $list_file = explode("/", $file);
+        foreach($list_file as $f){
+            $entity = $this->getEntity($f);
+            $path = $path . $entity->name . "/";
+        }
+        return substr($path,0,-1);
     }
 }
 

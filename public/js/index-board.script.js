@@ -53,15 +53,15 @@ $.ajaxSetup({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('conten
 function onGetClick(event) {
     // we're not passing any data with the get route, though you can if you want
     var dir = $(this).attr('value');
-    var prov = $(this).attr('data-tokenid');
+    var conname = $(this).attr('data-conname');
     if (window.location.pathname.search("search") == -1){
         var url = window.location.pathname + "?path=" + encodeURIComponent(dir)
-            + "&connid=" + encodeURIComponent(prov);
+            + "&connection_name=" + encodeURIComponent(conname);
     }else{
         var path = window.location.pathname.replace('/search','');
-        var url = path + "?path=" + encodeURIComponent(dir) + "&connid=" + encodeURIComponent(prov);
+        var url = path + "?path=" + encodeURIComponent(dir) + "&connection_name=" + encodeURIComponent(conname);
     }
-    // alert(url);
+     //alert(url);
     $("body").css("cursor", "progress");
     document.getElementById('let-in-folder-progress').className = "let-in-folder-progress";
     $("#board").load(url);
@@ -84,5 +84,5 @@ function onSuccess(data, status, xhr) {
 
 // listeners
 // $('button#get').on('click', onGetClick);
-$('span#dir').on('click', onGetClick);
+//$('span#dir').on('click', onGetClick);
 $('button#post').on('click', onPostClick);

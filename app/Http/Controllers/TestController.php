@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\AppModels\Provider;
 use Illuminate\Http\Request;
 
-use Auth;
-use App\User;
 use App\Http\Requests;
+use App\User;
+use Auth;
+use App\AppModels\Provider;
 use Illuminate\Support\Facades\Redirect;
 
-class HomeController extends Controller
+class TestController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -44,6 +44,33 @@ class HomeController extends Controller
         } else return Redirect::to('/');
     }
 
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
     public function show($id,$any)
     {
         $cname = $id;
@@ -52,6 +79,11 @@ class HomeController extends Controller
         }
         $proObj = new Provider($id);
         $data = $proObj->getFiles("/" . $any);
+        $par = (object)array(
+            'pname' => array(),
+            'ppath' => array(),
+            'pprovider' => array()
+        );
         $parent = $this->getNavbar($cname,$proObj->getPathName($any),$any);
         return view('pages.cloud.index',[
             'data' => $data,
@@ -61,16 +93,81 @@ class HomeController extends Controller
         ]);
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public
+    function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public
+    function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public
+    function destroy($id)
+    {
+        //
+    }
+
+    public
+    function search()
+    {
+        $fmap = new FileMapping(Auth::user()->id);
+        $result = $fmap->searchFiles($_GET['keyword']);
+
+        $email = User::find(Auth::user()->id)->email;
+
+        // All in One without Ajax Request
+        if (empty($_GET['path'])){
+            $par = $this->navbarDataByPath("All","");
+            return view('pages.cloud.index',[
+                'data' => $result,
+                "cname" => "All",
+                'cmail' => $email,
+                'parent' => $par
+            ]);
+        }else{
+            $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['connid']);
+            $par = $this->navbarDataByPath("All",$_GET['path']);
+            return view('pages.cloud.components.index-board',[
+                'data' => $data,
+                "cname" => "All",
+                'cmail' => $email,
+                'parent' => $par
+            ]);
+        }
+    }
+
     private function getNavbar($id,$pathname,$path)
     {
+        $pathname = $id . (($pathname == "")? "" : "/".$pathname);
+        $path = $id . (($pathname == "")? "" : "/".$path);
         $parent = (object)array(
             'par_now' => "",
             'par_name' => array(),
             'par_path' => array()
         );
-        $parent->par_now = $path;
-        $pathname = $id . (($pathname == "")? "" : "/".$pathname);
-        $path = $id . (($pathname == "")? "" : "/".$path);
         $parent->par_name = explode("/", $pathname);
         $paths = explode("/", $path);
         $temp = '/';
@@ -85,20 +182,21 @@ class HomeController extends Controller
                 $temp = $temp . '/';
             }
         }
+        $parent->par_now = end($parent->par_path);
         return $parent;
     }
 
+
     public function download(){
 
-        $proObj = new Provider($_GET['connection_name']);
-        $proObj->downloadFile($_GET['file']);
+    $proObj = new Provider($_GET['connection_name']);
+    $proObj->downloadFile($_GET['file']);
 
-    }
+}
 
     public function upload(){
-//        $proObj = new Provider($_GET['connection_name']);
-        $proObj = new Provider('box1');
-        $proObj->uploadFile($_FILES['file'],$_POST['destination']);
+        $proObj = new Provider($_GET['connection_name']);
+        $proObj->uploadFile($_GET['file']);
     }
 
     public function delete(){
@@ -115,17 +213,8 @@ class HomeController extends Controller
         return "test--";
     }
 
-    public function search()
+    public function test($id, $any)
     {
-        $proObj = new Provider('db2');
-        $cname = $proObj->getProvider();
-        $proObj->SearchFile('with');
-//        return view('pages.cloud.index',[
-//            'data' => $data,
-//            "cname" => $cname,
-//            'parent' => $parent,
-//            'in' => $id
-//        ]);
+        echo $id."\n".$any;
     }
-
 }

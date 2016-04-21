@@ -87,8 +87,13 @@ class OneDriveInterface implements ModelInterface
         return $this->refresh_token;
     }
 
-    public function downloadFile($file, $destination = null)
+    public function downloadFile($file)
     {
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
+
         $onedrive = new \App\Library\OneDrive\Client(array(
             'state' => $this->state
         ));
@@ -106,6 +111,11 @@ class OneDriveInterface implements ModelInterface
 
     public function uploadFile($file, $destination = null)
     {
+        if ($destination != null){
+            $list_destination = explode("/", $destination);
+            $destination = end($list_destination);
+        }
+        dump($destination);
         $onedrive = new \App\Library\OneDrive\Client(array(
             'state' => $this->state
         ));
@@ -115,31 +125,45 @@ class OneDriveInterface implements ModelInterface
         $content 	 = file_get_contents($file['tmp_name']);
         $parent      = $onedrive->fetchObject($parentId);
         $file        = $parent->createFile($name, $content);
+        dd($file);
         return $file;
     }
 
     public function getFiles($file = null)
     {
+        $full_path = "/";
+        if ($file != null){
+            $full_path = $file . $full_path;
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
         $onedrive = new \App\Library\OneDrive\Client(array(
             'state' => $this->state
         ));
 
         if (null === $file) {
             $root    = $onedrive->fetchRoot();
-            $objects = $root->fetchObjects();
-            return $objects;
+            $object = $root->fetchObjects();
         } else if (strpos($file,'folder') !== false) {
             $folder  = $onedrive->fetchObject($file);
-            $objects = $folder->fetchObjects();
-            return $objects;
+            $object = $folder->fetchObjects();
         } else {
             $object = $onedrive->fetchObject($file);
-            return $object;
         }
+
+        foreach($object as $val){
+            $val->setId($full_path);
+        }
+
+        return $object;
     }
 
     public function deleteFile($file)
     {
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
         $onedrive = new \App\Library\OneDrive\Client(array(
             'state' => $this->state
         ));
@@ -150,6 +174,10 @@ class OneDriveInterface implements ModelInterface
 
     public function getLink($file)
     {
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
         $onedrive = new \App\Library\OneDrive\Client(array(
             'state' => $this->state
         ));
@@ -177,6 +205,10 @@ class OneDriveInterface implements ModelInterface
 
     public function rename($file, $new_name)
     {
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
         $onedrive = new \App\Library\OneDrive\Client(array(
             'state' => $this->state
         ));
@@ -185,5 +217,28 @@ class OneDriveInterface implements ModelInterface
         $properties['name'] = $new_name;
         $onedrive->updateObject($file, $properties);
         return true;
+    }
+
+    public function getPathName($file)
+    {
+        $path = "";
+        $list_file = explode("/", $file);
+        foreach($list_file as $f){
+            $entity = $this->getFolder($f);
+            $path = $path . $entity->getName() . "/";
+        }
+        return substr($path,0,-1);
+
+//        $entity = $this->getFolder($path);
+//            while($entity->getParentId() != null){
+//                $parent->pname[] = $entity->getName();
+//                $parent->ppath[] = $entity->getId();
+//                $entity = $obj->getFolder($entity->getParentId());
+//            }
+//            $parent->pname[] = $id;
+//            $parent->ppath[] = '/' . $id;
+//
+//            $parent->pname = array_reverse($parent->pname);
+//            $parent->ppath = array_reverse($parent->ppath);
     }
 }

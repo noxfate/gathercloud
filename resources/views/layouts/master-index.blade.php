@@ -45,7 +45,7 @@
         <div id="my-cloud" class="my-cloud">
             <ul id="list-cloud" class="list-cloud">
                 <li id="side-bar-select-all">
-                    <a href="{{ url('/home') }}">
+                    <a href="{{ url('/home/all') }}">
                         <div>
                             <span class="glyphicon glyphicon-cloud"></span>
                             All in one

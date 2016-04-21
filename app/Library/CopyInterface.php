@@ -316,4 +316,13 @@ Class CopyInterface implements ModelInterface
     }
 
 
+    public function rename($file, $new_name)
+    {
+        // TODO: Implement rename() method.
+    }
+
+    public function getPath($file)
+    {
+        // TODO: Implement getPath() method.
+    }
 }

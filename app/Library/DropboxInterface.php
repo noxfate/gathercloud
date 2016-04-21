@@ -121,7 +121,7 @@ Class DropboxInterface implements ModelInterface
             $destination = $file['name'];
         } else
         {
-            $destination = substr($destination, "/".$file['name']);
+            $destination = $destination."/".$file['name'];
         }
         return $this->dbxObj->UploadFile($file['tmp_name'] ,$destination);
     }
@@ -173,6 +173,16 @@ Class DropboxInterface implements ModelInterface
         $new_name = substr($file, 0,$lastIndex+1) . $new_name;
 //        return  substr($file, 0,$lastIndex+1) . $new_name;
         return $this->dbxObj->Move($file,$new_name);
+    }
+
+    public function getPathName($file)
+    {
+        return $file;
+    }
+
+    public function SearchFile($keyword)
+    {
+        return $this->dbxObj->Search("",$keyword);
     }
 }
 
