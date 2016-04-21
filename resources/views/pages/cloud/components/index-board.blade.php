@@ -41,6 +41,7 @@
                         </div>
                         <div class="modal-body">
                             <input type="file" name="file">
+                            <input type="hidden" name="destination" value="{{$parent->par_now}}">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         </div>
                         <div class="modal-footer">
@@ -79,10 +80,10 @@
 </table>
 <div id="board-body" class="board-body">
     <table class="table-body table-hover table-striped">
+        <script>
+            document.getElementById('side-bar-select-{{ $cname }}').className = "withSelect";
+        </script>
         @if (!empty($data))
-            <script>
-                document.getElementById('side-bar-select-{{ $cname }}').className = "withSelect";
-            </script>
             @foreach($data as $d => $val)
                 <tr class="withItemMenu" value="{{ $val['path'] }}">
                     <td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>

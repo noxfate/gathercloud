@@ -105,13 +105,15 @@ class BoxInterface implements ModelInterface
         if ($destination != null){
             $list_destination = explode("/", $destination);
             $destination = end($list_destination);
+            $destination = substr($destination, 7);
         }
+
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
 
         if (null === $destination) {
             $destination = '0';
         }
-
+        dump($destination);
         $parentId = $destination;
         $name = $file['name'];
         $content = file_get_contents($file['tmp_name']);
@@ -124,8 +126,9 @@ class BoxInterface implements ModelInterface
             $data = (string)$response->getBody();
             $manage = (array)json_decode($data);
             print_r($manage);
+            return $manage;
         } elseif ($response instanceof ErrorResponse) {
-            # same as above
+            return $response;
         }
 
     }

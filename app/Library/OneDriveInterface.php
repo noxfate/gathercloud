@@ -115,6 +115,7 @@ class OneDriveInterface implements ModelInterface
             $list_destination = explode("/", $destination);
             $destination = end($list_destination);
         }
+        dump($destination);
         $onedrive = new \App\Library\OneDrive\Client(array(
             'state' => $this->state
         ));
@@ -124,6 +125,7 @@ class OneDriveInterface implements ModelInterface
         $content 	 = file_get_contents($file['tmp_name']);
         $parent      = $onedrive->fetchObject($parentId);
         $file        = $parent->createFile($name, $content);
+        dd($file);
         return $file;
     }
 

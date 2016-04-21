@@ -20,4 +20,5 @@ interface ModelInterface
     public function rename($file, $new_name);
     public function getPathName($file);
     public function getAccessToken();
+    public function SearchFile($keyword);
 }

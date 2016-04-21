@@ -23,7 +23,7 @@ Route::post('/register', "UserController@store");
 // Index Page
 Route::get('/home/{id}', 'HomeController@index');
 Route::get('/home/{id}/{any}', 'HomeController@show')->where('any', '.*');
-Route::get('/search/{id}', "HomeController@search");
+Route::get('/search', "HomeController@search");
 Route::get('/download',"HomeController@download");
 Route::post('/upload', 'HomeController@upload');
 Route::post('/{any}/delete', 'HomeController@delete')->where('any', '.*');

@@ -52,11 +52,6 @@ class HomeController extends Controller
         }
         $proObj = new Provider($id);
         $data = $proObj->getFiles("/" . $any);
-        $par = (object)array(
-            'pname' => array(),
-            'ppath' => array(),
-            'pprovider' => array()
-        );
         $parent = $this->getNavbar($cname,$proObj->getPathName($any),$any);
         return view('pages.cloud.index',[
             'data' => $data,
@@ -68,13 +63,14 @@ class HomeController extends Controller
 
     private function getNavbar($id,$pathname,$path)
     {
-        $pathname = $id . (($pathname == "")? "" : "/".$pathname);
-        $path = $id . (($pathname == "")? "" : "/".$path);
         $parent = (object)array(
             'par_now' => "",
             'par_name' => array(),
             'par_path' => array()
         );
+        $parent->par_now = $path;
+        $pathname = $id . (($pathname == "")? "" : "/".$pathname);
+        $path = $id . (($pathname == "")? "" : "/".$path);
         $parent->par_name = explode("/", $pathname);
         $paths = explode("/", $path);
         $temp = '/';
@@ -89,7 +85,6 @@ class HomeController extends Controller
                 $temp = $temp . '/';
             }
         }
-        $parent->par_now = end($parent->par_path);
         return $parent;
     }
 
@@ -101,8 +96,9 @@ class HomeController extends Controller
     }
 
     public function upload(){
-        $proObj = new Provider($_GET['connection_name']);
-        $proObj->uploadFile($_GET['file']);
+//        $proObj = new Provider($_GET['connection_name']);
+        $proObj = new Provider('box1');
+        $proObj->uploadFile($_FILES['file'],$_POST['destination']);
     }
 
     public function delete(){
@@ -114,9 +110,6 @@ class HomeController extends Controller
 
     public function rename(){
         // Provider(" waiting edit with ALL")
-        dump($_POST['connection_name']);
-        dump($_POST['file']);
-        dump($_POST['new_name']);
         $proObj = new Provider($_POST['connection_name']);
         $proObj->rename($_POST['file'], $_POST['new_name']);
         return "test--";
@@ -124,30 +117,15 @@ class HomeController extends Controller
 
     public function search()
     {
-        $fmap = new FileMapping(Auth::user()->id);
-        $result = $fmap->searchFiles($_GET['keyword']);
-
-        $email = User::find(Auth::user()->id)->email;
-
-        // All in One without Ajax Request
-        if (empty($_GET['path'])){
-            $par = $this->navbarDataByPath("All","");
-            return view('pages.cloud.index',[
-                'data' => $result,
-                "cname" => "All",
-                'cmail' => $email,
-                'parent' => $par
-            ]);
-        }else{
-            $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['connid']);
-            $par = $this->navbarDataByPath("All",$_GET['path']);
-            return view('pages.cloud.components.index-board',[
-                'data' => $data,
-                "cname" => "All",
-                'cmail' => $email,
-                'parent' => $par
-            ]);
-        }
+        $proObj = new Provider('db2');
+        $cname = $proObj->getProvider();
+        $proObj->SearchFile('with');
+//        return view('pages.cloud.index',[
+//            'data' => $data,
+//            "cname" => $cname,
+//            'parent' => $parent,
+//            'in' => $id
+//        ]);
     }
 
 }
