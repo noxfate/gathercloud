@@ -2,11 +2,6 @@
 
 namespace App\Library;
 
-use Auth;
-use App\Token;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Redirect;
-
 require __DIR__ . "/Dropbox/DropboxClient.php";
 
 
@@ -16,6 +11,7 @@ Class DropboxInterface implements ModelInterface
     private $dbxObj;
     private $APP_KEY = "fv1z1w4yn5039ys";
     private $APP_SECRET = "jyzrgispic9cabg";
+    private $return_url = "http://localhost/gathercloud/public/add/dropbox?auth_callback=1";
     private $APP_FULL_ACCESS = true;
 
     public function __construct($access_token = null)
@@ -26,7 +22,7 @@ Class DropboxInterface implements ModelInterface
     /**
      * @param mixed $dbxObj
      */
-    public function setDbxObj($access_token)
+    public function setDbxObj($token)
     {
         error_reporting(E_ALL);
         $this->enable_implicit_flush();
@@ -44,8 +40,8 @@ Class DropboxInterface implements ModelInterface
 
 //        $q = \App\Token::where('user_id',1)->get()[0]->access_token;
 //        $access_token = \GuzzleHttp\json_decode($q,true);
-        if(!empty($access_token)) {
-            $dbx->SetAccessToken($access_token);
+        if(!empty($token)) {
+            $dbx->SetAccessToken((array)\GuzzleHttp\json_decode($token->access_token));
 //			 echo "loaded access token:";
 //			 print_r($access_token);
         }
@@ -58,7 +54,6 @@ Class DropboxInterface implements ModelInterface
 
             // get & store access token, the request token is not needed anymore
             $access_token = $dbx->GetAccessToken($request_token);
-
             $this->setToken($access_token);
 
 //			$this->store_token($access_token, "access");
@@ -70,8 +65,7 @@ Class DropboxInterface implements ModelInterface
             // redirect user to dbx auth page
 //			$return_url = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'] . "?auth_callback=1";
 
-            $return_url = "http://localhost/gathercloud/public/add/dropbox?auth_callback=1";
-            $auth_url = $dbx->BuildAuthorizeUrl($return_url);
+            $auth_url = $dbx->BuildAuthorizeUrl($this->return_url);
 
             $request_token = $dbx->GetRequestToken();
             $this->store_token($request_token, "request_temp");
@@ -92,9 +86,14 @@ Class DropboxInterface implements ModelInterface
     /**
      * @return mixed
      */
-    public function getAccessToken()
+    public function getToken()
     {
-        return $this->token;
+        $tk = array(
+            'access_token' => json_encode($this->token),
+            'expired_in' => 0,
+            'refresh_token' => ""
+        );
+        return (object)$tk;
     }
 
     /**
@@ -197,6 +196,43 @@ Class DropboxInterface implements ModelInterface
             }
         }
         return $filledArray;
+    }
+
+    /**
+     * @param output of method getFiles() $list_data
+     * @param $token_id
+     * @param $connection_name
+     * @return list of object
+     * =>(string)name
+     * =>(string)path format '/example/example/example'
+     * =>(integer)bytes
+     * =>(string)mime_type
+     * =>(boolean)is_dir
+     * =>(string)modified format 'Y m d H:i:s'
+     * =>(string)shared
+     * =>(string)token_id
+     * =>(string)connection_name
+     */
+    public function normalizeMetaData($list_data, $token_id, $connection_name)
+    {
+        $format = array();
+        foreach ($list_data as $k => $val) {
+            $val->is_dir == 1 ? $mime = null : $mime = $val->mime_type;
+            empty($val->shared_folder) ? $sh = false : $sh = true;
+            array_push($format,
+                array(
+                    'name' => basename($k),
+                    'path' => $val->path,
+                    'bytes' => $val->bytes,
+                    'mime_type' => $mime,
+                    'is_dir' => ($val->is_dir)? true:false, // 1 == Folder, 0 = File
+                    'modified' => $val->modified,
+                    'shared' => $sh,
+                    'token_id' => $token_id,
+                    'connection_name' => $connection_name
+                ));
+        }
+        return $format;
     }
 }
 

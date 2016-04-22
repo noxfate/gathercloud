@@ -211,7 +211,7 @@ class DropboxClient {
 
 		$fh = @fopen($dest_path, 'wb'); // write binary
 		if($fh === false) {
-			@fclose($rfh);
+			@fclose($fh);
 			throw new DropboxException("Could not create file $dest_path !");
 		}
 

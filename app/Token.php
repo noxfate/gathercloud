@@ -19,10 +19,9 @@ class Token extends Model
         'access_token',
         'access_token_expired',
         'refresh_token',
-        'refresh_token_expired',
+        'gtc_folder',
         'user_id',
-        'provider',
-        'gtc_folder'
+        'provider_id',
     ];
 
     /**
@@ -31,22 +30,13 @@ class Token extends Model
      * @var array
      */
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
 
-    public function cache()
-    {
-        return $this->hasOne(Cache::class);
-    }
-
-    public function files()
+    public function file()
     {
         return $this->hasMany(File::class);
     }
 
-    public function dummyFiles()
+    public function dummyFile()
     {
         return $this->belongsTo(DummyFile::class);
     }

@@ -3,52 +3,66 @@
 namespace App\AppModels;
 
 use Auth;
+use App\User;
 use App\Token;
-use App\Cache;
+use App\Providers;
 
 class Provider
 {
-	private $provider;
+	private $provider_value;
     private $owner;
     private $connObj;
     private $token_id;
     private $storage;
-    private $conName;
+    private $connection_name;
 
-	function __construct($conName)
+	function __construct($connection_name)
 	{
-        $this->conName = $conName;
-        $tk = Token::where('connection_name', $conName)
+        $this->connection_name = $connection_name;
+//        $tk = User::find(Auth::user()->id)->token
+//            ->where('connection_name', $connection_name)
+//            ->first();
+        $tk = Token::where('connection_name', $connection_name)
             ->where('user_id', Auth::user()->id)
             ->firstOrFail();
-        $this->provider = $tk->provider;
+//        if(!empty($tk)){
+//
+//        }
+
+        $this->provider_value = Providers::where("id",$tk->provider_id)->first()->value;
         $this->owner = $tk->user_id;
         $this->token_id  = $tk->id;
-
-        switch ($this->provider) {
-            case "dropbox":
-                $this->connObj = new \App\Library\DropboxInterface((array)\GuzzleHttp\json_decode($tk->access_token));
-                break;
-            case "copy":
-                $this->connObj = new \App\Library\CopyInterface((array)\GuzzleHttp\json_decode($tk->access_token));
-                break;
-            case "box":
-                $this->connObj = new \App\Library\BoxInterface((array)\GuzzleHttp\json_decode($tk->access_token));
-                break;
-            case "onedrive":
-                $this->connObj = new \App\Library\OneDriveInterface((array)\GuzzleHttp\json_decode($tk->access_token));
-                break;
-            case "googledrive":
-                $token = array(
-                    'access_token' => json_decode($tk->access_token),
-                    'refresh_token' => json_decode($tk->refresh_token),
-                    'expires_in' => ""
+        $token = array(
+                    'access_token' => $tk->access_token,
+                    'expired_in' => $tk->expired_in,
+                    'refresh_token' => $tk->refresh_token,
                 );
-                $this->connObj = new \App\Library\GoogleInterface($token);
-                break;
-            default:
-                return "Error!! Provider: $this->provider";
-        }
+        $className = '\\App\\Library\\' . $this->provider_value . 'Interface';
+        $this->connObj = new $className((object)$token);
+//        switch ($this->provider) {
+//            case "dropbox":
+//                $this->connObj = new \App\Library\DropboxInterface($tk->access_token);
+//                break;
+//            case "copy":
+//                $this->connObj = new \App\Library\CopyInterface((array)\GuzzleHttp\json_decode($tk->access_token));
+//                break;
+//            case "box":
+//                $this->connObj = new \App\Library\BoxInterface((array)\GuzzleHttp\json_decode($tk->access_token));
+//                break;
+//            case "onedrive":
+//                $this->connObj = new \App\Library\OneDriveInterface((array)\GuzzleHttp\json_decode($tk->access_token));
+//                break;
+//            case "googledrive":
+//                $token = array(
+//                    'access_token' => json_decode($tk->access_token),
+//                    'refresh_token' => json_decode($tk->refresh_token),
+//                    'expires_in' => ""
+//                );
+//                $this->connObj = new \App\Library\GoogleInterface($token);
+//                break;
+//            default:
+//                return "Error!! Provider: $this->provider";
+//        }
 		
 	}
 
@@ -84,48 +98,49 @@ class Provider
     {
         return $this->connObj;
     }
+
     /**
      * @return mixed
      */
-    public function getStorage($readable = false)
-    {
-        $this->storage = array(
-            'quota' => 0,
-            'used' => 0,
-            'remain' => 0
-        );
-        $st = $this->connObj->getAccountInfo();
-        switch($this->provider){
-            case "dropbox":
-                $st = $st->quota_info;
-                $this->storage['quota'] = $st->quota;
-                $this->storage['used'] = $st->shared + $st->normal;
-                $this->storage['remain'] = $st->quota - ($st->shared + $st->normal);
-                break;
-            case "copy":
-                $st = json_decode($st);
-                $this->storage['quota'] = $st->storage->quota;
-                $this->storage['used'] = $st->storage->used;
-                $this->storage['remain'] = $st->storage->quota - $st->storage->used;
-                break;
-            case "onedrive":
-                break;
-            case "box":
-                break;
-            case "googledrive":
-                break;
-            default:
-                return "Error!! Provider: $this->provider";
-        }
-
-        if ($readable){
-            foreach ($this->storage as $key => $val){
-                $this->storage[$key] = $this->humanFileSize($val);
-            }
-        }
-
-        return $this->storage;
-    }
+//    public function getStorage($readable = false)
+//    {
+//        $this->storage = array(
+//            'quota' => 0,
+//            'used' => 0,
+//            'remain' => 0
+//        );
+//        $st = $this->connObj->getAccountInfo();
+//        switch($this->provider){
+//            case "dropbox":
+//                $st = $st->quota_info;
+//                $this->storage['quota'] = $st->quota;
+//                $this->storage['used'] = $st->shared + $st->normal;
+//                $this->storage['remain'] = $st->quota - ($st->shared + $st->normal);
+//                break;
+//            case "copy":
+//                $st = json_decode($st);
+//                $this->storage['quota'] = $st->storage->quota;
+//                $this->storage['used'] = $st->storage->used;
+//                $this->storage['remain'] = $st->storage->quota - $st->storage->used;
+//                break;
+//            case "onedrive":
+//                break;
+//            case "box":
+//                break;
+//            case "googledrive":
+//                break;
+//            default:
+//                return "Error!! Provider: $this->provider";
+//        }
+//
+//        if ($readable){
+//            foreach ($this->storage as $key => $val){
+//                $this->storage[$key] = $this->humanFileSize($val);
+//            }
+//        }
+//
+//        return $this->storage;
+//    }
 
 	function downloadFile($file)
 	{
@@ -138,7 +153,9 @@ class Provider
 	function getFiles($file = null)
 	{
         $data = $this->connObj->getFiles($file);
-        return $this->normalizeMetaData($data, $this->provider);
+        $data = $this->connObj->normalizeMetaData($data,$this->token_id,$this->connection_name);
+        $data = $this->humanFileSize($data);
+        return $data;
 	}
     function deleteFile($file)
     {
@@ -152,7 +169,9 @@ class Provider
     function searchFile($keyword)
     {
         $data = $this->connObj->searchFile($keyword);
-        return $this->normalizeMetaData($data, $this->provider);
+        $data = $this->connObj->normalizeMetaData($data,$this->token_id,$this->connection_name);
+        $data = $this->humanFileSize($data);
+        return $data;
     }
 
 	function getLink($file)
@@ -261,20 +280,23 @@ class Provider
 
     }
 
-    private
-    function humanFileSize($size)
+    private function humanFileSize($data)
     {
-        if (!$size) {
-            return "";
-        } elseif (($size >= 1 << 30)) {
-            return number_format($size / (1 << 30), 2) . "GB";
-        } elseif (($size >= 1 << 20)) {
-            return number_format($size / (1 << 20), 2) . "MB";
-        } elseif (($size >= 1 << 10)) {
-            return number_format($size / (1 << 10), 2) . "kB";
-        } else {
-            return number_format($size) . "B";
+        foreach ($data as $k => $val) {
+            $size = $val['bytes'];
+            if (!$size) {
+                $data[$k]['size'] = "";
+            } elseif (($size >= 1 << 30)) {
+                $data[$k]['size'] = number_format($size / (1 << 30), 2) . "GB";
+            } elseif (($size >= 1 << 20)) {
+                $data[$k]['size'] = number_format($size / (1 << 20), 2) . "MB";
+            } elseif (($size >= 1 << 10)) {
+                $data[$k]['size'] = number_format($size / (1 << 10), 2) . "kB";
+            } else {
+                $data[$k]['size'] = number_format($size) . "B";
+            }
         }
+        return $data;
     }
 }
 

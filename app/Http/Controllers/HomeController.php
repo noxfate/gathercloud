@@ -25,25 +25,17 @@ class HomeController extends Controller
         if (Auth::check()) {
             $cname = $id;
             if ($id == 'all') {
-                $token = User::find(Auth::user()->id)->tokens;
+                $token = User::find(Auth::user()->id)->token;
                 $data = array();
                 foreach ($token as $tk) {
                     $proObj = new Provider($tk->connection_name);
-//                    $dummy_files = DummyFile::where('real_store',User::find(Auth::user()->id)->tokens
-//                        ->where('connection_name',$tk->connection_name)
-//                        ->first()->id)->get();
                     $temp = $proObj->getFiles();
-//                    dd($temp);
-//                    foreach($dummy_files as $dmf){
-//
-//                    }
                     $data = array_merge($data, $temp);
                 }
             } else {
                 $proObj = new Provider($id);
                 $data = $proObj->getFiles();
             }
-//            dd();
             $parent = $this->getNavbar($cname,"","");
             return view('pages.cloud.index', [
                 'data' => $data,
@@ -101,7 +93,7 @@ class HomeController extends Controller
     }
 
     private function getStorages(){
-        $conn = User::find(auth()->user()->id)->tokens->all();
+        $conn = User::find(auth()->user()->id)->token->all();
         return $conn;
     }
 
@@ -120,7 +112,7 @@ class HomeController extends Controller
         dump($_POST['real_store']);
         dump($_POST['dummy_path']);
         dump($_POST['dummy_store']);
-        dump(User::find(Auth::user()->id)->tokens
+        dump(User::find(Auth::user()->id)->token
             ->where('connection_name',$_POST['real_store'])
             ->first()->id
         );
@@ -128,10 +120,10 @@ class HomeController extends Controller
         $path = $proObj->uploadFile($_FILES['file']);
         if($_POST['dummy_store'] != 'all'){
             $dm = new DummyFile();
-            $real_store = User::find(Auth::user()->id)->tokens
+            $real_store = User::find(Auth::user()->id)->token
                 ->where('connection_name',$_POST['real_store'])
                 ->first()->id;
-            $dummy_store = User::find(Auth::user()->id)->tokens
+            $dummy_store = User::find(Auth::user()->id)->token
                 ->where('connection_name',$_POST['dummy_store'])
                 ->first()->id;
             $dm->path = $path;
@@ -159,8 +151,6 @@ class HomeController extends Controller
 
     public function search($id)
     {
-//        dump($id);
-//        dd($_GET['keyword']);
         $proObj = new Provider($id);
         $data = $proObj->SearchFile($_GET['keyword']);
         $parent = $this->getNavbar("","","");

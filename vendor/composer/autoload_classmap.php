@@ -8,7 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'CreateDummyFilesTable' => $baseDir . '/database/migrations/2016_04_21_193520_create_dummy_files_table.php',
     'CreateFailedJobsTable' => $baseDir . '/database/migrations/2016_03_23_151916_create_failed_jobs_table.php',
-    'CreateFilesTable' => $baseDir . '/database/migrations/2016_04_01_163324_create_files_table.php',
+    'CreateFilesTable' => $baseDir . '/database/migrations/2016_04_03_163324_create_files_table.php',
     'CreateJobsTable' => $baseDir . '/database/migrations/2016_02_08_074116_create_jobs_table.php',
     'CreateLinksTable' => $baseDir . '/database/migrations/2016_04_02_144042_create_links_table.php',
     'CreatePasswordResetsTable' => $baseDir . '/database/migrations/2014_10_12_100000_create_password_resets_table.php',

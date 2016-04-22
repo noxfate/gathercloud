@@ -17,18 +17,21 @@ class CreateTokensTable extends Migration
             $table->string('connection_name');
             $table->string('connection_email');
             $table->longText('access_token');
-            $table->dateTime('access_token_expired');
+            $table->integer('expired_in');
             $table->longText('refresh_token');
-            $table->dateTime('refresh_token_expired');
             $table->longText('gtc_folder');
             $table->integer('user_id')->unsigned();
+            $table->integer('provider_id')->unsigned();
             $table->timestamps();
 
-            // Provider supposed to depend on Provider Table
-            $table->integer('provider');
             $table->foreign('user_id')
                 ->references('id')->on('users')
-                ->onDelete('cascade');
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+            $table->foreign('provider_id')
+                ->references('id')->on('providers')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
     }
 
