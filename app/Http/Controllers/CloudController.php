@@ -55,8 +55,8 @@ class CloudController extends Controller
     public function add($service)
     {
 
-        if (!empty($_REQUEST['conname'])){
-            Session::put('new_conname', $_REQUEST['conname']);
+        if (!empty($_REQUEST['connection_name'])){
+            Session::put('new_connection_name', $_REQUEST['connection_name']);
             Session::save();
 
         }

@@ -15,10 +15,8 @@ class CreateProvidersTable extends Migration
         Schema::create('providers', function (Blueprint $table) {
             $table->increments('id');
             $table->string('provider_name');
-            $table->string('core_color');
-            $table->string('image_path');
-            $table->string('icon_path');
-            $table->timestamps();
+            $table->string('provider_logo');
+            $table->string('value');
         });
     }
 

@@ -93,7 +93,8 @@ class File extends Node {
       'is_dir',
       'shared',
       'modified',
-      'token_id'
+      'token_id',
+      'link_id'
   ];
 
   //////////////////////////////////////////////////////////////////////////////
@@ -115,6 +116,11 @@ class File extends Node {
     public function token()
     {
         return $this->belongsTo(Token::class);
+    }
+
+    public function link()
+    {
+        return $this->belongsTo(Link::class);
     }
 
 }

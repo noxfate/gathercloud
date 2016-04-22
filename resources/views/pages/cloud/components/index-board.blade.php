@@ -1,5 +1,5 @@
-{{--<iframe name="hiddenIframe" id="hiddenIframe" style="display: none;" ></iframe>--}}
-<iframe name="hiddenIframe" id="hiddenIframe"  ></iframe>
+<iframe name="hiddenIframe" id="hiddenIframe" style="display: none;" ></iframe>
+{{--<iframe name="hiddenIframe" id="hiddenIframe"  ></iframe>--}}
 <div id="box-nav-bar" class="box-nav-bar">
     <div id="nav-bar" class="nav-bar">
         @if (!empty($parent))
@@ -126,21 +126,18 @@
             @foreach($data as $d => $val)
                 <tr class="withItemMenu" value="{{ $val['path'] }}">
                     <td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>
-
-                    {{--<td class="th-icon-cloud"><input class="gtl-chkbox" id="{{ $d }}" type="checkbox"></td>--}}
-
                     <td class="th-name">
                         @if ($val['is_dir'])
                             <span class="glyphicon glyphicon-folder-close"></span>
-                            <a href="{{ Request::getBaseUrl() . "/home/" .$cname . $val['path'] . ($cname == 'all' ? '?in='.$val['conName'] : '')}}">
+                            <a href="{{ Request::getBaseUrl() . "/home/" .$cname . $val['path'] . ($cname == 'all' ? '?in='.$val['connection_name'] : '')}}">
                                 <span class="dir"
-                                      data-conname="{{ $val['conName'] }}" data-tokenid="{{$val['token_id']}}"
+                                      data-conname="{{ $val['connection_name'] }}" data-tokenid="{{$val['token_id']}}"
                                       value="{{ $val['path'] }}">{{ $val['name'] }}</span>
                             </a>
                         @else
                             <span class="glyphicon glyphicon glyphicon-file"></span>
                             <a href="#">
-                                <span data-conname="{{ $val['conName'] }}" data-tokenid="{{$val['token_id']}}"
+                                <span data-conname="{{ $val['connection_name'] }}" data-tokenid="{{$val['token_id']}}"
                                       value="{{ $val['path'] }}">{{ $val['name'] }}</span>
                             </a>
 

@@ -4499,7 +4499,7 @@ EOT;
     Except for the limited purpose of indicating to the public that the
     Work is licensed under the CCPL, Creative Commons does not authorize
     the use by either party of the trademark "Creative Commons" or any
-    related trademark or logo of Creative Commons without the prior
+    related trademark or logo-provider of Creative Commons without the prior
     written consent of Creative Commons. Any permitted use will be in
     compliance with Creative Commons' then-current trademark usage
     guidelines, as may be published on its website or otherwise made

@@ -21,10 +21,12 @@ class CreateDummyFilesTable extends Migration
             $table->timestamps();
             $table->foreign('real_store')
                 ->references('id')->on('tokens')
-                ->onDelete('cascade');
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->foreign('dummy_store')
                 ->references('id')->on('tokens')
-                ->onDelete('cascade');
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
     }
 

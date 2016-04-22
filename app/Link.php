@@ -14,9 +14,8 @@ class Link extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id',
         'link_name',
-        'file_id',
+        'user_id',
         'url'
     ];
 
@@ -25,5 +24,8 @@ class Link extends Model
      *
      * @var array
      */
-//    protected $hidden = ['password', 'remember_token'];
+    public function file()
+    {
+        return $this->hasMany(File::class);
+    }
 }

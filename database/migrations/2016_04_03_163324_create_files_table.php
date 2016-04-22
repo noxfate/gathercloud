@@ -36,11 +36,17 @@ class CreateFilesTable extends Migration {
       $table->string('shared');
       $table->string('modified');
       $table->integer('token_id')->unsigned();
+      $table->integer('link_id')->unsigned();
       $table->timestamps();
 
       $table->foreign('token_id')
           ->references('id')->on('tokens')
-          ->onDelete('cascade');
+          ->onDelete('cascade')
+          ->onUpdate('cascade');
+      $table->foreign('link_id')
+          ->references('id')->on('links')
+          ->onDelete('cascade')
+          ->onUpdate('cascade');
 
 
     });
