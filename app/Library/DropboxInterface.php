@@ -123,7 +123,7 @@ Class DropboxInterface implements ModelInterface
         {
             $destination = $destination."/".$file['name'];
         }
-        return $this->dbxObj->UploadFile($file['tmp_name'] ,$destination);
+        return $this->dbxObj->UploadFile($file['tmp_name'] ,$destination)->path;
     }
     public function getFiles($file = null)
     {

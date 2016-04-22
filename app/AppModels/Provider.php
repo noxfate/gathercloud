@@ -133,7 +133,7 @@ class Provider
 	}
 	function uploadFile($file, $destination = null)
 	{
-       dd($this->connObj->uploadFile($file, $destination));
+       return $this->connObj->uploadFile($file, $destination);
 	}
 	function getFiles($file = null)
 	{

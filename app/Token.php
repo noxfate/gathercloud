@@ -21,7 +21,8 @@ class Token extends Model
         'refresh_token',
         'refresh_token_expired',
         'user_id',
-        'provider'
+        'provider',
+        'gtc_folder'
     ];
 
     /**
@@ -29,12 +30,6 @@ class Token extends Model
      *
      * @var array
      */
-//    protected $hidden = ['password', 'remember_token'];
-
-//    public function cache()
-//    {
-//        return $this->hasOne(Cache::class);
-//    }
 
     public function user()
     {
@@ -49,5 +44,10 @@ class Token extends Model
     public function files()
     {
         return $this->hasMany(File::class);
+    }
+
+    public function dummyFiles()
+    {
+        return $this->belongsTo(DummyFile::class);
     }
 }

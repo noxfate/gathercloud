@@ -16,11 +16,14 @@ class CreateDummyFilesTable extends Migration
             $table->increments('id');
             $table->string('path');
             $table->integer('real_store')->unsigned();
+            $table->string('dummy_path');
             $table->integer('dummy_store')->unsigned();
-            $table->integer('user_id')->unsigned();
-
-            $table->foreign('user_id')
-                ->references('id')->on('users')
+            $table->timestamps();
+            $table->foreign('real_store')
+                ->references('id')->on('tokens')
+                ->onDelete('cascade');
+            $table->foreign('dummy_store')
+                ->references('id')->on('tokens')
                 ->onDelete('cascade');
         });
     }

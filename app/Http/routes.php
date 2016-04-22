@@ -26,6 +26,7 @@ Route::get('/home/{id}/{any}', 'HomeController@show')->where('any', '.*');
 Route::get('/search/{id}', "HomeController@search");
 Route::get('/download',"HomeController@download");
 Route::post('/upload', 'HomeController@upload');
+Route::post('/upload-dummy', 'HomeController@upload_dummy');
 Route::post('/{any}/delete', 'HomeController@delete')->where('any', '.*');
 Route::post('/rename', 'HomeController@rename');
 Route::get('/home',function ()

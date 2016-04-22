@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\AppModels\Provider;
+use App\DummyFile;
+use App\Token;
 use Illuminate\Http\Request;
 
 use Auth;
@@ -27,19 +29,28 @@ class HomeController extends Controller
                 $data = array();
                 foreach ($token as $tk) {
                     $proObj = new Provider($tk->connection_name);
+//                    $dummy_files = DummyFile::where('real_store',User::find(Auth::user()->id)->tokens
+//                        ->where('connection_name',$tk->connection_name)
+//                        ->first()->id)->get();
                     $temp = $proObj->getFiles();
+//                    dd($temp);
+//                    foreach($dummy_files as $dmf){
+//
+//                    }
                     $data = array_merge($data, $temp);
                 }
             } else {
                 $proObj = new Provider($id);
                 $data = $proObj->getFiles();
             }
+//            dd();
             $parent = $this->getNavbar($cname,"","");
             return view('pages.cloud.index', [
                 'data' => $data,
                 "cname" => $cname,
                 'parent' => $parent,
-                'in' => $id
+                'in' => $id,
+                'upload_storages' => $this->getStorages()
             ]);
         } else return Redirect::to('/');
     }
@@ -57,7 +68,8 @@ class HomeController extends Controller
             'data' => $data,
             "cname" => $cname,
             'parent' => $parent,
-            'in' => $id
+            'in' => $id,
+            'upload_storages' => $this->getStorages()
         ]);
     }
 
@@ -88,6 +100,11 @@ class HomeController extends Controller
         return $parent;
     }
 
+    private function getStorages(){
+        $conn = User::find(auth()->user()->id)->tokens->all();
+        return $conn;
+    }
+
     public function download(){
 
         $proObj = new Provider($_GET['connection_name']);
@@ -96,9 +113,34 @@ class HomeController extends Controller
     }
 
     public function upload(){
-//        $proObj = new Provider($_GET['connection_name']);
-        $proObj = new Provider('box1');
+        $proObj = new Provider($_POST['connection_name']);
         $proObj->uploadFile($_FILES['file'],$_POST['destination']);
+    }
+    public function upload_dummy(){
+        dump($_POST['real_store']);
+        dump($_POST['dummy_path']);
+        dump($_POST['dummy_store']);
+        dump(User::find(Auth::user()->id)->tokens
+            ->where('connection_name',$_POST['real_store'])
+            ->first()->id
+        );
+        $proObj = new Provider($_POST['real_store']);
+        $path = $proObj->uploadFile($_FILES['file']);
+        if($_POST['dummy_store'] != 'all'){
+            $dm = new DummyFile();
+            $real_store = User::find(Auth::user()->id)->tokens
+                ->where('connection_name',$_POST['real_store'])
+                ->first()->id;
+            $dummy_store = User::find(Auth::user()->id)->tokens
+                ->where('connection_name',$_POST['dummy_store'])
+                ->first()->id;
+            $dm->path = $path;
+            $dm->real_store = $real_store;
+            $dm->dummy_path = $_POST['dummy_path'];
+            $dm->dummy_store = $dummy_store;
+            $dm->save();
+        }
+
     }
 
     public function delete(){

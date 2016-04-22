@@ -18,6 +18,7 @@ class CreateProvidersTable extends Migration
             $table->string('core_color');
             $table->string('image_path');
             $table->string('icon_path');
+            $table->timestamps();
         });
     }
 
