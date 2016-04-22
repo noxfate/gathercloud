@@ -97,4 +97,19 @@ class GoogleInterface implements ModelInterface
     {
         return $this->refresh_token;
     }
+
+    public function rename($file, $new_name)
+    {
+        // TODO: Implement rename() method.
+    }
+
+    public function getPathName($file)
+    {
+        // TODO: Implement getPathName() method.
+    }
+
+    public function searchFile($keyword)
+    {
+        // TODO: Implement searchFile() method.
+    }
 }

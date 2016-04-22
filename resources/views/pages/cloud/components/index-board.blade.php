@@ -20,9 +20,46 @@
             <div class="icon-new-folder"></div>
             New Folder
         </button>
-        <!--  <button id="file-upload" class="btn btn-default"><span class="glyphicon glyphicon-cloud-upload"></span>
-             File Upload
-         </bitton> -->
+        @if($cname == 'all')
+        <!-- Btn trigger modal Upload -->
+        <button id="trig-upload" class="btn btn-default" data-toggle="modal" data-target="#all-modal-upload">
+            <span class="glyphicon glyphicon-cloud-upload"></span>
+            File Upload
+        </button>
+        <!-- Modal -->
+        <div class="modal fade bs-example-modal-lg" id="all-modal-upload" tabindex="-1" role="dialog"
+             aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <!-- Modal content-->
+                <form action="{{ url('upload-dummy') }}" target="hiddenIframe" method="POST" enctype="multipart/form-data">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Upload</h4>
+                        </div>
+                        <div class="modal-body">
+                            <input type="file" name="file">
+                            <input type="hidden" name="dummy_path" value="{{$parent->par_now}}">
+                            <input type="hidden" name="dummy_store" value="{{$in}}">
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                            @foreach ($upload_storages as $c)
+                                <input type="radio" name="real_store" value="{{ $c->connection_name }}">{{ $c->connection_name }}
+                                <br>
+                            @endforeach
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-primary" id="btn-upload" value="Upload">
+                            {{--<button class="btn btn-primary" id="create-copy" value="Upload">--}}
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+        @else
         <!-- Btn trigger modal Upload -->
         <button id="trig-upload" class="btn btn-default" data-toggle="modal" data-target="#modal-upload">
             <span class="glyphicon glyphicon-cloud-upload"></span>
@@ -42,6 +79,7 @@
                         <div class="modal-body">
                             <input type="file" name="file">
                             <input type="hidden" name="destination" value="{{$parent->par_now}}">
+                            <input type="hidden" name="connection_name" value="{{$cname}}" >
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         </div>
                         <div class="modal-footer">
@@ -56,7 +94,8 @@
             <!-- /.modal-dialog -->
         </div>
         <!-- /.modal -->
-        <form action="{{ url("/search") }}">
+        @endif
+        <form action="{{ url("/search/{$cname}") }}">
             <div class="input-group">
                 <input type="text" name="keyword" class="form-control" placeholder="Search for...">
                       <span class="input-group-btn">

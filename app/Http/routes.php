@@ -23,12 +23,18 @@ Route::post('/register', "UserController@store");
 // Index Page
 Route::get('/home/{id}', 'HomeController@index');
 Route::get('/home/{id}/{any}', 'HomeController@show')->where('any', '.*');
-Route::get('/search', "HomeController@search");
+Route::get('/search/{id}', "HomeController@search");
 Route::get('/download',"HomeController@download");
 Route::post('/upload', 'HomeController@upload');
+Route::post('/upload-dummy', 'HomeController@upload_dummy');
 Route::post('/{any}/delete', 'HomeController@delete')->where('any', '.*');
 Route::post('/rename', 'HomeController@rename');
-//Route::resource('/home',"HomeController");
+Route::get('/home',function ()
+{
+    if (!Auth::check())
+        return view('pages.info.login');
+    return Redirect::to('/home/all');
+});
 
 //New Index Page=============================================
 Route::get('/test/{id}', ['uses' =>'TestController@index']);
