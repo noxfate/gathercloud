@@ -2,10 +2,12 @@
 
 @section('content')
     <div id="board" class="board">
-        blahh
-    <button onclick="goToSelect()">Continue</button>
+        <div class="gtl-jumbotron">
+            <h1>GatherLink</h1>
+            <p>This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+            <button class="btn btn-primary btn-lg" onclick="goToSelect()">Continue</button>
+        </div>
     <script>
-//        document.getElementById('add-gtl').className = "btn-add add-withSelect"
         function goToSelect(){
             var url = window.location.pathname + "/select";
             // alert(url);
@@ -16,8 +18,6 @@
         document.getElementById('tab-gtls').className = "active";
         document.getElementById('content-drives').className = "tab-pane fade";
         document.getElementById('content-gtls').className = "tab-pane fade active in";
-
-
     </script>
     </div>
 
