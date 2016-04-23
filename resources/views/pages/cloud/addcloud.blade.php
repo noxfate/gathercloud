@@ -22,7 +22,7 @@
                             <div class="modal-body">
                                 <div class="div-center">
                                     <div class="div-circle">
-                                        <img src="{{ URL::asset('logo-provider') }}">
+                                        <img src="{{ URL::asset('images/logo-provider/logo-box.png') }}">
                                     </div>
                                     <h5>Connection Name:</h5>
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -155,7 +155,7 @@
         </div>
     </div>
     </div>
-    <script>
-        document.getElementById('add-cloud').style.backgroundColor = "white";
-    </script>
+    {{--<script>--}}
+        {{--document.getElementById('add-cloud').className = "btn-add add-withSelect";--}}
+    {{--</script>--}}
 @endsection

@@ -5,10 +5,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Gathercloud</title>
     @include('components.main_script')
-    {{--<link rel="stylesheet" type="text/css" href="{{URL::asset('css/bootstrap.min.css')}}">--}}
-    {{--<link rel="stylesheet" href="{{URL::asset('css/cloud-index.css')}}">--}}
-    {{--<link rel="stylesheet" href="{{URL::asset('css/cloud-add.css')}}">--}}
-    {{--<script src="{{ URL::asset('js/jquery.min.js') }}"></script>--}}
 </head>
 <body>
 
@@ -33,61 +29,65 @@
 
 <div class="box-lv-1">
     <div id="side-bar" class="side-bar">
-        <div id="add-cloud" class="add-cloud">
-            <a href="{{ url('/add') }}">
-                <button class="btn btn-primary">
-                    <span class="glyphicon glyphicon-plus"></span>
-                    Add Cloud Account
-                </button>
-            </a>
-        </div>
-        <div class="itemMenu-separator"></div>
-        <div id="my-cloud" class="my-cloud">
-            <ul id="list-cloud" class="list-cloud">
-                <li id="side-bar-select-all">
-                    <a href="{{ url('/home/all') }}">
-                        <div>
-                            <span class="glyphicon glyphicon-cloud"></span>
-                            All in one
-                        </div>
+        <ul class="nav nav-tabs">
+            <li id="tab-drives" class="active"><a href="#content-drives" data-toggle="tab" aria-expanded="true">Drives</a></li>
+            <li id="tab-gtls" class=""><a href="#content-gtls" data-toggle="tab" aria-expanded="false">GatherLinks</a></li>
+        </ul>
+        <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade active in" id="content-drives">
+                <div id="add-cloud" class="btn-add">
+                    <a href="{{ url('/add') }}">
+                        <button class="btn btn-primary">
+                            <span class="glyphicon glyphicon-plus"></span>
+                            Add New Drive
+                        </button>
                     </a>
-                </li>
-                @foreach ($conn as $c)
-                    <li id="side-bar-select-{{ $c->connection_name }}">
-                        <a href="{{ url("/home/{$c->connection_name}") }}">
-                            <div><span class="glyphicon glyphicon-cloud"></span>
-                                {{ $c->connection_name }}
-                            </div>
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
-        </div>
+                </div>
+                <div id="my-cloud" class="my-cloud">
+                    <ul id="list-cloud" class="list-cloud">
+                        <li id="side-bar-select-all">
+                            <a class="btn btn-link" href="{{ url('/home/all') }}">
+                                    <span class="glyphicon glyphicon-cloud"></span>
+                                    All in one
+                            </a>
+                        </li>
+                        @foreach ($conn as $c)
+                            <li id="side-bar-select-{{ $c->connection_name }}">
+                                <a class="btn btn-link"  href="{{ url("/home/{$c->connection_name}") }}">
+                                    <span class="glyphicon glyphicon-cloud"></span>
+                                        {{ $c->connection_name }}
 
-        <div class="itemMenu-separator"></div>
-        <div id="add-gtl" class="add-cloud">
-            <a href="{{ url('/gtl') }}">
-                <button class="btn btn-primary" >
-                    {{--id="gtl-btn"--}}
-                    <span class="glyphicon glyphicon-plus"></span>
-                    Create new GatherLink
-                </button>
-            </a>
-        </div>
 
-        <div class="itemMenu-separator"></div>
-        <div id="my-cloud" class="my-cloud">
-            <ul id="list-cloud" class="list-cloud">
-                @foreach ($link as $key => $val)
-                    <li id="side-bar-select-{{ $key }}">
-                        <a href="{{ url("/gtl/{$key}") }}">
-                            <div><span class="glyphicon glyphicon-cloud"></span>
-                                {{ $key }}
-                            </div>
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="content-gtls">
+                <div id="add-gtl" class="btn-add">
+                    <a href="{{ url('/gtl') }}">
+                        <button class="btn btn-primary" >
+                            {{--id="gtl-btn"--}}
+                            <span class="glyphicon glyphicon-plus"></span>
+                            Create new GatherLink
+                        </button>
+                    </a>
+                </div>
+                <div id="my-cloud" class="my-cloud">
+                    <ul id="list-cloud" class="list-cloud">
+                        @foreach ($link as $key => $val)
+                            <li id="side-bar-select-{{ $key }}">
+                                <a href="{{ url("/gtl/{$key}") }}">
+                                    <div><span class="glyphicon glyphicon-cloud"></span>
+                                        {{ $key }}
+                                    </div>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 

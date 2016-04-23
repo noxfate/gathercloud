@@ -131,7 +131,7 @@ class PHP_CodeCoverage_Report_HTML
     private function copyFiles($target)
     {
         $dir = $this->getDirectory($target . 'css');
-        copy($this->templatePath . 'css/bootstrap.min.css', $dir . 'bootstrap.min.css');
+        copy($this->templatePath . 'css/bootswatch.min.css', $dir . 'bootswatch.min.css');
         copy($this->templatePath . 'css/nv.d3.min.css', $dir . 'nv.d3.min.css');
         copy($this->templatePath . 'css/style.css', $dir . 'style.css');
 
