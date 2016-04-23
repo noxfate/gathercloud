@@ -94,7 +94,7 @@ interface ModelInterface
 
     /**
      * @param output of method getFiles() $list_data
-     * @param $token_id
+     * @param $provider_logo
      * @param $connection_name
      * @return list of array
      * =>(string)name
@@ -104,9 +104,9 @@ interface ModelInterface
      * =>(boolean)is_dir
      * =>(string)modified format 'Y m d H:i:s'
      * =>(string)shared
-     * =>(string)token_id
+     * =>(string)provider_logo
      * =>(string)connection_name
      */
-    public function normalizeMetaData($list_data, $token_id, $connection_name);
+    public function normalizeMetaData($list_data, $provider_logo, $connection_name);
 
 }

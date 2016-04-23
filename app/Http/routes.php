@@ -11,6 +11,10 @@
 |
 */
 
+Route::get('/test',function(){
+    return view('test.test');
+});
+
 Route::get('/', "PagesController@index");
 
 // Authentication System
@@ -35,11 +39,6 @@ Route::get('/home',function ()
         return view('pages.info.login');
     return Redirect::to('/home/all');
 });
-
-//New Index Page=============================================
-Route::get('/test/{id}', ['uses' =>'TestController@index']);
-Route::get('/test/{id}/{any}', ['uses' =>'TestController@show'])->where('any', '.*');
-//array('as' = > '', 'uses' => '')->where('any', '.*');
 
 //===========================================================
 

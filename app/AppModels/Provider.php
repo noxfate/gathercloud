@@ -10,6 +10,7 @@ use App\Providers;
 class Provider
 {
 	private $provider_value;
+    private $provider_logo;
     private $owner;
     private $connObj;
     private $token_id;
@@ -19,17 +20,12 @@ class Provider
 	function __construct($connection_name)
 	{
         $this->connection_name = $connection_name;
-//        $tk = User::find(Auth::user()->id)->token
-//            ->where('connection_name', $connection_name)
-//            ->first();
         $tk = Token::where('connection_name', $connection_name)
             ->where('user_id', Auth::user()->id)
             ->firstOrFail();
-//        if(!empty($tk)){
-//
-//        }
-
-        $this->provider_value = Providers::where("id",$tk->provider_id)->first()->value;
+        $pvd = Providers::where("id",$tk->provider_id)->first();
+        $this->provider_value = $pvd->value;
+        $this->provider_logo = $pvd->provider_logo;
         $this->owner = $tk->user_id;
         $this->token_id  = $tk->id;
         $token = array(
@@ -39,31 +35,6 @@ class Provider
                 );
         $className = '\\App\\Library\\' . $this->provider_value . 'Interface';
         $this->connObj = new $className((object)$token);
-//        switch ($this->provider) {
-//            case "dropbox":
-//                $this->connObj = new \App\Library\DropboxInterface($tk->access_token);
-//                break;
-//            case "copy":
-//                $this->connObj = new \App\Library\CopyInterface((array)\GuzzleHttp\json_decode($tk->access_token));
-//                break;
-//            case "box":
-//                $this->connObj = new \App\Library\BoxInterface((array)\GuzzleHttp\json_decode($tk->access_token));
-//                break;
-//            case "onedrive":
-//                $this->connObj = new \App\Library\OneDriveInterface((array)\GuzzleHttp\json_decode($tk->access_token));
-//                break;
-//            case "googledrive":
-//                $token = array(
-//                    'access_token' => json_decode($tk->access_token),
-//                    'refresh_token' => json_decode($tk->refresh_token),
-//                    'expires_in' => ""
-//                );
-//                $this->connObj = new \App\Library\GoogleInterface($token);
-//                break;
-//            default:
-//                return "Error!! Provider: $this->provider";
-//        }
-		
 	}
 
     /**
@@ -153,7 +124,7 @@ class Provider
 	function getFiles($file = null)
 	{
         $data = $this->connObj->getFiles($file);
-        $data = $this->connObj->normalizeMetaData($data,$this->token_id,$this->connection_name);
+        $data = $this->connObj->normalizeMetaData($data,$this->provider_logo,$this->connection_name);
         $data = $this->humanFileSize($data);
         return $data;
 	}

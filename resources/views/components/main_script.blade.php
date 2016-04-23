@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{{URL::asset('css/bootstrap.min.css')}}">
+<link rel="stylesheet" href="{{URL::asset('css/bootswatch.min.css')}}">
 <link rel="stylesheet" href="{{URL::asset('css/cloud-index.css')}}">
 <link rel="stylesheet" href="{{URL::asset('css/cloud-add.css')}}">
 <link rel="stylesheet" type="text/css" href="{{URL::asset('css/jquery.dataTables.min.css')}}">

@@ -213,7 +213,7 @@ Class DropboxInterface implements ModelInterface
      * =>(string)token_id
      * =>(string)connection_name
      */
-    public function normalizeMetaData($list_data, $token_id, $connection_name)
+    public function normalizeMetaData($list_data, $provider_logo, $connection_name)
     {
         $format = array();
         foreach ($list_data as $k => $val) {
@@ -226,9 +226,9 @@ Class DropboxInterface implements ModelInterface
                     'bytes' => $val->bytes,
                     'mime_type' => $mime,
                     'is_dir' => ($val->is_dir)? true:false, // 1 == Folder, 0 = File
-                    'modified' => $val->modified,
+                    'modified' => date('Y m d H:i:s',strtotime($val->modified)),
                     'shared' => $sh,
-                    'token_id' => $token_id,
+                    'provider_logo' => $provider_logo,
                     'connection_name' => $connection_name
                 ));
         }
