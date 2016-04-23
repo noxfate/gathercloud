@@ -14,7 +14,7 @@ use Google_Client;
 use Google_Service_Drive;
 
 
-class GoogleInterface implements ModelInterface
+class GoogleDriveInterface implements ModelInterface
 {
 
     private $access_token;
@@ -111,5 +111,36 @@ class GoogleInterface implements ModelInterface
     public function searchFile($keyword)
     {
         // TODO: Implement searchFile() method.
+    }
+
+    /**
+     * @return object
+     * =>(string)access_token
+     * =>(integer)expired_in
+     * =>(string)refresh_token
+     */
+    public function getToken()
+    {
+        // TODO: Implement getToken() method.
+    }
+
+    /**
+     * @param output of method getFiles() $list_data
+     * @param $provider_logo
+     * @param $connection_name
+     * @return list of array
+     * =>(string)name
+     * =>(string)path format '/example/example/example'
+     * =>(integer)bytes
+     * =>(string)mime_type
+     * =>(boolean)is_dir
+     * =>(string)modified format 'Y m d H:i:s'
+     * =>(string)shared
+     * =>(string)provider_logo
+     * =>(string)connection_name
+     */
+    public function normalizeMetaData($list_data, $provider_logo, $connection_name)
+    {
+        // TODO: Implement normalizeMetaData() method.
     }
 }
