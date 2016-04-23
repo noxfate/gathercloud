@@ -42,10 +42,10 @@ interface ModelInterface
     public function getToken();
 
     /**
-     * @param string or null $file
+     * @param string $file
      * @return list of file metadata (value depend on provider)
      */
-    public function getFiles($file = null);
+    public function getFiles($file);
 
     /**
      * @param string $file
@@ -55,11 +55,11 @@ interface ModelInterface
 
     /**
      * @param string $file
-     * @param null $destination
+     * @param string $destination
      * @return boolean
      *
      */
-    public function uploadFile($file, $destination = null);
+    public function uploadFile($file, $destination);
 
     /**
      * @param string $file

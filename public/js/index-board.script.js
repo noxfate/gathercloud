@@ -4,51 +4,6 @@ document.getElementById('let-in-folder-progress').className = "";
 // set up jQuery with the CSRF token, or else post routes will fail
 $.ajaxSetup({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}});
 
-
-//$(".gtl-chkbox").hide();
-//$("#gtl-btn-cancel").hide();
-//$("#gtl-btn-save").hide();
-//$("#gtl-btn").click(function(){
-//    $("#gtl-btn-cancel").show();
-//    $("#gtl-btn-save").show();
-//    $(".gtl-chkbox").show();
-//});
-//$(".gtl-chkbox").click(function(){
-//    if (typeof Storage !== "undefined") { // Support Web Storage
-//        if (sessionStorage.getItem("selected") === null){
-//            sessionStorage.setItem("selected",JSON.stringify([$(this).attr("id")]));
-//            // alert("Created");
-//        }else{
-//            var ids = JSON.parse(sessionStorage.getItem("selected"));
-//            var index = ids.indexOf($(this).attr("id"));
-//            if (index !== -1){
-//                ids.splice(index,1);
-//            }else{
-//                ids.push($(this).attr("id"));
-//            }
-//            ids.sort();
-//            sessionStorage.setItem("selected",JSON.stringify(ids));
-//            // alert(ids);
-//        }
-//    }
-//});
-//$("#gtl-btn-save").click(function(e){
-//    var selected_ids = JSON.parse(sessionStorage.getItem("selected"));
-//    if (selected_ids === null){
-//        alert("Please Selected at least 1 item");
-//    }else{
-//        window.location.href = window.location.pathname.replace('/home','/gtl/create');;
-//    }
-//});
-//$("#gtl-btn-cancel").click(function(e){
-//    $(".gtl-chkbox").attr('checked',false);
-//    sessionStorage.removeItem("selected");
-//    $(".gtl-chkbox").hide();
-//    $("#gtl-btn-cancel").hide();
-//    $("#gtl-btn-save").hide();
-//});
-
-
 // handlers
 function onGetClick(event) {
     // we're not passing any data with the get route, though you can if you want
@@ -81,6 +36,28 @@ function onSuccess(data, status, xhr) {
     ;
 
 }
+
+function trig_uploadOnClick(){
+$('.bar-percentage[data-percentage]').each(function () {
+    var progress = $(this);
+    var percentage = Math.ceil($(this).attr('data-percentage'));
+    $({countNum: 0}).animate({countNum: percentage}, {
+        duration: 2000,
+        easing:'linear',
+        step: function() {
+            // What todo on every count
+            var pct = Math.floor(this.countNum) + '%';
+            progress.text(pct) && progress.siblings().children().css('width',pct);
+        }
+    });
+});
+}
+
+document.getElementById("file").onchange = function () {
+    document.getElementById("file-selected").innerHTML = this.value.replace("C:\\fakepath\\", "");
+    document.getElementById('panel-priority').style.display = 'inherit';
+    trig_uploadOnClick();
+};
 
 // listeners
 // $('button#get').on('click', onGetClick);

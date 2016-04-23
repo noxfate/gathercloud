@@ -5,7 +5,7 @@
 </script>
 <div id="box-st-bar" class="box-st-bar">
     <div id="create-bar" class="create-bar">
-        <button id="new-folder" class="btn btn-default btn-sm">
+        <button id="new-folder" class="btn btn-default btn-sm create-btn">
             {{--<div class="icon-new-folder"></div>--}}
             {{--New Folder--}}
             <span class="glyphicon glyphicon-plus-sign"></span>
@@ -13,36 +13,93 @@
         </button>
         @if($cname == 'all')
                 <!-- Btn trigger modal Upload -->
-        <button id="trig-upload" class="btn btn-default btn-sm" data-toggle="modal" data-target="#all-modal-upload">
+        <button id="trig-upload" class="btn btn-default btn-sm create-btn" data-toggle="modal" data-target="#all-modal-upload">
             <span class="glyphicon glyphicon-cloud-upload"></span>
             File Upload
         </button>
         <!-- Modal -->
         <div class="modal fade bs-example-modal-lg" id="all-modal-upload" tabindex="-1" role="dialog"
              aria-labelledby="myModalLabel">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-upload" role="document">
                 <!-- Modal content-->
                 <form action="{{ url('upload-dummy') }}" target="hiddenIframe" method="POST" enctype="multipart/form-data">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Upload</h4>
+                            <h4 class="modal-title">Upload File</h4>
                         </div>
                         <div class="modal-body">
-                            <input type="file" name="file">
-                            <input type="hidden" name="dummy_path" value="{{$parent->par_now}}">
-                            <input type="hidden" name="dummy_store" value="{{$in}}">
-                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            @foreach ($upload_storages as $c)
-                                <input type="radio" name="real_store" value="{{ $c->connection_name }}">{{ $c->connection_name }}
-                                <br>
-                            @endforeach
+                            <div class="fileUpload btn btn-primary">
+                                <span>Choose File</span>
+                                <input type="file" id="file" name="file" class="upload" />
+                            </div>
+                            <input type="hidden" name="dummy_path" value="{{$parent->par_now}}"/>
+                            <input type="hidden" name="dummy_store" value="{{$in}}"/>
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
+                            <span id="file-selected" style="padding-left: 5px">No file chosen</span>
+                            <h6 id="rdd-text"><span class="glyphicon glyphicon-ok-sign rdd-success" aria-hidden="true"></span> not have file in drive</h6>
+
+                            <div class="panel panel-primary" id="panel-priority" style="display: none">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">You can select storage</h3>
+                                </div>
+                                <div class="panel-body priority thin-scrollbar">
+                                    {{--@foreach ($upload_storages as $c)--}}
+                                    {{--<div class="radio">--}}
+                                    {{--<label>--}}
+                                    {{--<input type="radio" name="real_store" id="optionsRadios1" value="{{ $c->connection_name }}" checked="">--}}
+                                    {{--{{ $c->connection_name }}--}}
+                                    {{--</label>--}}
+                                    {{--</div>--}}
+                                    {{--@endforeach--}}
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="real_store" id="optionsRadios1" value="" checked="">
+                                            <div class="limit-text">{{ 'Project Drive sdfsdfsdifhsidfhskdjfhsdfhsidfhsdohfsf'}}</div> <p class="text-muted">{{'15GB free of 20GB'}}</p>
+                                        </label>
+                                        <div id="bar-2" class="bar-main-container azure">
+                                            <div class="wrap">
+                                                <div class="bar-percentage" data-percentage="38"></div>
+                                                <div class="bar-container">
+                                                    <div class="bar"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="real_store" id="optionsRadios1" value="">
+                                            <b>{{ 'ma books ' }}</b> <p class="text-muted">{{'15GB free of 20GB'}}</p>
+                                        </label>
+                                        <div id="bar-2" class="bar-main-container yellow">
+                                            <div class="wrap">
+                                                <div class="bar-percentage" data-percentage="71"></div>
+                                                <div class="bar-container">
+                                                    <div class="bar"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="real_store" id="optionsRadios1" value="" >
+                                            <b>{{ 'dropbox for IT '}}</b> <p class="text-muted">{{'15GB free of 20GB'}}</p>
+                                        </label>
+                                        <div id="bar-2" class="bar-main-container red">
+                                            <div class="wrap">
+                                                <div class="bar-percentage" data-percentage="85"></div>
+                                                <div class="bar-container">
+                                                    <div class="bar"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                             <input type="submit" class="btn btn-primary" id="btn-upload" value="Upload">
-                            {{--<button class="btn btn-primary" id="create-copy" value="Upload">--}}
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close
-                            </button>
                         </div>
                     </div>
                 </form>
@@ -52,14 +109,14 @@
         <!-- /.modal -->
         @else
                 <!-- Btn trigger modal Upload -->
-        <button id="trig-upload" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modal-upload">
+        <button id="trig-upload" class="btn btn-default btn-sm create-btn" data-toggle="modal" data-target="#modal-upload">
             <span class="glyphicon glyphicon-cloud-upload"></span>
             File Upload
         </button>
         <!-- Modal -->
         <div class="modal fade bs-example-modal-lg" id="modal-upload" tabindex="-1" role="dialog"
              aria-labelledby="myModalLabel">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-upload" role="document">
                 <!-- Modal content-->
                 <form action="{{ url('upload') }}" target="hiddenIframe" method="POST" enctype="multipart/form-data">
                     <div class="modal-content">
@@ -68,16 +125,19 @@
                             <h4 class="modal-title">Upload</h4>
                         </div>
                         <div class="modal-body">
-                            <input type="file" name="file">
-                            <input type="hidden" name="destination" value="{{$parent->par_now}}">
-                            <input type="hidden" name="connection_name" value="{{$cname}}" >
-                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                            <div class="fileUpload btn btn-primary">
+                                <span>Choose File</span>
+                                <input type="file" id="file" name="file" class="upload" />
+                            </div>
+                            <input type="hidden" name="dummy_path" value="{{$parent->par_now}}"/>
+                            <input type="hidden" name="dummy_store" value="{{$in}}"/>
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
+                            <span id="file-selected" style="padding-left: 5px">No file chosen</span>
+                            <h6 id="rdd-text"><span class="glyphicon glyphicon-ok-sign rdd-success" aria-hidden="true"></span> not have file in drive</h6>
                         </div>
                         <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                             <input type="submit" class="btn btn-primary" id="btn-upload" value="Upload">
-                            {{--<button class="btn btn-primary" id="create-copy" value="Upload">--}}
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close
-                            </button>
                         </div>
                     </div>
                 </form>
@@ -128,53 +188,53 @@
                     <th class="th-action"></th>
                 </tr>
             </table>
-            <div id="board-body" class="board-body">
+            <div id="board-body" class="board-body thin-scrollbar">
                 <table class="table-body table-hover table-striped">
-                    @if (!empty($data))
-                    @foreach($data as $d => $val)
-                    <tr class="withItemMenu" value="{{ $val['path'] }}">
-                    <td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>
-                    <td class="th-name">
-                    @if ($val['is_dir'])
-                    <span class="glyphicon glyphicon-folder-close"></span>
-                    <a href="{{ Request::getBaseUrl() . "/home/" .$cname . $val['path'] . ($cname == 'all' ? '?in='.$val['connection_name'] : '')}}">
-                    <span class="dir"
-                    data-conname="{{ $val['connection_name'] }}"
-                    value="{{ $val['path'] }}">{{ $val['name'] }}</span>
-                    </a>
-                    @else
-                    <span class="glyphicon glyphicon glyphicon-file"></span>
-                    <a href="#">
-                    <span data-conname="{{ $val['connection_name'] }}"
-                    value="{{ $val['path'] }}">{{ $val['name'] }}</span>
-                    </a>
+                    {{--@if (!empty($data))--}}
+                    {{--@foreach($data as $d => $val)--}}
+                    {{--<tr class="withItemMenu" value="{{ $val['path'] }}">--}}
+                    {{--<td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>--}}
+                    {{--<td class="th-name">--}}
+                    {{--@if ($val['is_dir'])--}}
+                    {{--<span class="glyphicon glyphicon-folder-close"></span>--}}
+                    {{--<a href="{{ Request::getBaseUrl() . "/home/" .$cname . $val['path'] . ($cname == 'all' ? '?in='.$val['connection_name'] : '')}}">--}}
+                    {{--<span class="dir"--}}
+                    {{--data-conname="{{ $val['connection_name'] }}"--}}
+                    {{--value="{{ $val['path'] }}">{{ $val['name'] }}</span>--}}
+                    {{--</a>--}}
+                    {{--@else--}}
+                    {{--<span class="glyphicon glyphicon glyphicon-file"></span>--}}
+                    {{--<a href="#">--}}
+                    {{--<span data-conname="{{ $val['connection_name'] }}"--}}
+                    {{--value="{{ $val['path'] }}">{{ $val['name'] }}</span>--}}
+                    {{--</a>--}}
 
-                    @endif
-                    </td>
-                    @if ($val['is_dir']  or ($val['size'] == 0))
-                    <td class="th-size"></td>
-                    @else
-                    <td class="th-size">{{ $val['size'] }}</td>
-                    @endif
-                    <td class="th-last-mo">{{ $val['modified'] }}</td>
-                    <td class="th-action"><span class="caret action"></span></td>
-                    </tr>
-                    @endforeach
-                    @endif
-                    {{--@for($i=0 ; $i<5 ; $i++)--}}
-                        {{--<tr class="withItemMenu">--}}
-                            {{--<td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>--}}
-                            {{--<td class="th-name">--}}
-                                {{--<span class="glyphicon glyphicon glyphicon-file"></span>--}}
-                                {{--<a href="#">--}}
-                                    {{--<span>testestest</span>--}}
-                                {{--</a>--}}
-                            {{--</td>--}}
-                            {{--<td class="th-size">dd</td>--}}
-                            {{--<td class="th-last-mo">adsasdasdasd</td>--}}
-                            {{--<td class="th-action"><span class="caret action"></span></td>--}}
-                        {{--</tr>--}}
-                    {{--@endfor--}}
+                    {{--@endif--}}
+                    {{--</td>--}}
+                    {{--@if ($val['is_dir']  or ($val['size'] == 0))--}}
+                    {{--<td class="th-size"></td>--}}
+                    {{--@else--}}
+                    {{--<td class="th-size">{{ $val['size'] }}</td>--}}
+                    {{--@endif--}}
+                    {{--<td class="th-last-mo">{{ $val['modified'] }}</td>--}}
+                    {{--<td class="th-action"><span class="caret action"></span></td>--}}
+                    {{--</tr>--}}
+                    {{--@endforeach--}}
+                    {{--@endif--}}
+                    @for($i=0 ; $i<30 ; $i++)
+                        <tr class="withItemMenu">
+                            <td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>
+                            <td class="th-name">
+                                <span class="glyphicon glyphicon glyphicon-file"></span>
+                                <a href="#">
+                                    <span>{{'File ' . $i}}</span>
+                                </a>
+                            </td>
+                            <td class="th-size">1 GB</td>
+                            <td class="th-last-mo">2016 12 13 20:00:01</td>
+                            <td class="th-action"><span class="caret action"></span></td>
+                        </tr>
+                    @endfor
                 </table>
             </div>
         </div>

@@ -325,4 +325,53 @@ Class CopyInterface implements ModelInterface
     {
         // TODO: Implement getPath() method.
     }
+
+    /**
+     * @return object
+     * =>(string)access_token
+     * =>(integer)expired_in
+     * =>(string)refresh_token
+     */
+    public function getToken()
+    {
+        // TODO: Implement getToken() method.
+    }
+
+    /**
+     * @param string $keyword
+     * @return list of file metadata (value depend on provider)
+     */
+    public function searchFile($keyword)
+    {
+        // TODO: Implement searchFile() method.
+    }
+
+    /**
+     * @param string $file
+     * @return string format 'example/example/example'
+     */
+    public function getPathName($file)
+    {
+        // TODO: Implement getPathName() method.
+    }
+
+    /**
+     * @param output of method getFiles() $list_data
+     * @param $provider_logo
+     * @param $connection_name
+     * @return list of array
+     * =>(string)name
+     * =>(string)path format '/example/example/example'
+     * =>(integer)bytes
+     * =>(string)mime_type
+     * =>(boolean)is_dir
+     * =>(string)modified format 'Y m d H:i:s'
+     * =>(string)shared
+     * =>(string)provider_logo
+     * =>(string)connection_name
+     */
+    public function normalizeMetaData($list_data, $provider_logo, $connection_name)
+    {
+        // TODO: Implement normalizeMetaData() method.
+    }
 }
