@@ -11,8 +11,10 @@ namespace App\Library;
 
 interface ModelInterface
 {
+
     /**
      * Implement construct
+     * To instantiate connection object $this->connObj
      *
      * @param (object) $token
      * =>(string)access_token
@@ -21,7 +23,7 @@ interface ModelInterface
      *
      * function __construct($token)
      */
-
+    public function __construct($token);
 
 
     /**
@@ -42,8 +44,8 @@ interface ModelInterface
     public function getToken();
 
     /**
-     * @param string $file
-     * @return list of file metadata (value depend on provider)
+     * @param string  $file
+     * @return list of file metadata (return value depends on Provider)
      */
     public function getFiles($file);
 
@@ -69,7 +71,7 @@ interface ModelInterface
 
     /**
      * @param string $keyword
-     * @return list of file metadata (value depend on provider)
+     * @return list of file metadata (return value depends on Provider)
      */
     public function searchFile($keyword);
 
@@ -93,7 +95,7 @@ interface ModelInterface
     public function getPathName($file);
 
     /**
-     * @param output of method getFiles() $list_data
+     * @param output from method getFiles() $list_data
      * @param $provider_logo
      * @param $connection_name
      * @return list of array
@@ -108,5 +110,6 @@ interface ModelInterface
      * =>(string)connection_name
      */
     public function normalizeMetaData($list_data, $provider_logo, $connection_name);
+
 
 }

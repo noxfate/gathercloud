@@ -18,6 +18,8 @@ class CreateProvidersTable extends Migration
             $table->string('provider_logo');
             $table->string('value');
         });
+
+
     }
 
     /**
