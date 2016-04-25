@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>Register</title>
-    <link rel="stylesheet" type="text/css" href="{{URL::asset('bootswatch.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{URL::asset('css/bootswatch.min.css')}}">
     <link rel="stylesheet" href="{{asset('css/register.css')}}">
     <link rel="stylesheet" href="{{URL::asset('css/cloud-index.css')}}">
     <link rel="stylesheet" href="{{URL::asset('css/cloud-add.css')}}">
@@ -12,7 +12,7 @@
 <body>
 <div class="regis-bg">
     <div class="regis">
-        <div class="regis-logo"><h1>&lt;Logo&gt;</h1></div>
+        <div class="regis-logo"><img src="{{URL::asset('images/logo-gtc.png')}}" height="100px"></div>
     <form action="{{ url('/register') }}" method="POST">
         First Name : <span class="glyphicon glyphicon-pencil"></span><input type="text" name="fname" required>
         Last Name : <span class="glyphicon glyphicon-pencil last"></span><input type="text" name="lname" required>

@@ -151,9 +151,19 @@ class HomeController extends Controller
 
     public function search($id)
     {
-        $proObj = new Provider($id);
-        $data = $proObj->SearchFile($_GET['keyword']);
-        $parent = $this->getNavbar("","","");
+        if ($id == 'all') {
+            $token = User::find(Auth::user()->id)->token;
+            $data = array();
+            foreach ($token as $tk) {
+                $proObj = new Provider($tk->connection_name);
+                $temp = $proObj->SearchFile($_GET['keyword']);
+                $data = array_merge($data, $temp);
+            }
+        } else {
+            $proObj = new Provider($id);
+            $data = $proObj->SearchFile($_GET['keyword']);
+        }
+        $parent = $this->getNavbar("Results of '".$_GET['keyword']."'","","");
         return view('pages.cloud.index',[
             'data' => $data,
             "cname" => $id,
