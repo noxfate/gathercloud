@@ -3,24 +3,16 @@
     <ul class="itemMenu show-itemMenu">
         <li class="itemMenu-item">
             <button type="button" class="itemMenu-btn">
-                <span class="glyphicon glyphicon-folder-open"></span>
-                <span class="itemMenu-text">Open</span>
+                <span class="glyphicon glyphicon-share"></span>
+                <span class="itemMenu-text">Share</span>
             </button>
         </li>
-        <li class="itemMenu-separator"></li>
         <li class="itemMenu-item" id="right-download">
             <button type="button" class="itemMenu-btn">
                 <span class="glyphicon glyphicon-download-alt"></span>
                 <span class="itemMenu-text">Download</span>
             </button>
         </li>
-        <li class="itemMenu-item">
-            <button type="button" class="itemMenu-btn">
-                <span class="glyphicon glyphicon-share-alt"></span>
-                <span class="itemMenu-text">Share</span>
-            </button>
-        </li>
-        <li class="itemMenu-separator"></li>
         <li class="itemMenu-item" id="right-delete">
             <button type="button" class="itemMenu-btn">
                 <span class="glyphicon glyphicon-trash"></span>
@@ -32,18 +24,23 @@
                 <span class="glyphicon glyphicon-edit"></span>
                 <span class="itemMenu-text">Rename</span>
             </button>
-
         </li>
         <li class="itemMenu-item">
             <button type="button" class="itemMenu-btn">
                 <span class="glyphicon glyphicon-move"></span>
-                <span class="itemMenu-text">Move</span>
+                <span class="itemMenu-text">Move...</span>
             </button>
         </li>
         <li class="itemMenu-item">
             <button type="button" class="itemMenu-btn">
                 <span class="glyphicon glyphicon-copy"></span>
-                <span class="itemMenu-text">Copy</span>
+                <span class="itemMenu-text">Copy...</span>
+            </button>
+        </li>
+        <li class="itemMenu-item" id="right-transfer">
+            <button type="button" class="itemMenu-btn">
+                <span class="glyphicon glyphicon-transfer"></span>
+                <span class="itemMenu-text">Transfer...</span>
             </button>
         </li>
     </ul>
@@ -188,6 +185,9 @@
             },
             'right-rename': function(t) {
                 ShowAction(t, "Rename");
+            },
+            'right-transfer': function(t) {
+                ShowAction(t, "Transfer");
             }
 
         }
@@ -240,6 +240,9 @@
 //            $(t).find("td:eq(1)").html("<input type='text' id='new_name' name='new_name' value='"+ old_name +"'>" +
 //                    "<button id=\"rename_save\">Save</button><button id=\"rename_cancel\">Cancel</button>");
 //            $('#rename_cancel').on('click', test);
+
+        }else if(a == "Transfer"){
+            $("#modal-transfer").modal();
 
         }
 

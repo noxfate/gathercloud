@@ -9,7 +9,8 @@
 <body>
 
 <div id="top-bar" class="top-bar">
-    <div id="logo" class="logo">&lt;Logo&gt;</div>
+    <div id="logo" class="logo"><img src="{{URL::asset('images/logo-mini-white-gtc.png')}}" height="40px"></div>
+    <div style="position: absolute;right: 50px;top: 17px;">admin gtc</div>
     <div id="userMenu" class="userMenu">
         <div class="dropdown">
             <button class="btn-userMenu dropdown-toggle " type="button" id="dropdownMenu1" data-toggle="dropdown"
@@ -85,6 +86,13 @@
                                 </a>
                             </li>
                         @endforeach
+                            <li id="side-bar-select-test">
+                                <a class="btn btn-link" href="#">
+                                    <div><span class="glyphicon glyphicon-list"></span>
+                                        test gtl
+                                    </div>
+                                </a>
+                            </li>
                     </ul>
                 </div>
             </div>

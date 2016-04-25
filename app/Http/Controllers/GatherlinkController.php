@@ -6,9 +6,10 @@ use Illuminate\Http\Request;
 
 use Auth;
 use App\User;
-use App\Token;
+use App\Providers;
 use App\File;
 use App\Link;
+use App\AppModels\Provider;
 use App\Jobs\CreateFileMapping;
 use App\Library\FileMapping;
 use App\Http\Requests;
@@ -151,102 +152,51 @@ class GatherlinkController extends Controller
 
     public function select()
     {
+
         if (Auth::check()) {
-
-            $que = User::find(Auth::user()->id)->tokens;
-            $email = User::find(Auth::user()->id)->email;
-
-            $fmap = new FileMapping(Auth::user()->id);
-
-            // All in One without Ajax Request
-            if (empty($_GET['path'])){
-                $data = $fmap->getFirstLevel();
-//                dd($data);
-                $par = $this->navbarDataByPath("All","");
-                return view('pages.gtl.components.gtl-board',[
-                    'data' => $data,
-                    "cname" => "all",
-                    'cmail' => $email,
-                    'parent' => $par
-                ]);
-            }else{
-                $data = $fmap->traverseInsideFolder($_GET['path'], $_GET['provider']);
-                $par = $this->navbarDataByPath("All",$_GET['path']);
-                return view('pages.gtl.components.gtl-board',[
-                    'data' => $data,
-                    "cname" => "all",
-                    'cmail' => $email,
-                    'parent' => $par
-                ]);
-            }
-
-
-        } else
-            return Redirect::to('/gtl');
+            $id = "select";
+            $cname = $id;
+                $token = User::find(Auth::user()->id)->token;
+                $data = array();
+                foreach ($token as $tk) {
+                    $proObj = new Provider($tk->connection_name);
+                    $temp = $proObj->getFiles();
+                    $data = array_merge($data, $temp);
+                }
+            $parent = $this->getNavbar($cname,"","");
+            return view('pages.gtl.components.gtl-board', [
+                'data' => $data,
+                "cname" => $cname,
+                'parent' => $parent,
+                'in' => $id,
+            ]);
+        } else return Redirect::to('/');
     }
 
-    private function navbarDataByPath($id,$path)
+
+    private function getNavbar($id,$pathname,$path)
     {
-        $path = $id . $path;
         $parent = (object)array(
-            'pname' => array(),
-            'ppath' => array(),
-            'pprovider' => array()
+            'par_now' => "",
+            'par_name' => array(),
+            'par_path' => array()
         );
-        if (!empty($_GET['provider'])){
-            $parent->pprovider = $_GET['provider'];
-        }
-        $parent->pname = explode("/", $path);
+        $parent->par_now = $path;
+        $pathname = $id . (($pathname == "")? "" : "/".$pathname);
+        $path = $id . (($pathname == "")? "" : "/".$path);
+        $parent->par_name = explode("/", $pathname);
+        $paths = explode("/", $path);
         $temp = '/';
-        for ($i = 0; $i < count($parent->pname); $i++) {
+        for ($i = 0; $i < count($parent->par_name); $i++) {
             if ($i == 0) {
-                $temp = $temp . $parent->pname[$i];
-                $parent->ppath[] = $temp;
-                $temp = '/';
+                $temp = $temp . $paths[$i];
+                $parent->par_path[] = $temp;
+                $temp = '/' . $id . '/';
             } else {
-                $temp = $temp . $parent->pname[$i];
-                $parent->ppath[] = $temp;
+                $temp = $temp . $paths[$i];
+                $parent->par_path[] = $temp;
                 $temp = $temp . '/';
             }
-
-        }
-        return $parent;
-    }
-
-    private function navbarDataById($id, $path, $obj, $provider)
-    {
-        $parent = (object)array(
-            'pname' => array(),
-            'ppath' => array()
-        );
-
-
-        if ($provider == 'box') {
-
-            $parent->pname[] = $id;
-            $parent->ppath[] = '/' . $id;
-
-            $entity = $obj->getEntity($path);
-            $pcollection = $entity->path_collection;
-            for($i = 1; $i < $pcollection->total_count ; $i++){
-                $parent->pname[] = $pcollection->entries[$i]->name;
-                $parent->ppath[] = ($pcollection->entries[$i]->type == 'folder') ? 'folder.'.$pcollection->entries[$i]->id : 'file.'.$pcollection->entries[$i]->id;
-            }
-            $parent->pname[] = $entity->name;
-            $parent->ppath[] = $entity->type . "." . $entity->id;
-
-        }elseif($provider == 'onedrive'){
-            $entity = $obj->getFolder($path);
-            while($entity->getParentId() != null){
-                $parent->pname[] = $entity->getName();
-                $parent->ppath[] = $entity->getId();
-                $entity = $obj->getFolder($entity->getParentId());
-            }
-            $parent->pname[] = $id;
-            $parent->ppath[] = '/' . $id;
-
-            $parent->pname = array_reverse($parent->pname);
-            $parent->ppath = array_reverse($parent->ppath);
         }
         return $parent;
     }
