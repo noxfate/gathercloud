@@ -18,23 +18,29 @@
 }
 
 .board-add-cloud{
-    position: relative;
-    top: 60px;
-    width: 90%;
-    margin: 0 auto;
-    padding: 60px 1% 40px 1%;
-    border: solid #080808 1px;
+    height: 100%;
+    padding: 40px;
+    font-size: 13px;
+    color: #666666;
+    line-height: 1.846;
+    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    /*position: relative;*/
+    /*top: 60px;*/
+    /*width: 90%;*/
+    /*margin: 0 auto;*/
+    /*padding: 60px 1% 40px 1%;*/
+    /*border: solid #2196f3 1px;*/
     text-align: center;
 }
 
-.board-add-cloud h1{
-    position: absolute;
-    top: -43px;
-    left: 30px;
-    padding-left: 5px;
-    padding-right: 5px;
-    background-color: white;
-}
+/*.board-add-cloud h1{*/
+    /*position: absolute;*/
+    /*top: -60px;*/
+    /*left: 30px;*/
+    /*padding-left: 5px;*/
+    /*padding-right: 5px;*/
+    /*background-color: white;*/
+/*}*/
 
 .div-center{
     width: 450px;

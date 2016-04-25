@@ -45,9 +45,7 @@ button{
 
 .logo {
     position: absolute;
-    font-size: 1.5em;
-    padding-left: 15px;
-    padding-top: 10px;
+    padding-left: 10px;
 }
 
 .userMenu {
@@ -170,6 +168,10 @@ button{
 .box-nd-bar .panel-default .panel-body {
     padding: 0px;
     height: calc(100% - 50px);
+}
+
+.panel-gtl{
+    height: calc(100% - 70px) !important;
 }
 
 .nav-bar {
@@ -379,6 +381,12 @@ input:-webkit-autofill:active {
     width: 30px;
     text-align: center;
 }
+
+
+.th-icon-cb-gtl{
+    width: 42px;
+    text-align: center;
+}
 .th-name {
     width: calc(100% - 30px - 80px - 120px - 50px);
     padding-left: 0px;
@@ -397,7 +405,7 @@ input:-webkit-autofill:active {
     text-align: right;
 }
 
-.board .board-body {
+.board-body {
     overflow: auto;
     height: calc(100% - 25px);
 }
@@ -472,4 +480,73 @@ input:-webkit-autofill:active {
     height: calc(100% - 50px);
     opacity: 0.7;
     z-index: 100;
+}
+
+.gtl-buttom-bar{
+    height: 50px;
+    float: right;
+}
+
+.gtl-box{
+    height: 100%;
+    padding: 20px;
+    text-align: center;
+}
+
+.gtl-div-table{
+    width: 50%;
+    margin: 0px auto;
+    text-align: left;
+    max-height: calc(100% - 205px);
+}
+
+.gtl-landing{
+    width: 55%;
+    background-color: #f9f9f9;
+    text-align: left;
+    margin: 0 auto;
+}
+
+
+.setting-box{
+    height: 100%;
+    padding: 40px;
+    font-size: 13px;
+    color: #666666;
+    line-height: 1.846;
+    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.setting-box .form-horizontal {
+    background-color: white;
+    padding: 0px;
+    margin-bottom: 20px;
+}
+
+.setting-box .form-horizontal .form-group {
+    margin: 0px 0px;
+}
+
+.setting-box .col-lg-4, .setting-box .col-lg-2{
+    padding-left: 0px;
+    padding-right: 10px;
+}
+
+legend{
+    border-bottom: 2px solid #2196f3;
+}
+
+.font-12{
+    font-size: 12px;
+}
+
+.font-14{
+    font-size: 14px;
+}
+
+ul.ul-tranfer{
+    list-style: none;
+}
+ul.ul-tranfer li{
+    padding: 5px;
 }

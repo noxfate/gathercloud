@@ -3,8 +3,8 @@
     float: left;
     width: 100%;
     height: 100%;
-    background-color: #204d74;
-    color: whitesmoke;
+    background-color: lightblue;
+    color: #2196f3;
 }
 
 .regis {
@@ -28,29 +28,30 @@
 
 .regis-logo {
     width: 100%;
+    margin-bottom: 10px;
 }
 .regis-logo h1{
     padding-left: 70px;
 }
 
 .regis span.glyphicon-pencil{
-    top: 73px;
+    top: 133px;
 }
 
 
 .regis span.glyphicon-pencil.last{
-    top: 128px;
+    top: 188px;
 }
 
 .regis span.glyphicon-envelope{
-    top: 182px;
+    top: 242px;
 }
 
 .regis span.glyphicon-lock{
-    top: 238px;
+    top: 298px;
 }
 .regis span.glyphicon-lock.re{
-    top: 293px;
+    top: 353px;
 }
 
 .regis input {
@@ -61,7 +62,7 @@
 }
 
 .regis input[type="email"] {
-    background: #dedede;
+    background-color: whitesmoke ;
     /* 	border-top: 1px solid #000;
     border-right: 1px solid #000;
     border-left: 1px solid #000;
@@ -71,7 +72,7 @@
     margin-bottom: 10px;
 }
 .regis input[type="text"] {
-    background: #dedede;
+    background-color: whitesmoke ;
     /* 	border-top: 1px solid #000;
     border-right: 1px solid #000;
     border-left: 1px solid #000;
@@ -82,7 +83,7 @@
 }
 
 .regis input[type="password"] {
-    background-color: #dedede;
+    background-color: whitesmoke ;
     /* 	border-top: 1px solid #828282;
     border-right: 1px solid #000;
     border-bottom: 1px solid #000;

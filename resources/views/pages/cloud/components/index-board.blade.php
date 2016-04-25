@@ -37,11 +37,14 @@
                             <input type="hidden" name="dummy_store" value="{{$in}}"/>
                             <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
                             <span id="file-selected" style="padding-left: 5px">No file chosen</span>
-                            <h6 id="rdd-text"><span class="glyphicon glyphicon-ok-sign rdd-success" aria-hidden="true"></span> not have file in drive</h6>
+                            <h6 id="rdd-text">
+                                <span class="glyphicon glyphicon-ok-sign rdd-success" aria-hidden="true"></span>
+                                File doesn't exist in this drive.
+                            </h6>
 
                             <div class="panel panel-primary" id="panel-priority" style="display: none">
                                 <div class="panel-heading">
-                                    <h3 class="panel-title">You can select storage</h3>
+                                    <h3 class="panel-title">Please select your storage.</h3>
                                 </div>
                                 <div class="panel-body priority thin-scrollbar">
                                     {{--@foreach ($upload_storages as $c)--}}
@@ -55,11 +58,11 @@
                                     <div class="radio">
                                         <label>
                                             <input type="radio" name="real_store" id="optionsRadios1" value="" checked="">
-                                            <div class="limit-text">{{ 'Project Drive sdfsdfsdifhsidfhskdjfhsdfhsidfhsdohfsf'}}</div> <p class="text-muted">{{'15GB free of 20GB'}}</p>
+                                            <div class="limit-text">{{ 'box text 2 '}}</div> <p class="text-muted">{{'2.5GB free of 2.5GB'}}</p>
                                         </label>
                                         <div id="bar-2" class="bar-main-container azure">
                                             <div class="wrap">
-                                                <div class="bar-percentage" data-percentage="38"></div>
+                                                <div class="bar-percentage" data-percentage="1"></div>
                                                 <div class="bar-container">
                                                     <div class="bar"></div>
                                                 </div>
@@ -69,25 +72,11 @@
                                     <div class="radio">
                                         <label>
                                             <input type="radio" name="real_store" id="optionsRadios1" value="">
-                                            <b>{{ 'ma books ' }}</b> <p class="text-muted">{{'15GB free of 20GB'}}</p>
+                                            <b>{{ 'Dropbox test 1 ' }}</b> <p class="text-muted">{{'1.13GB free of 2.63GB'}}</p>
                                         </label>
                                         <div id="bar-2" class="bar-main-container yellow">
                                             <div class="wrap">
-                                                <div class="bar-percentage" data-percentage="71"></div>
-                                                <div class="bar-container">
-                                                    <div class="bar"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="radio">
-                                        <label>
-                                            <input type="radio" name="real_store" id="optionsRadios1" value="" >
-                                            <b>{{ 'dropbox for IT '}}</b> <p class="text-muted">{{'15GB free of 20GB'}}</p>
-                                        </label>
-                                        <div id="bar-2" class="bar-main-container red">
-                                            <div class="wrap">
-                                                <div class="bar-percentage" data-percentage="85"></div>
+                                                <div class="bar-percentage" data-percentage="58"></div>
                                                 <div class="bar-container">
                                                     <div class="bar"></div>
                                                 </div>
@@ -166,11 +155,9 @@
                             <li>
                                 @if ($i == 0)
                                     {{--{{$parent->par_now}}--}}
-                                    <a href="{{ url("/home{$parent->par_path[$i]}") }}"><span>{{ $parent->par_name[$i] }}</span></a>
+                                    <a href="{{ url("/home{$parent->par_path[$i]}") }}">{{ $parent->par_name[$i] }}</a>
                                 @else
-                                    <span class="glyphicon glyphicon-menu-right"></span>
-                                    <span class="glyphicon glyphicon-folder-open"></span>
-                                    <a href="{{ url("/home{$parent->par_path[$i]}?in={$in}") }}"><span>{{ $parent->par_name[$i] }}</span></a>
+                                    <a href="{{ url("/home{$parent->par_path[$i]}?in={$in}") }}">{{ $parent->par_name[$i] }}</a>
                                 @endif
                             </li>
                         @endfor
@@ -190,51 +177,50 @@
             </table>
             <div id="board-body" class="board-body thin-scrollbar">
                 <table class="table-body table-hover table-striped">
-                    {{--@if (!empty($data))--}}
-                    {{--@foreach($data as $d => $val)--}}
-                    {{--<tr class="withItemMenu" value="{{ $val['path'] }}">--}}
+                    @if (!empty($data))
+                        @foreach($data as $d => $val)
+                            <tr class="withItemMenu" value="{{ $val['path'] }}">
+                                <td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>
+                                <td class="th-name">
+                                    @if ($val['is_dir'])
+                                        <span class="glyphicon glyphicon-folder-close"></span>
+                                        <a href="{{ Request::getBaseUrl() . "/home/" .$cname . $val['path'] . ($cname == 'all' ? '?in='.$val['connection_name'] : '')}}">
+                                            <span class="dir" data-conname="{{ $val['connection_name'] }}" value="{{ $val['path'] }}">{{ $val['name'] }}</span>
+                                            <br><span class="text-muted font-12">in</span><a href="#"><span class="text-primary font-12">{{"/".$val['connection_name']. $val['path'] }}</span></a>
+                                        </a>
+                                    @else
+                                        <span class="glyphicon glyphicon glyphicon-file"></span>
+                                        <a href="#">
+                                            <span data-conname="{{ $val['connection_name'] }}" value="{{ $val['path'] }}">{{ $val['name'] }}</span>
+                                            <br><span class="text-muted font-12">in</span><a href="#"><span class="text-primary font-12">{{ "/".$val['connection_name']. $val['path'] }}</span></a>
+                                        </a>
+
+                                    @endif
+                                </td>
+                                @if ($val['is_dir']  or ($val['size'] == 0))
+                                    <td class="th-size"></td>
+                                @else
+                                    <td class="th-size">{{ $val['size'] }}</td>
+                                @endif
+                                <td class="th-last-mo">{{ $val['modified'] }}</td>
+                                <td class="th-action"><span class="caret action"></span></td>
+                            </tr>
+                        @endforeach
+                    @endif
+                    {{--@for($i=0 ; $i<30 ; $i++)--}}
+                    {{--<tr class="withItemMenu">--}}
                     {{--<td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>--}}
                     {{--<td class="th-name">--}}
-                    {{--@if ($val['is_dir'])--}}
-                    {{--<span class="glyphicon glyphicon-folder-close"></span>--}}
-                    {{--<a href="{{ Request::getBaseUrl() . "/home/" .$cname . $val['path'] . ($cname == 'all' ? '?in='.$val['connection_name'] : '')}}">--}}
-                    {{--<span class="dir"--}}
-                    {{--data-conname="{{ $val['connection_name'] }}"--}}
-                    {{--value="{{ $val['path'] }}">{{ $val['name'] }}</span>--}}
-                    {{--</a>--}}
-                    {{--@else--}}
                     {{--<span class="glyphicon glyphicon glyphicon-file"></span>--}}
                     {{--<a href="#">--}}
-                    {{--<span data-conname="{{ $val['connection_name'] }}"--}}
-                    {{--value="{{ $val['path'] }}">{{ $val['name'] }}</span>--}}
+                    {{--<span>{{'File ' . $i}}</span>--}}
                     {{--</a>--}}
-
-                    {{--@endif--}}
                     {{--</td>--}}
-                    {{--@if ($val['is_dir']  or ($val['size'] == 0))--}}
-                    {{--<td class="th-size"></td>--}}
-                    {{--@else--}}
-                    {{--<td class="th-size">{{ $val['size'] }}</td>--}}
-                    {{--@endif--}}
-                    {{--<td class="th-last-mo">{{ $val['modified'] }}</td>--}}
+                    {{--<td class="th-size">1 GB</td>--}}
+                    {{--<td class="th-last-mo">2016 12 13 20:00:01</td>--}}
                     {{--<td class="th-action"><span class="caret action"></span></td>--}}
                     {{--</tr>--}}
-                    {{--@endforeach--}}
-                    {{--@endif--}}
-                    @for($i=0 ; $i<30 ; $i++)
-                        <tr class="withItemMenu">
-                            <td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>
-                            <td class="th-name">
-                                <span class="glyphicon glyphicon glyphicon-file"></span>
-                                <a href="#">
-                                    <span>{{'File ' . $i}}</span>
-                                </a>
-                            </td>
-                            <td class="th-size">1 GB</td>
-                            <td class="th-last-mo">2016 12 13 20:00:01</td>
-                            <td class="th-action"><span class="caret action"></span></td>
-                        </tr>
-                    @endfor
+                    {{--@endfor--}}
                 </table>
             </div>
         </div>
@@ -263,6 +249,57 @@
                     {{--<button class="btn btn-primary" id="create-copy" value="Upload">--}}
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close
                     </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<!-- Modal Transfer-->
+<div class="modal fade bs-example-modal-lg" id="modal-transfer" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <!-- Modal content-->
+        <form action="{{ url('transfer') }}" target="hiddenIframe" method="POST">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Transfer to another drive.</h4>
+                </div>
+                <div class="modal-body" style="padding: 0px 20px;height: 255px">
+                    <div style="background-color: ghostwhite;padding: 10px;border: 1px solid #eee;height: 100%">
+                        <ul class="ul-tranfer" style="padding: 0px">
+                            <li>
+                        <span class="glyphicon glyphicon-minus-sign" style="margin-right: 5px"></span>
+                        <span><span class="glyphicon glyphicon-cloud" style="margin-right: 4px"></span>box test 2</span>
+                                <ul class="ul-tranfer">
+                                    <li>
+                                        <span class="glyphicon glyphicon-minus-sign" style="margin-right: 5px"></span>
+                                        <span>Test 1</span>
+                                        <ul class="ul-tranfer">
+                                            <li>
+                                                <span class="glyphicon glyphicon-plus-sign" style="margin-right: 5px"></span>
+                                                <span>lvl1</span>
+                                            </li>
+                                            <li style="background-color: skyblue">
+                                                <span class="glyphicon glyphicon-plus-sign" style="margin-right: 5px"></span>
+                                                <span class="text-primary">SMO_TEST</span>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="btn-rename" >Transfer</button>
+                    {{--<button class="btn btn-primary" id="create-copy" value="Upload">--}}
+
                 </div>
             </div>
         </form>
