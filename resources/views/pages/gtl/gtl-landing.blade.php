@@ -11,10 +11,13 @@
             </div>
         </div>
         <script>
+            var url = window.location.pathname + "/select/all";
+            // alert(url);
+            $("#board").load(url);
+
             function goToSelect(){
-                var url = window.location.pathname + "/select";
+                var url = window.location.pathname + "/select/all";
                 // alert(url);
-                alert(url);
                 $("#board").load(url);
             }
 

@@ -58,7 +58,8 @@ Route::get('/upload',function(){
 
 // GatherLink Ver. 1
 Route::get('/gtl/shared', 'GatherlinkController@showFromToken');
-Route::get('/gtl/select', 'GatherlinkController@select');
+Route::get('/gtl/select/{id}', 'GatherlinkController@select');
+Route::get('/gtl/select/{id}/{any}', 'GatherlinkController@select')->where('any', '.*');;
 Route::resource('/gtl','GatherlinkController');
 
 

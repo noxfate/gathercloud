@@ -86,13 +86,13 @@
                                 </a>
                             </li>
                         @endforeach
-                            <li id="side-bar-select-test">
-                                <a class="btn btn-link" href="#">
-                                    <div><span class="glyphicon glyphicon-list"></span>
-                                        test gtl
-                                    </div>
-                                </a>
-                            </li>
+                            {{--<li id="side-bar-select-test">--}}
+                                {{--<a class="btn btn-link" href="#">--}}
+                                    {{--<div><span class="glyphicon glyphicon-list"></span>--}}
+                                        {{--test gtl--}}
+                                    {{--</div>--}}
+                                {{--</a>--}}
+                            {{--</li>--}}
                     </ul>
                 </div>
             </div>

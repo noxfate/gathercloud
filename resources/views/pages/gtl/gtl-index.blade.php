@@ -45,15 +45,14 @@
 
 
 	<div class="gtl-box">
-		<form action="{{ url('/gtl') }}" method="POST" style="height: 100%">
-			<h4><span class="label label-default" style="color: black">GTL Name</span>&nbsp;<span>test gtl</span></h4>
+			<h4><span class="label label-default" style="color: black">GTL Name</span>&nbsp;<span>{{ $link->link_name }}</span></h4>
 			<hr width="50%">
 			<div style="margin-bottom: 10px">
 				<div style="display: inline-block;">
-					<h6 class="text-primary" style="display: inline;padding-right: 3px">Yours Selected items <span class="badge">3</span></h6>
+					<h6 class="text-primary" style="display: inline;padding-right: 3px">Yours Selected items <span class="badge">{{ $data->count() }}</span></h6>
 				</div>
 				<div style="display: inline-block;border-left: 1px solid #eee;padding-left: 15px;margin-left: 10px">
-					<button type="button" class="btn btn-default btn-sm" aria-hidden="true">
+					<button type="button" id="gtl-url-btn" data-url="{{url('gtl/shared').'?tokens='.$link->url }}" class="btn btn-default btn-sm" aria-hidden="true">
 						<span class="glyphicon glyphicon-link"></span> Copy link
 					</button>
 				</div>
@@ -101,28 +100,38 @@
 						{{--</tr>--}}
 						{{--@endforeach--}}
 						{{--@endif--}}
-						@for($i=0 ; $i<3 ; $i++)
+{{--						@for($i=0 ; $i<3 ; $i++)--}}
+						@foreach($data as $d)
 							<tr class="withItemMenu">
 								<td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>
 								<td class="th-name">
-									<span class="glyphicon glyphicon glyphicon-file"></span>
+									@if ($d->is_dir)
+										<span class="glyphicon glyphicon glyphicon-folder-close"></span>
+									@else
+										<span class="glyphicon glyphicon glyphicon-file"></span>
+									@endif
 									<a href="#">
-										<span>{{'File ' . $i}}</span>
+										<span>{{ $d->name }}</span>
 									</a>
 								</td>
-								<td class="th-size">1 GB</td>
-								<td class="th-last-mo">2016 12 13 20:00:01</td>
+								<td class="th-size">{{ $d->size }}</td>
+								<td class="th-last-mo">{{ $d->modified }}</td>
 								<td class="th-action"><span class="caret action"></span></td>
 							</tr>
-						@endfor
+						@endforeach
+						{{--@endfor--}}
 					</table>
 				</div>
-				<input type="hidden" name="items" id="post-data">
-				<input type="hidden" name="_token" value="{{ csrf_token() }}">
 			</div>
 			<br>
-			<input class="btn btn-default" type="Submit" onclick="sessionStorage.removeItem('selected')" id="gtl-create-btn" value="Edit">
-			<input class="btn btn-danger" type="Submit" onclick="sessionStorage.removeItem('selected')" id="gtl-create-btn" value="Delete">
-		</form>
+			<button class="btn btn-default"  id="gtl-edit-btn">Edit</button>
+			<button class="btn btn-danger"  id="gtl-delete-btn">Delete</button>
 	</div>
+
+    <script>
+
+        $("#gtl-url-btn").click(function (e) {
+            window.prompt("Copy to Clipboard: Press Ctrl+C, Enter", $(this).attr("data-url"));
+        });
+    </script>
 @endsection
