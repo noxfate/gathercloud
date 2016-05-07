@@ -64,14 +64,43 @@ class GatherlinkController extends Controller
     {
         $selected = json_decode($request->input('items'));
         $tmp_url = substr(base64_encode(sha1(mt_rand())), 0, 16);
-        foreach ($selected as $s){
-            $link = new Link();
-            $link->link_name = $request->input('lkname');
-            $link->user_id = Auth::user()->id;
-            $link->url = $tmp_url;
-            $link->file_id = $s;
+        $link = new Link();
+        $link->link_name = $request->input('lkname');
+        $link->user_id = Auth::user()->id;
+        $link->url = $tmp_url;
+//            $link->file_id = $s;
 //        dd($link->data);
-            $link->save();
+        $link->save();
+        $lid = $link->id;
+        $random = User::find(Auth::user()->id)->token->first()->id;
+        $root = File::create([
+            'name' => 'root',
+            'path' => $request->input("lkname"),
+            'link_id' => $lid,
+            'token_id' => $random
+            // Error
+        ]);
+
+        foreach ($selected as $s){
+            $tokenName = substr(dirname($s),1);
+            $path = trim(substr($s, strlen($tokenName)+1));
+            $provObj = new Provider($tokenName);
+            $before_dir = str_replace(basename($path), "", $path);
+            $file = $provObj->getFiles($before_dir);
+            $key = array_search($path, array_column($file, 'path'));
+//            dd($file[$key]);
+            $root->children()->create([
+                'name' => $file[$key]['name'],
+                'path' => $file[$key]['path'],
+                'bytes' => $file[$key]['bytes'],
+                'size' => $file[$key]['size'],
+                'mime_type' => $file[$key]['mime_type'],
+                'is_dir' => $file[$key]['is_dir'],
+                'shared' => $file[$key]['shared'],
+                'modified' => $file[$key]['modified'],
+                'token_id' => $provObj->getTokenId(),
+                'link_id'=> $lid
+            ]);
         }
         return Redirect::to('/home');
     }
@@ -85,11 +114,13 @@ class GatherlinkController extends Controller
     public function show($id)
     {
         if (Auth::check()){
-            $link = Link::where('link_name',$id)->where('user_id', Auth::user()->id)->get();
-            $data = collect();
-            foreach($link as $d){
-                $data = $data->push(File::find($d->file_id));
-            }
+            $link = Link::where('link_name',$id)->where('user_id', Auth::user()->id)->first();
+//            dd($link);
+            $root = File::roots()->where('link_id', $link->id)->first();
+            $data = $root->getDescendants();
+//            foreach($link as $d){
+//                $data = $data->push(File::find($d->file_id));
+//            }
 //            dd($data);
             return view("pages.gtl.gtl-index",[
                 "link" => $link,
@@ -102,11 +133,9 @@ class GatherlinkController extends Controller
 
     public function showFromToken()
     {
-        $link = Link::where("url",$_GET['tokens'])->get();
-        $data = collect();
-        foreach($link as $d){
-            $data = $data->push(File::find($d->file_id));
-        }
+        $link = Link::where("url",$_GET['tokens'])->first();
+        $root = File::roots()->where('link_id', $link->id)->first();
+        $data = $root->getDescendants();
         dd($data);
         return $data;
     }
@@ -152,17 +181,16 @@ class GatherlinkController extends Controller
 
     public function select()
     {
-
         if (Auth::check()) {
-            $id = "select";
+            $id = "all";
             $cname = $id;
-                $token = User::find(Auth::user()->id)->token;
-                $data = array();
-                foreach ($token as $tk) {
-                    $proObj = new Provider($tk->connection_name);
-                    $temp = $proObj->getFiles();
-                    $data = array_merge($data, $temp);
-                }
+            $token = User::find(Auth::user()->id)->token;
+            $data = array();
+            foreach ($token as $tk) {
+                $proObj = new Provider($tk->connection_name);
+                $temp = $proObj->getFiles();
+                $data = array_merge($data, $temp);
+            }
             $parent = $this->getNavbar($cname,"","");
             return view('pages.gtl.components.gtl-board', [
                 'data' => $data,
@@ -172,7 +200,6 @@ class GatherlinkController extends Controller
             ]);
         } else return Redirect::to('/');
     }
-
 
     private function getNavbar($id,$pathname,$path)
     {
