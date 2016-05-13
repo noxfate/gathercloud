@@ -80,7 +80,14 @@ Class DropboxInterface implements ModelInterface
 
     public function getAccountInfo()
     {
-        return $this->dbxObj->GetAccountInfo();
+        $info = $this->dbxObj->GetAccountInfo();
+        $nml_info = array(
+            'email' => $info->email,
+            'quota' => $info->quota_info->quota,
+            'used' => $info->quota_info->normal,
+            'remain' => $info->quota_info->quota - $info->quota_info->normal
+        );
+        return (object)$nml_info;
     }
 
     /**
@@ -108,6 +115,10 @@ Class DropboxInterface implements ModelInterface
     // @params $file = String of File Paths on Dropbox
     public function downloadFile($file, $destination = null)
     {
+        if($destination == 'temp'){
+            $destination = $destination . $file;
+            $this->dbxObj->DownloadFile($file,$destination);
+        }
         $this->dbxObj->DownloadFile($file,$destination);
         header("Content-Type: application/download");
         header("Content-disposition: attachment; filename=". basename($_GET['file']));
@@ -116,13 +127,17 @@ Class DropboxInterface implements ModelInterface
     }
     public function uploadFile($file, $destination = null)
     {
-        if (empty($destination)){
-            $destination = $file['name'];
-        } else
-        {
-            $destination = $destination."/".$file['name'];
+        if(is_array($file)){
+            if (empty($destination)){
+                $destination = $file['name'];
+            } else
+            {
+                $destination = $destination."/".$file['name'];
+            }
+            return $this->dbxObj->UploadFile($file['tmp_name'] ,$destination)->path;
+        } else {
+            return $this->dbxObj->CreateFolder($file);
         }
-        return $this->dbxObj->UploadFile($file['tmp_name'] ,$destination)->path;
     }
     public function getFiles($file = null)
     {

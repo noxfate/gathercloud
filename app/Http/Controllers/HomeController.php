@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\AppModels\Provider;
 use App\DummyFile;
+use App\Providers;
 use App\Token;
 use Illuminate\Http\Request;
 
 use Auth;
 use App\User;
-use App\Http\Requests;
 use Illuminate\Support\Facades\Redirect;
 
 class HomeController extends Controller
@@ -30,6 +30,11 @@ class HomeController extends Controller
                 foreach ($token as $tk) {
                     $proObj = new Provider($tk->connection_name);
                     $temp = $proObj->getFiles();
+                    foreach($temp as $index => $d){
+                        if($d['path'] == $tk->gtc_folder){
+                            unset($temp[$index]);
+                        }
+                    }
                     $data = array_merge($data, $temp);
                 }
             } else {
@@ -41,8 +46,7 @@ class HomeController extends Controller
                 'data' => $data,
                 "cname" => $cname,
                 'parent' => $parent,
-                'in' => $id,
-                'upload_storages' => $this->getStorages()
+                'in' => $id
             ]);
         } else return Redirect::to('/');
     }
@@ -53,15 +57,36 @@ class HomeController extends Controller
         if($id == 'all') {
             $id = $_GET['in'];
         }
+
         $proObj = new Provider($id);
         $data = $proObj->getFiles("/" . $any);
+
+        // dummy check
+        $dummy_tk = Token::where('connection_name', $id)
+            ->where('user_id', Auth::user()->id)
+            ->firstOrFail();
+        $dummy_files = DummyFile::where('dummy_store',$dummy_tk->id)
+            ->where('dummy_path', $any)
+            ->get();
+        if(!empty($dummy_files)){
+            foreach($dummy_files as $d){
+                $real_tk = Token::where('id', $d->real_store)
+                    ->where('user_id', Auth::user()->id)
+                    ->firstOrFail();
+                $realProObj = new Provider($real_tk->connection_name);
+                $temp = $realProObj->getFiles($d->path);
+                $data = array_merge($data, $temp);
+            }
+        }
+
+
+
         $parent = $this->getNavbar($cname,$proObj->getPathName($any),$any);
         return view('pages.cloud.index',[
             'data' => $data,
             "cname" => $cname,
             'parent' => $parent,
-            'in' => $id,
-            'upload_storages' => $this->getStorages()
+            'in' => $id
         ]);
     }
 
@@ -92,9 +117,69 @@ class HomeController extends Controller
         return $parent;
     }
 
-    private function getStorages(){
-        $conn = User::find(auth()->user()->id)->token->all();
-        return $conn;
+    public function getStorages(){
+        $tks = User::find(auth()->user()->id)->token->all();
+        $storages = array();
+        foreach($tks as $tk){
+            $proObj = new Provider($tk->connection_name);
+            $temp = $proObj->getAccountInfo();
+            $temp = (array)$temp;
+            $temp['connection_name'] = $tk->connection_name;
+            $temp = (object)$temp;
+            array_push($storages,$temp);
+
+        }
+        return json_encode($storages);
+    }
+
+    public function redundancyCheck(Request $req){
+        if ($req->hasFile('file'))
+        {
+            $file = $req->file('file');
+            $file_name =  $file->getClientOriginalName();
+            $token = User::find(Auth::user()->id)->token;
+            $data = array();
+            foreach ($token as $tk) {
+                $proObj = new Provider($tk->connection_name);
+                $temp = $proObj->SearchFile($file_name);
+                if(!empty($temp)){
+                    array_push($data,$tk->connection_name);
+                }
+            }
+            return json_encode($data);
+        }
+    }
+
+    public function getFolderList(Request $req){
+        $proObj = new Provider($req->input('connection_name'));
+        $data = $proObj->getFiles($req->input('path'));
+        foreach($data as $index => $d){
+            if(!$d['is_dir']){
+                unset($data[$index]);
+            }
+        }
+        return json_encode($data);
+    }
+
+    public function getConnectionList(){
+        $tokens = User::find(Auth::user()->id)->token;
+        $data = array();
+        foreach($tokens as $tk){
+            $icon = Providers::where('id',$tk->provider_id)->first()->provider_logo;
+            $d = array(
+                'connection_name' => $tk->connection_name,
+                'icon' => $icon
+            );
+            array_push($data,$d);
+        }
+        return json_encode($data);
+    }
+
+    public function transferFile(){
+        dump($_POST['tf_file']);
+        dump($_POST['from_connection']);
+        dump($_POST['to_connection_name']);
+        dd($_POST['to_path']);
     }
 
     public function download(){
@@ -108,6 +193,10 @@ class HomeController extends Controller
         $proObj = new Provider($_POST['connection_name']);
         $proObj->uploadFile($_FILES['file'],$_POST['destination']);
     }
+    public function createFolder(){
+        $proObj = new Provider($_POST['connection_name']);
+        $proObj->uploadFile($_POST['name'],$_POST['destination']);
+    }
     public function upload_dummy(){
         dump($_POST['real_store']);
         dump($_POST['dummy_path']);
@@ -116,8 +205,12 @@ class HomeController extends Controller
             ->where('connection_name',$_POST['real_store'])
             ->first()->id
         );
+
+        $tk = Token::where('connection_name', $_POST['real_store'])
+            ->where('user_id', Auth::user()->id)
+            ->firstOrFail();
         $proObj = new Provider($_POST['real_store']);
-        $path = $proObj->uploadFile($_FILES['file']);
+        $path = $proObj->uploadFile($_FILES['file'], $tk->gtc_folder);
         if($_POST['dummy_store'] != 'all'){
             $dm = new DummyFile();
             $real_store = User::find(Auth::user()->id)->token

@@ -49,12 +49,18 @@ class AddConnectionService
                 ->where('provider_id',$this->provider_id)
                 ->first();
         } else {
+            $gtc_folder = $objInterface->SearchFile('GatherCloudForAll');
+            if(empty($gtc_folder)){
+                $objInterface->uploadFile('GatherCloudForAll',null);
+                $gtc_folder = $objInterface->SearchFile('GatherCloudForAll');
+            }
             $connection_name = Session::get('new_connection_name');
             $tk = new Token();
             $tk->connection_name = $connection_name;
             $tk->connection_email = $connection_email;
             $tk->user_id = Auth::user()->id;
             $tk->provider_id = $this->provider_id;
+            $tk->gtc_folder = $gtc_folder['GatherCloudForAll']->path;
         }
 
         $tk->access_token = $objInterface->getToken()->access_token;

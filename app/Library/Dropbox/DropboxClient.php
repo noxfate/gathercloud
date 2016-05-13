@@ -465,6 +465,7 @@ class DropboxClient {
 
 		if(!empty($dir->error)) throw new DropboxException($dir->error);
 
+		if(property_exists($dir, 'contents')){
 		foreach($dir->contents as $item)
 		{
 			$files[trim($item->path,'/')] = $item;
@@ -472,6 +473,9 @@ class DropboxClient {
 			{
 				$this->getFileTree($item->path, $include_deleted, $max_depth, $depth+1);
 			}
+		}
+		}else {
+			$files[trim($dir->path,'/')] = $dir;
 		}
 
 		return $files;

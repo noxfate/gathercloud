@@ -243,7 +243,12 @@
 
         }else if(a == "Transfer"){
             $("#modal-transfer").modal();
-
+            var file = $(t).attr('value');
+            var connection_name = $(t).find("td:eq(1)").find("a").find("span").attr('data-conname');
+            document.getElementById('transfer-box').innerHTML = "";
+            $("#tf_file").val(file);
+            $("#from_connection").val(connection_name);
+            trig_getConnection();
         }
 
     }
@@ -263,6 +268,37 @@
                 alert(result);
             }
         });
+    }
+
+    function trig_getConnection(){
+        $.ajax({
+            type: "POST",
+            url : $('#ajr').attr('data-getConnectionList').trim(),
+            success : function(data){
+                console.log(data);
+                setConnection(data);
+            }
+        },"json");
+    }
+
+    function setConnection($data){
+        data = JSON.parse($data);
+        var tf_box = document.getElementById('transfer-box');
+        var ul_tf = document.createElement('ul');
+        ul_tf.className = 'ul-transfer first-node';
+        tf_box.appendChild(ul_tf);
+        for (var v in data) {
+            console.log(data[v]);
+            var li = document.createElement('li');
+            li.innerHTML = '<span class="glyphicon glyphicon-plus-sign gg-margin-right-5 gg-hover" data-connection_name="'+data[v]['connection_name']+'" data-path="" onclick="trig_getFolderList(this)"></span>' +
+                    '<label class="btn btn-default"><span class="glyphicon glyphicon-cloud gg-margin-right-4"></span>' +
+                    '<input type="radio" name="to_path" value=""><input type="radio" name="to_connection_name" value="' + data[v]['connection_name'] +
+                    '">' +
+                    data[v]['connection_name'] + '</label>';
+//                    '<a class="btn btn-link"><span class="glyphicon glyphicon-cloud gg-margin-right-4"></span>' +
+//                    data[v]['connection_name'] + '</a>';
+            ul_tf.appendChild(li);
+        }
     }
 </script>
 

@@ -31,6 +31,22 @@ Route::get('/search/{id}', "HomeController@search");
 Route::get('/download',"HomeController@download");
 Route::post('/upload', 'HomeController@upload');
 Route::post('/upload-dummy', 'HomeController@upload_dummy');
+Route::any('/getStorages', array(
+    'as'    =>  'getStorages',
+    'uses'  =>  'HomeController@getStorages'));
+Route::any('/redundancyCheck', array(
+    'as'    =>  'redundancyCheck',
+    'uses'  =>  'HomeController@redundancyCheck'));
+Route::any('/getFolderList', array(
+    'as'    =>  'getFolderList',
+    'uses'  =>  'HomeController@getFolderList'));
+Route::any('/getConnectionList', array(
+    'as'    =>  'getConnectionList',
+    'uses'  =>  'HomeController@getConnectionList'));
+Route::any('/transferFile', array(
+    'as'    =>  'transferFile',
+    'uses'  =>  'HomeController@transferFile'));
+Route::post('/createFolder', 'HomeController@createFolder');
 Route::post('/{any}/delete', 'HomeController@delete')->where('any', '.*');
 Route::post('/rename', 'HomeController@rename');
 Route::get('/home',function ()
