@@ -211,7 +211,6 @@
             var indOf = window.location.pathname.indexOf("/home",1);
             var myStr = window.location.pathname.substr(0,indOf );
             var url = myStr + "/delete"
-            alert(file);
             $.ajax({
                 type: 'POST',
                 url: 'delete',
@@ -220,7 +219,7 @@
                     connection_name: connection_name
                 },
                 success: function(result){
-                    alert(result);
+                    console.log(result);
                 }
             });
 

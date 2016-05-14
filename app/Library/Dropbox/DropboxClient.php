@@ -324,7 +324,6 @@ class DropboxClient {
 
 		$query = http_build_query(array_merge(compact('overwrite', 'parent_rev'), array('locale' => $this->locale)),'','&');
 		$url = $this->cleanUrl(self::API_CONTENT_URL."/files_put/$this->rootPath/$dropbox_path")."?$query";
-
 		if($this->useCurl) {
 			$context = $this->createRequestContext($url, "PUT");
 			curl_setopt($context, CURLOPT_BINARYTRANSFER, true);
@@ -332,7 +331,9 @@ class DropboxClient {
 			curl_setopt($context, CURLOPT_PUT, 1);
 			curl_setopt($context, CURLOPT_INFILE, $fh); // file pointer
 			curl_setopt($context, CURLOPT_INFILESIZE, filesize($src_file));
-			$meta = json_decode(self::execCurlAndClose($context));
+			curl_setopt($context, CURLOPT_RETURNTRANSFER, true);
+			$response_headers = array();
+			$meta = self::execCurlAndClose($context, $response_headers);
 			fclose($fh);
 			return self::checkForError($meta);
 		} else {

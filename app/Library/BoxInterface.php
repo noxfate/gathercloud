@@ -22,20 +22,45 @@ use AdammBalogh\KeyValueStore\KeyValueStore;
 use AdammBalogh\KeyValueStore\Adapter\MemoryAdapter;
 use AdammBalogh\Box\Exception\ExitException;
 use AdammBalogh\Box\Exception\OAuthException;
+use App\Token;
 use GuzzleHttp\Exception\ClientException;
 
 class BoxInterface implements ModelInterface
 {
     private $access_token;
     private $refresh_token;
+    private $expired_in;
     private $clientId = 'ovfbhzo5niff7zog2joq53pkocb544uc';
     private $clientSecret = '4Nw8sSNI2OQediWzn3VgyZeqYzqNKbur';
     private $redirectUri = 'http://localhost/gathercloud/public/add/box';
 
-    function __construct($access_token = null)
+    function __construct($token = null)
     {
-        if ($access_token != null) {
-            $this->access_token = $access_token[0];
+        if ($token != null) {
+            $this->access_token = $token->access_token;
+            $this->refresh_token = $token->refresh_token;
+            $this->expired_in = $token->expired_in;
+            if($this->getAccessTokenStatus() != 1){
+                dump('rftk');
+                $keyValueStore = new KeyValueStore(new MemoryAdapter());
+                $keyValueStore->set('access_token',$this->access_token);
+                $keyValueStore->set('refresh_token',$this->refresh_token);
+                $keyValueStore->expire('access_token', 0);
+                $keyValueStore->expire('refresh_token', ($this->expired_in + (5184000-3600)) - time()); #  60 days
+
+                $oAuthClient = new OAuthClient($keyValueStore, $this->clientId, $this->clientSecret, $this->redirectUri);
+                $oAuthClient->authorize();
+                $keyValueStore = $oAuthClient->getKvs();
+                Token::where('access_token', $this->access_token)->where('refresh_token',$this->refresh_token)
+                    ->update(array(
+                        'access_token'  =>$keyValueStore->get('access_token'),
+                        'refresh_token' =>$keyValueStore->get('refresh_token'),
+                        'expired_in'    =>time() + $keyValueStore->getTtl('access_token')));
+                $this->access_token = $keyValueStore->get('access_token');
+                $this->refresh_token = $keyValueStore->get('refresh_token');
+                $this->expired_in = time() + $keyValueStore->getTtl('access_token');
+            }
+
         } else {
             $keyValueStore = new KeyValueStore(new MemoryAdapter());
             $oAuthClient = new OAuthClient($keyValueStore, $this->clientId, $this->clientSecret, $this->redirectUri);
@@ -44,6 +69,7 @@ class BoxInterface implements ModelInterface
                 $keyValueStore = $oAuthClient->getKvs();
                 $this->access_token = $keyValueStore->get('access_token');
                 $this->refresh_token = $keyValueStore->get('refresh_token');
+                $this->expired_in = time() + $keyValueStore->getTtl('access_token');
             } catch (ExitException $e) {
                 # Location header has set (box's authorize page)
                 # Instead of an exit call it throws an ExitException
@@ -57,23 +83,6 @@ class BoxInterface implements ModelInterface
         }
 
     }
-
-    /**
-     * @return mixed
-     */
-    public function getAccessToken()
-    {
-        return $this->access_token;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRefreshToken()
-    {
-        return $this->refresh_token;
-    }
-
 
     public function downloadFile($file)
     {
@@ -107,28 +116,43 @@ class BoxInterface implements ModelInterface
             $destination = end($list_destination);
             $destination = substr($destination, 7);
         }
-
-        $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
-
         if (null === $destination) {
             $destination = '0';
         }
-        dump($destination);
+
         $parentId = $destination;
-        $name = $file['name'];
-        $content = file_get_contents($file['tmp_name']);
-        $command = new Content\File\UploadFile($name, $parentId, $content);
+        $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
+        if(is_array($file)){
+            $name = $file['name'];
+            $content = file_get_contents($file['tmp_name']);
+            $command = new Content\File\UploadFile($name, $parentId, $content);
+        } else {
+            $command = new Content\Folder\CreateFolder($file, $parentId);
+        }
+
         $response = ResponseFactory::getResponse($contentClient, $command);
         if ($response instanceof SuccessResponse) {
             $response->getStatusCode();
             $response->getReasonPhrase();
             $response->getHeaders();
             $data = (string)$response->getBody();
-            $manage = (array)json_decode($data);
-            print_r($manage);
-            return $manage;
+            $entity = json_decode($data);
+            $format = array();
+            $sh = ($entity->shared_link == null) ? null : $entity->shared_link->url;
+            $mime = ($entity->type == 'folder') ? 'folder' : substr($entity->name,strpos($entity->name,'.')+1);
+            array_push($format,
+                array(
+                    'name' => $entity->name,
+                    'path' => ($entity->id == "0") ? null : ($entity->type == "folder") ? "folder." . $entity->id : "file." . $entity->id,
+                    'size' => $entity->size,
+                    'mime_type' => $mime,
+                    'is_dir' => ($entity->type == "folder") ? true : false, // 1 == Folder, 0 = File
+                    'modified' => $entity->modified_at,
+                    'shared' => $sh
+                ));
+            return $format;
         } elseif ($response instanceof ErrorResponse) {
-            return $response;
+            return false;
         }
 
     }
@@ -165,23 +189,23 @@ class BoxInterface implements ModelInterface
             if ($manage->type == 'folder' && $manage->item_collection->total_count != 0) {
                 for ($i = 0; $i < $manage->item_collection->total_count; $i++) {
                     $entity = $this->getEntity($manage->item_collection->entries[$i]->type . "." . $manage->item_collection->entries[$i]->id);
+                    $sh = ($entity->shared_link == null) ? null : $entity->shared_link->url;
+                    $mime = ($entity->type == 'folder') ? 'folder' : substr($entity->name,strpos($entity->name,'.')+1);
                     array_push($format,
                         array(
                             'name' => $entity->name,
                             'path' => $full_path . (($entity->id == "0") ? null : ($entity->type == "folder") ? "folder." . $entity->id : "file." . $entity->id),
                             'size' => $entity->size,
-                            'mime_type' => null,
-                            'is_dir' => ($entity->type == "folder") ? 1 : 0, // 1 == Folder, 0 = File
+                            'mime_type' => $mime,
+                            'is_dir' => ($entity->type == "folder") ? true : false, // 1 == Folder, 0 = File
                             'modified' => $entity->modified_at,
-                            'shared' => false
+                            'shared' => $sh
                         ));
                 }
             }
             return $format;
         } elseif ($response instanceof ErrorResponse) {
-            echo $id;
-            echo (string)$response->getStatusCode();
-            echo (string)$response->getReasonPhrase();
+            return false;
         }
 
     }
@@ -207,10 +231,10 @@ class BoxInterface implements ModelInterface
 //            echo (string)$response->getStatusCode();
 //            echo "<br>";
 //            echo (string)$response->getReasonPhrase();
-            return (string)$response->getStatusCode();
+            return true;
 
         } elseif ($response instanceof ErrorResponse) {
-            # ...
+            return false;
         }
 
     }
@@ -231,8 +255,14 @@ class BoxInterface implements ModelInterface
             $response->getReasonPhrase();
             $response->getHeaders();
             $data = (string)$response->getBody();
-            $manage = (array)json_decode($data);
-            return $manage;
+            $info = json_decode($data);
+            $nml_info = array(
+                'email' => $info->login,
+                'quota' => $info->space_amount,
+                'used' => $info->space_used,
+                'remain' => $info->space_amount - $info->space_used
+            );
+            return (object)$nml_info;
         } elseif ($response instanceof ErrorResponse) {
             # ...
         }
@@ -294,9 +324,9 @@ class BoxInterface implements ModelInterface
         $response = ResponseFactory::getResponse($contentClient, $command);
 
         if ($response instanceof SuccessResponse) {
-            return $response->getStatusCode();
+            return true;
         } elseif ($response instanceof ErrorResponse) {
-            return $response->getStatusCode();
+            return false;
         }
     }
 
@@ -340,7 +370,7 @@ class BoxInterface implements ModelInterface
             return $format;
 
         } elseif ($response instanceof ErrorResponse) {
-            return $response;
+            return false;
         }
     }
 
@@ -352,7 +382,12 @@ class BoxInterface implements ModelInterface
      */
     public function getToken()
     {
-        // TODO: Implement getToken() method.
+        $tk = array(
+            'access_token' => $this->access_token,
+            'expired_in' => $this->expired_in,
+            'refresh_token' => $this->refresh_token
+        );
+        return (object)$tk;
     }
 
     /**
@@ -372,7 +407,58 @@ class BoxInterface implements ModelInterface
      */
     public function normalizeMetaData($list_data, $provider_logo, $connection_name)
     {
-        // TODO: Implement normalizeMetaData() method.
+        $format = array();
+        foreach ($list_data as $k => $val) {
+            array_push($format,
+                array(
+                    'name' => $val['name'],
+                    'path' => $val['path'],
+                    'bytes' => $val['size'],
+                    'mime_type' => $val['mime_type'],
+                    'is_dir' => $val['is_dir'],
+                    'modified' => date('Y m d H:i:s', strtotime($val['modified'])),
+                    'shared' => $val['shared'],
+                    'provider_logo' => $provider_logo,
+                    'connection_name' => $connection_name
+                ));
+        }
+        return $format;
+    }
+
+    /**
+     * Gets the access token expiration delay.
+     *
+     * @return (int) The token expiration delay, in seconds.
+     */
+    private function getTokenExpire() {
+        return $this->expired_in - time();
+    }
+
+    /**
+     * Gets the status of the current access token.
+     *
+     * @return (int) The status of the current access token:
+     *          0 => no access token
+     *         -1 => access token will expire soon (1 minute or less)
+     *         -2 => access token is expired
+     *          1 => access token is valid
+     */
+    private function getAccessTokenStatus() {
+        if (null === $this->access_token) {
+            return 0;
+        }
+
+        $remaining = $this->getTokenExpire();
+
+        if (0 >= $remaining) {
+            return -2;
+        }
+
+        if (60 >= $remaining) {
+            return -1;
+        }
+
+        return 1;
     }
 }
 

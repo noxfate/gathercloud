@@ -191,11 +191,11 @@ class HomeController extends Controller
 
     public function upload(){
         $proObj = new Provider($_POST['connection_name']);
-        $proObj->uploadFile($_FILES['file'],$_POST['destination']);
+        return $proObj->uploadFile($_FILES['file'],$_POST['destination']);
     }
     public function createFolder(){
         $proObj = new Provider($_POST['connection_name']);
-        $proObj->uploadFile($_POST['name'],$_POST['destination']);
+        return $proObj->uploadFile($_POST['name'],$_POST['destination']);
     }
     public function upload_dummy(){
         dump($_POST['real_store']);
@@ -231,15 +231,13 @@ class HomeController extends Controller
     public function delete(){
         // Provider(" waiting edit with ALL")
         $proObj = new Provider($_POST['connection_name']);
-        $proObj->deleteFile($_POST['file']);
-        return "test--";
+        return $proObj->deleteFile($_POST['file']);
     }
 
     public function rename(){
         // Provider(" waiting edit with ALL")
         $proObj = new Provider($_POST['connection_name']);
-        $proObj->rename($_POST['file'], $_POST['new_name']);
-        return "test--";
+        return $proObj->rename($_POST['file'], $_POST['new_name']);
     }
 
     public function search($id)

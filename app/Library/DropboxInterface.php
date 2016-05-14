@@ -77,7 +77,6 @@ Class DropboxInterface implements ModelInterface
         return $dbx;
     }
 
-
     public function getAccountInfo()
     {
         $info = $this->dbxObj->GetAccountInfo();
@@ -134,18 +133,22 @@ Class DropboxInterface implements ModelInterface
             {
                 $destination = $destination."/".$file['name'];
             }
-            return $this->dbxObj->UploadFile($file['tmp_name'] ,$destination)->path;
+            $res = $this->dbxObj->UploadFile($file['tmp_name'] ,$destination);
+            return array((object)\GuzzleHttp\json_decode($res));
         } else {
-            return $this->dbxObj->CreateFolder($file);
+            $this->dbxObj->CreateFolder($file);
+            return true;
         }
     }
+
     public function getFiles($file = null)
     {
         return $this->dbxObj->GetFiles($file);
     }
     public function deleteFile($file)
     {
-        return $this->dbxObj->Delete($file);
+        $res = $this->dbxObj->Delete($file);
+        return $res->is_deleted;
     }
 
     public function getLink($file)
@@ -184,7 +187,8 @@ Class DropboxInterface implements ModelInterface
     {
         $lastIndex = strripos($file, "/");
         $new_name = substr($file, 0,$lastIndex+1) . $new_name;
-        return $this->dbxObj->Move($file,$new_name);
+        $res = $this->dbxObj->Move($file,$new_name);
+        return true;
     }
 
     public function getPathName($file)
@@ -225,7 +229,7 @@ Class DropboxInterface implements ModelInterface
      * =>(boolean)is_dir
      * =>(string)modified format 'Y m d H:i:s'
      * =>(string)shared
-     * =>(string)token_id
+     * =>(string)provider_logo
      * =>(string)connection_name
      */
     public function normalizeMetaData($list_data, $provider_logo, $connection_name)
@@ -233,16 +237,15 @@ Class DropboxInterface implements ModelInterface
         $format = array();
         foreach ($list_data as $k => $val) {
             $val->is_dir == 1 ? $mime = null : $mime = $val->mime_type;
-            empty($val->shared_folder) ? $sh = false : $sh = true;
             array_push($format,
                 array(
                     'name' => basename($k),
                     'path' => $val->path,
                     'bytes' => $val->bytes,
                     'mime_type' => $mime,
-                    'is_dir' => ($val->is_dir)? true:false, // 1 == Folder, 0 = File
+                    'is_dir' => ($val->is_dir)? true:false,
                     'modified' => date('Y m d H:i:s',strtotime($val->modified)),
-                    'shared' => $sh,
+                    'shared' => null,
                     'provider_logo' => $provider_logo,
                     'connection_name' => $connection_name
                 ));

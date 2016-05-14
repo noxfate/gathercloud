@@ -58,7 +58,7 @@ interface ModelInterface
     /**
      * @param string $file
      * @param string $destination
-     * @return boolean
+     * @return list of file metadata (return value depends on Provider)
      *
      */
     public function uploadFile($file, $destination);

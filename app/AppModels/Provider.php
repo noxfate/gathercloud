@@ -115,11 +115,13 @@ class Provider
 
     function downloadFile($file)
     {
-        $this->connObj->downloadFile($file);
+        return $this->connObj->downloadFile($file);
     }
     function uploadFile($file, $destination = null)
     {
-        return $this->connObj->uploadFile($file, $destination);
+        $res = $this->connObj->uploadFile($file, $destination);
+        $res = $this->connObj->normalizeMetaData($res,$this->provider_logo,$this->connection_name);
+        return $res;
     }
     function getFiles($file = null)
     {
@@ -130,24 +132,27 @@ class Provider
     }
     function deleteFile($file)
     {
-        $this->connObj->deleteFile($file);
+        $res = $this->connObj->deleteFile($file);
+        return ($res) ? 'true' : 'false';
     }
 
     function rename($file, $new_name){
-        return $this->connObj->rename($file,$new_name);
+        $res = $this->connObj->rename($file,$new_name);
+        return ($res) ? 'true' : 'false';
+
     }
 
     function searchFile($keyword)
     {
         $data = $this->connObj->searchFile($keyword);
-        $data = $this->connObj->normalizeMetaData($data,$this->token_id,$this->connection_name);
+        $data = $this->connObj->normalizeMetaData($data,$this->provider_logo,$this->connection_name);
         $data = $this->humanFileSize($data);
         return $data;
     }
 
     function getLink($file)
     {
-
+        return 0;
     }
     function getAccountInfo()
     {
