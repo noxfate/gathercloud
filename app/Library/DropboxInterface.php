@@ -117,12 +117,15 @@ Class DropboxInterface implements ModelInterface
         if($destination == 'temp'){
             $destination = $destination . $file;
             $this->dbxObj->DownloadFile($file,$destination);
+            return $destination;
         }
+        else{
         $this->dbxObj->DownloadFile($file,$destination);
         header("Content-Type: application/download");
         header("Content-disposition: attachment; filename=". basename($_GET['file']));
         readfile(basename($_GET['file']));
         unlink(basename($_GET['file']));
+        }
     }
     public function uploadFile($file, $destination = null)
     {
@@ -133,6 +136,7 @@ Class DropboxInterface implements ModelInterface
             {
                 $destination = $destination."/".$file['name'];
             }
+
             $res = $this->dbxObj->UploadFile($file['tmp_name'] ,$destination);
             return array((object)\GuzzleHttp\json_decode($res));
         } else {
@@ -198,7 +202,7 @@ Class DropboxInterface implements ModelInterface
 
     public function searchFile($keyword)
     {
-        $list_data =  $this->dbxObj->Search("",$keyword);
+        $list_data =  $this->dbxObj->Search("",urlencode($keyword));
         if(!empty($list_data)){
             $key = array();
             foreach($list_data as $data){

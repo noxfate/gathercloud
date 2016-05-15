@@ -113,9 +113,9 @@ class Provider
 //        return $this->storage;
 //    }
 
-    function downloadFile($file)
+    function downloadFile($file , $des = null)
     {
-        return $this->connObj->downloadFile($file);
+        return $this->connObj->downloadFile($file,$des);
     }
     function uploadFile($file, $destination = null)
     {

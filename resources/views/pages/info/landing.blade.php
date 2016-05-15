@@ -9,7 +9,7 @@
 </head>
 <body>
 <header>
-    <div id="logo" class="land-logo"><img src="{{URL::asset('images/logo-gtc.png')}}" height="80px"></div>
+    <div id="logo" class="land-logo"><img src="{{URL::asset('images/logo-gtc.png')}}" ></div>
     <div class="land-menu">
         <ul>
             <li><a href="#">About</a></li>

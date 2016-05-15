@@ -46,6 +46,11 @@ button{
 .logo {
     position: absolute;
     padding-left: 10px;
+    padding-top: 5px;
+}
+
+.logo img{
+    height: 30px;
 }
 
 .userMenu {
@@ -96,6 +101,10 @@ button{
 
 .side-bar span {
     padding-right: 10px;
+}
+
+.side-bar .list-cloud span {
+    padding-left: 10px;
 }
 
 .side-bar .nav-tabs li{
@@ -764,6 +773,21 @@ ul.ul-transfer input[type="radio"]{
 
 ul.first-node{
     padding: 0px;
+}
+
+.div-circle-icon{
+    background-color: transparent;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    padding: 6px 0px 0px 0px;
+    margin: 0px  2% 10px 2%;
+    display: inline-block;
+
+}
+
+.div-circle-icon img{
+    width: 20px;
 }
 
 

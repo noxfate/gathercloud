@@ -157,7 +157,6 @@ function trig_getFolderList(e){
         url : $('#ajr').attr('data-getFolderList').trim(),
         data: param,
         success : function(data){
-            console.log(data);
             setFolderList(e,data);
         }
     },"json");

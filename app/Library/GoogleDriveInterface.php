@@ -58,59 +58,17 @@ class GoogleDriveInterface implements ModelInterface
         }
     }
 
-    public function downloadFile($file)
-    {
-        // TODO: Implement downloadFile() method.
-    }
 
-    public function uploadFile($file, $destination = null)
-    {
-        // TODO: Implement uploadFile() method.
-    }
-
-    public function getFiles($file = null)
-    {
-        // TODO: Implement getFiles() method.
-        return $this->drive_service->files->listFiles(array())->getItems();
-    }
-
-    public function deleteFile($file)
-    {
-        // TODO: Implement deleteFile() method.
-    }
-
-    public function getLink($file)
-    {
-        // TODO: Implement getLink() method.
-    }
-
+    /**
+     * @return object
+     * =>(string)email
+     * =>(integer)quota
+     * =>(integer)used
+     * =>(integer)remain
+     */
     public function getAccountInfo()
     {
-        return $this->drive_service->about->get();
-    }
-
-    public function getAccessToken()
-    {
-        return $this->access_token;
-    }
-    public function getRefreshToken()
-    {
-        return $this->refresh_token;
-    }
-
-    public function rename($file, $new_name)
-    {
-        // TODO: Implement rename() method.
-    }
-
-    public function getPathName($file)
-    {
-        // TODO: Implement getPathName() method.
-    }
-
-    public function searchFile($keyword)
-    {
-        // TODO: Implement searchFile() method.
+        $this->drive_service->about->get();
     }
 
     /**
@@ -125,7 +83,83 @@ class GoogleDriveInterface implements ModelInterface
     }
 
     /**
-     * @param output of method getFiles() $list_data
+     * @param string $file
+     * @return list of file metadata (return value depends on Provider)
+     */
+    public function getFiles($file)
+    {
+        $this->drive_service->files->listFiles(array())->getItems();
+    }
+
+    /**
+     * @param string $file
+     * @param string $destination
+     * @return string of Location
+     */
+    public function downloadFile($file, $destination = null)
+    {
+        // TODO: Implement downloadFile() method.
+    }
+
+    /**
+     * @param string $file
+     * @param string $destination
+     * @return list of file metadata (return value depends on Provider)
+     *
+     */
+    public function uploadFile($file, $destination)
+    {
+        // TODO: Implement uploadFile() method.
+    }
+
+    /**
+     * @param string $file
+     * @return string of public share url
+     */
+    public function getLink($file)
+    {
+        // TODO: Implement getLink() method.
+    }
+
+    /**
+     * @param string $keyword
+     * @return list of file metadata (return value depends on Provider)
+     */
+    public function searchFile($keyword)
+    {
+        // TODO: Implement searchFile() method.
+    }
+
+    /**
+     * @param string $file
+     * @return boolean
+     */
+    public function deleteFile($file)
+    {
+        // TODO: Implement deleteFile() method.
+    }
+
+    /**
+     * @param string $file
+     * @param string $new_name
+     * @return boolean
+     */
+    public function rename($file, $new_name)
+    {
+        // TODO: Implement rename() method.
+    }
+
+    /**
+     * @param string $file
+     * @return string format 'example/example/example'
+     */
+    public function getPathName($file)
+    {
+        // TODO: Implement getPathName() method.
+    }
+
+    /**
+     * @param output from method getFiles() $list_data
      * @param $provider_logo
      * @param $connection_name
      * @return list of array

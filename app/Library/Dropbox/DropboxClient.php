@@ -328,6 +328,7 @@ class DropboxClient {
 			$context = $this->createRequestContext($url, "PUT");
 			curl_setopt($context, CURLOPT_BINARYTRANSFER, true);
 			$fh = fopen($src_file, 'rb');
+
 			curl_setopt($context, CURLOPT_PUT, 1);
 			curl_setopt($context, CURLOPT_INFILE, $fh); // file pointer
 			curl_setopt($context, CURLOPT_INFILESIZE, filesize($src_file));

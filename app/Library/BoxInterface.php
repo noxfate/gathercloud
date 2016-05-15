@@ -41,7 +41,6 @@ class BoxInterface implements ModelInterface
             $this->refresh_token = $token->refresh_token;
             $this->expired_in = $token->expired_in;
             if($this->getAccessTokenStatus() != 1){
-                dump('rftk');
                 $keyValueStore = new KeyValueStore(new MemoryAdapter());
                 $keyValueStore->set('access_token',$this->access_token);
                 $keyValueStore->set('refresh_token',$this->refresh_token);
@@ -84,27 +83,62 @@ class BoxInterface implements ModelInterface
 
     }
 
-    public function downloadFile($file)
+    public function downloadFile($file, $destination = null)
     {
         if ($file != null){
             $list_file = explode("/", $file);
             $file = end($list_file);
         }
-        $file = substr($file, 5);
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
         $er = new ExtendedRequest();
-        $command = new Content\File\DownloadFile($file, $er);
-        $response = ResponseFactory::getResponse($contentClient, $command);
+        if($destination != 'temp'){
+            $file = substr($file, 5);
+            $command = new Content\File\DownloadFile($file, $er);
+            $response = ResponseFactory::getResponse($contentClient, $command);
 //        dd($response->getHeaders()["Location"][0]);
-        if ($response instanceof SuccessResponse) {
+            if ($response instanceof SuccessResponse) {
 //            echo (string)$response->getStatusCode();
 //            echo "<br>";
 //            echo (string)$response->getReasonPhrase();
 //            echo "<br>";
-            header("Location: " . $response->getHeaders()["Location"][0]);
-            die();
-        } elseif ($response instanceof ErrorResponse) {
-            # ...
+                header("Location: " . $response->getHeaders()["Location"][0]);
+                die();
+            } elseif ($response instanceof ErrorResponse) {
+                # ...
+            }
+        }else{
+            $info = $this->getFiles($file);
+            $file = substr($file, 5);
+            $fh = @fopen($destination . '/' . $info->name, 'wb'); // write binary
+            if($fh === false) {
+                @fclose($fh);
+                throw new DropboxException("Could not create file" . $destination .'/' . $info->name . "!");
+            }
+            $er->setHeader(CURLOPT_FILE, $fh);
+            $er->setHeader(CURLOPT_BINARYTRANSFER , true);
+            $er->setHeader(CURLOPT_FOLLOWLOCATION, true);
+            $command = new Content\File\DownloadFile($file, $er);
+            $response = ResponseFactory::getResponse($contentClient, $command);
+            $ch = curl_init();
+            curl_setopt_array($ch, array(
+                // SSL options.
+                CURLOPT_SSL_VERIFYHOST => false,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_BINARYTRANSFER => true,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_FILE => $fh,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_URL        => $response->getHeaders()["Location"][0],
+                CURLOPT_HTTPHEADER => array(
+                    'Content-Type: application/download',
+                ),
+            ));
+            $res = curl_exec($ch);
+            curl_close($ch);
+            fclose($fh);
+            return $destination.'/'.$info->name;
         }
 
     }
@@ -116,7 +150,7 @@ class BoxInterface implements ModelInterface
             $destination = end($list_destination);
             $destination = substr($destination, 7);
         }
-        if (null === $destination) {
+        if (null == $destination) {
             $destination = '0';
         }
 
@@ -137,6 +171,11 @@ class BoxInterface implements ModelInterface
             $response->getHeaders();
             $data = (string)$response->getBody();
             $entity = json_decode($data);
+
+            if(is_array($file)){
+                $entity = $entity->entries[0];
+            }
+
             $format = array();
             $sh = ($entity->shared_link == null) ? null : $entity->shared_link->url;
             $mime = ($entity->type == 'folder') ? 'folder' : substr($entity->name,strpos($entity->name,'.')+1);
@@ -166,7 +205,7 @@ class BoxInterface implements ModelInterface
             $file = end($list_file);
         }
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
-        if (null === $file) {
+        if (null === $file || $file == "") {
             $id = '0';
             $command = new Content\Folder\GetFolderInfo($id);
         } elseif (strpos($file, 'folder') !== false) {
@@ -185,6 +224,11 @@ class BoxInterface implements ModelInterface
             $response->getHeaders();
             $data = (string)$response->getBody();
             $manage = json_decode($data);
+
+            if (strpos($file, 'file') !== false) {
+                return $manage;
+            }
+
             $format = array();
             if ($manage->type == 'folder' && $manage->item_collection->total_count != 0) {
                 for ($i = 0; $i < $manage->item_collection->total_count; $i++) {
@@ -344,7 +388,7 @@ class BoxInterface implements ModelInterface
     public function searchFile($keyword)
     {
         $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
-        $command = new Content\Search\SearchContent($keyword);
+        $command = new Content\Search\SearchContent(urlencode($keyword));
         $response = ResponseFactory::getResponse($contentClient, $command);
         if ($response instanceof SuccessResponse) {
             $response->getStatusCode();

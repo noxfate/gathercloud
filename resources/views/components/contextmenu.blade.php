@@ -244,9 +244,11 @@
             $("#modal-transfer").modal();
             var file = $(t).attr('value');
             var connection_name = $(t).find("td:eq(1)").find("a").find("span").attr('data-conname');
+            var mime_type = $(t).find("td:eq(1)").find("a").find("span").attr('data-mime');
             document.getElementById('transfer-box').innerHTML = "";
             $("#tf_file").val(file);
             $("#from_connection").val(connection_name);
+            $("#mime_type").val(mime_type);
             trig_getConnection();
         }
 

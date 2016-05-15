@@ -199,19 +199,22 @@
                     @if (!empty($data))
                         @foreach($data as $d => $val)
                             <tr class="withItemMenu" value="{{ $val['path'] }}">
-                                <td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>
+                                <td class="th-icon-cloud">
+                                    <div class="div-circle-icon">
+                                        <img src="{{ URL::asset('images/logo-provider/'. $val['provider_logo']) }}">
+                                    </div>
+                                </td>
                                 <td class="th-name">
                                     @if ($val['is_dir'])
                                         <span class="glyphicon glyphicon-folder-close"></span>
                                         <a href="{{ Request::getBaseUrl() . "/home/" .$cname . $val['path'] . ($cname == 'all' ? '?in='.$val['connection_name'] : '')}}">
-                                            <span class="dir" data-conname="{{ $val['connection_name'] }}" value="{{ $val['path'] }}">{{ $val['name'] }}</span>
-                                            <br><span class="text-muted font-12">in</span><a href="#"><span class="text-primary font-12">{{"/".$val['connection_name']. $val['path'] }}</span></a>
+                                            <span class="dir" data-mime="{{ $val['mime_type'] }}" data-conname="{{ $val['connection_name'] }}" value="{{ $val['path'] }}">{{ $val['name'] }}</span>
+                                            {{--<br><span class="text-muted font-12">in</span><a href="#"><span class="text-primary font-12">{{"/".$val['connection_name']. $val['path'] }}</span></a>--}}
                                         </a>
                                     @else
-                                        <span class="glyphicon glyphicon glyphicon-file"></span>
                                         <a href="#">
                                             <span data-conname="{{ $val['connection_name'] }}" value="{{ $val['path'] }}">{{ $val['name'] }}</span>
-                                            <br><span class="text-muted font-12">in</span><a href="#"><span class="text-primary font-12">{{ "/".$val['connection_name']. $val['path'] }}</span></a>
+                                            {{--<br><span class="text-muted font-12">in</span><a href="#"><span class="text-primary font-12">{{ "/".$val['connection_name']. $val['path'] }}</span></a>--}}
                                         </a>
 
                                     @endif
@@ -327,6 +330,7 @@
                     </div>
                     <input type="hidden" name="tf_file" id="tf_file">
                     <input type="hidden" name="from_connection" id="from_connection">
+                    <input type="hidden" name="mime_type" id="mime_type">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 </div>
                 <div class="modal-footer">
@@ -343,11 +347,6 @@
 <!-- /.modal -->
 
 {{--<iframe name="hiddenIframe" id="hiddenIframe" style="display: none;" ></iframe>--}}
-<iframe name="hiddenIframe" id="hiddenIframe"  ></iframe>
-<span class="loading style-1"></span>
-<div class="loader">
-    <h1></h1><span></span><span></span><span></span>
-</div>
-
+<iframe name="hiddenIframe" id="hiddenIframe"  width="70%" height="500px"></iframe>
 <script src="{{ URL::asset('js/index-board.script.js') }}"></script>
 @include("components.contextmenu")

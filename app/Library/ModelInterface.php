@@ -51,9 +51,10 @@ interface ModelInterface
 
     /**
      * @param string $file
+     * @param string $destination
      * @return string of Location
      */
-    public function downloadFile($file);
+    public function downloadFile($file, $destination = null);
 
     /**
      * @param string $file

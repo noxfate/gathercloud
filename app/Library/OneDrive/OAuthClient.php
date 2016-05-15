@@ -21,7 +21,7 @@ class OAuthClient extends GuzzleClient
 {
     const AUTHORIZE_URI = 'https://login.live.com/oauth20_authorize.srf';
     const TOKEN_URI = 'https://login.live.com/oauth20_token.srf';
-    const REVOKE_TOKEN_URI = 'https://www.box.com/api/oauth2/revoke';
+    const REVOKE_TOKEN_URI = '';
 
     /**
      * @var string
@@ -230,7 +230,8 @@ class OAuthClient extends GuzzleClient
             'wl.signin',
             'wl.basic',
             'wl.contacts_skydrive',
-            'wl.skydrive_update'
+            'wl.skydrive_update',
+            'wl.offline_access'
         );
         $imploded    = implode(',', $scopes);
         $queryData = [
@@ -279,37 +280,9 @@ class OAuthClient extends GuzzleClient
         ));
 
         $response = curl_exec($curl);
-        $decoded = (array)json_decode($response);
-
-        if (null === $decoded) {
-            throw new \Exception('json_decode() failed');
-        }
-        $this->kvs->set('access_token', $decoded["access_token"]);
-
-        return json_decode($response);
-
-//        /* @var ResponseInterface $response */
-//        $response = $this->post(self::TOKEN_URI, [
-//            'body' => [
-//                'grant_type' => 'authorization_code',
-//                'code' => $this->getCodeQueryField(),
-//                'client_id' => $this->clientId,
-//                'client_secret' => $this->clientSecret,
-//                'edirect_uri' => $this->redirectUri
-//            ]
-//        ]);
-//
-//
-//        if ($response->getStatusCode() == 200) {
-//            $this->setPropertiesBasedOnSuccessResponse($response->json());
-//
-//            return;
-//        } else {
-//            var_dump($response->getHeader());
-//        }
-//
-//        $response = $response->json();
-//        throw new OAuthException("{$response['error']}:{$response['error_description']}");
+        $response = \GuzzleHttp\json_decode($response);
+        $this->setPropertiesBasedOnSuccessResponse((array)$response);
+        return;
     }
 
     /**

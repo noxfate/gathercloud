@@ -9,6 +9,7 @@ use App\Token;
 use Illuminate\Http\Request;
 
 use Auth;
+use Symfony\Component\HttpFoundation\File\File;
 use App\User;
 use Illuminate\Support\Facades\Redirect;
 
@@ -41,6 +42,16 @@ class HomeController extends Controller
                 $proObj = new Provider($id);
                 $data = $proObj->getFiles();
             }
+
+            if(!empty($data)){
+                foreach ($data as $key => $row) {
+                    $is_dir[$key]  = $row['is_dir'];
+                    $name[$key] = $row['name'];
+                }
+
+                array_multisort($is_dir, SORT_DESC, $name, SORT_ASC, $data);
+            }
+
             $parent = $this->getNavbar($cname,"","");
             return view('pages.cloud.index', [
                 'data' => $data,
@@ -80,6 +91,14 @@ class HomeController extends Controller
         }
 
 
+        if(!empty($data)){
+            foreach ($data as $key => $row) {
+                $is_dir[$key]  = $row['is_dir'];
+                $name[$key] = $row['name'];
+            }
+
+            array_multisort($is_dir, SORT_DESC, $name, SORT_ASC, $data);
+        }
 
         $parent = $this->getNavbar($cname,$proObj->getPathName($any),$any);
         return view('pages.cloud.index',[
@@ -161,6 +180,11 @@ class HomeController extends Controller
         return json_encode($data);
     }
 
+    /**
+     *
+     */
+
+
     public function getConnectionList(){
         $tokens = User::find(Auth::user()->id)->token;
         $data = array();
@@ -176,10 +200,30 @@ class HomeController extends Controller
     }
 
     public function transferFile(){
-        dump($_POST['tf_file']);
-        dump($_POST['from_connection']);
-        dump($_POST['to_connection_name']);
-        dd($_POST['to_path']);
+//        dump($_POST['tf_file']);
+//        dump($_POST['from_connection']);
+//        dump($_POST['to_connection_name']);
+//        dump($_POST['to_path']);
+        $proObj = new Provider($_POST['from_connection']);
+        $filename = $proObj->downloadFile($_POST['tf_file'], 'temp');
+        $proObj->deleteFile($_POST['tf_file']);
+        $proObj = new Provider($_POST['to_connection_name']);
+        $objfile = new File($filename);
+        $file = array(
+            'name' => $objfile->getBasename(),
+            'type' => $objfile->getMimeType(),
+            'tmp_name' => $filename,
+            'error' => 0,
+            'size' => $objfile->getSize()
+        );
+        $proObj->uploadFile($file,$_POST['to_path']);
+        readfile($filename);
+        unlink($filename);
+    }
+
+    public function test(){
+
+         phpinfo();
     }
 
     public function download(){
