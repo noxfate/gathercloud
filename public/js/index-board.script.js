@@ -84,6 +84,8 @@ function setStoragesBar($data){
         var div_text = document.createElement("div");
         div_text.className = "limit-text";
         div_text.innerHTML = obj.connection_name;
+        var div_p = document.createElement("div");
+        div_p.className = "div_p";
         var p_text = document.createElement("p");
         p_text.className = "text-muted";
         p_text.innerHTML = obj.remain + " free of " + obj.quota;
@@ -100,7 +102,8 @@ function setStoragesBar($data){
 
         lb_radio.appendChild(input_radio);
         lb_radio.appendChild(div_text);
-        lb_radio.appendChild(p_text);
+        div_p.appendChild(p_text);
+        lb_radio.appendChild(div_p);
 
         div_bar_con.appendChild(div_bar);
         div_warp.appendChild(div_bar_per);

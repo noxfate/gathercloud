@@ -140,8 +140,8 @@ Class DropboxInterface implements ModelInterface
             $res = $this->dbxObj->UploadFile($file['tmp_name'] ,$destination);
             return array((object)\GuzzleHttp\json_decode($res));
         } else {
-            $this->dbxObj->CreateFolder($file);
-            return true;
+            $res = $this->dbxObj->CreateFolder($file);
+            return array((object)\GuzzleHttp\json_decode($res));;
         }
     }
 

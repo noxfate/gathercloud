@@ -209,12 +209,12 @@
                                         <span class="glyphicon glyphicon-folder-close"></span>
                                         <a href="{{ Request::getBaseUrl() . "/home/" .$cname . $val['path'] . ($cname == 'all' ? '?in='.$val['connection_name'] : '')}}">
                                             <span class="dir" data-mime="{{ $val['mime_type'] }}" data-conname="{{ $val['connection_name'] }}" value="{{ $val['path'] }}">{{ $val['name'] }}</span>
-                                            {{--<br><span class="text-muted font-12">in</span><a href="#"><span class="text-primary font-12">{{"/".$val['connection_name']. $val['path'] }}</span></a>--}}
+                                            <br><span class="text-muted font-12">in</span><a href="#"><span class="text-primary font-12">{{"/".$val['connection_name']. $val['path'] }}</span></a>
                                         </a>
                                     @else
                                         <a href="#">
                                             <span data-conname="{{ $val['connection_name'] }}" value="{{ $val['path'] }}">{{ $val['name'] }}</span>
-                                            {{--<br><span class="text-muted font-12">in</span><a href="#"><span class="text-primary font-12">{{ "/".$val['connection_name']. $val['path'] }}</span></a>--}}
+                                            <br><span class="text-muted font-12">in</span><a href="#"><span class="text-primary font-12">{{ "/".$val['connection_name']. $val['path'] }}</span></a>
                                         </a>
 
                                     @endif

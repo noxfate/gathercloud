@@ -233,6 +233,7 @@ button{
 
 .create-bar .modal-body .panel .priority .radio{
     margin-bottom: 10px;
+    text-align: left;
 }
 
 .create-bar .modal-body .panel .priority .radio label p{
@@ -245,7 +246,7 @@ button{
     display: inline-block;
     font-weight: bolder;
     white-space: nowrap;
-    width: 170px;
+    width: 110px;
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: left;
@@ -337,6 +338,12 @@ button{
 
 .create-bar .modal-body .radio label{
     line-height: 20px;
+    width: 100%;
+}
+
+.div_p {
+    float: right;
+    display: inherit;
 }
 
 .search-bar{

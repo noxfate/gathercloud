@@ -263,7 +263,7 @@ class HomeController extends Controller
             $dummy_store = User::find(Auth::user()->id)->token
                 ->where('connection_name',$_POST['dummy_store'])
                 ->first()->id;
-            $dm->path = $path;
+            $dm->path = $path[0]['path'];
             $dm->real_store = $real_store;
             $dm->dummy_path = $_POST['dummy_path'];
             $dm->dummy_store = $dummy_store;

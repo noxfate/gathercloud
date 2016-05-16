@@ -16,7 +16,7 @@ class CreateProvidersTable extends Migration
             $table->increments('id');
             $table->string('provider_name');
             $table->string('provider_logo');
-            $table->string('value');
+            $table->string('reference_name');
         });
 
 
