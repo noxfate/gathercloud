@@ -324,15 +324,17 @@ class DropboxClient {
 
 		$query = http_build_query(array_merge(compact('overwrite', 'parent_rev'), array('locale' => $this->locale)),'','&');
 		$url = $this->cleanUrl(self::API_CONTENT_URL."/files_put/$this->rootPath/$dropbox_path")."?$query";
-
 		if($this->useCurl) {
 			$context = $this->createRequestContext($url, "PUT");
 			curl_setopt($context, CURLOPT_BINARYTRANSFER, true);
 			$fh = fopen($src_file, 'rb');
+
 			curl_setopt($context, CURLOPT_PUT, 1);
 			curl_setopt($context, CURLOPT_INFILE, $fh); // file pointer
 			curl_setopt($context, CURLOPT_INFILESIZE, filesize($src_file));
-			$meta = json_decode(self::execCurlAndClose($context));
+			curl_setopt($context, CURLOPT_RETURNTRANSFER, true);
+			$response_headers = array();
+			$meta = self::execCurlAndClose($context, $response_headers);
 			fclose($fh);
 			return self::checkForError($meta);
 		} else {
@@ -465,6 +467,7 @@ class DropboxClient {
 
 		if(!empty($dir->error)) throw new DropboxException($dir->error);
 
+		if(property_exists($dir, 'contents')){
 		foreach($dir->contents as $item)
 		{
 			$files[trim($item->path,'/')] = $item;
@@ -472,6 +475,9 @@ class DropboxClient {
 			{
 				$this->getFileTree($item->path, $include_deleted, $max_depth, $depth+1);
 			}
+		}
+		}else {
+			$files[trim($dir->path,'/')] = $dir;
 		}
 
 		return $files;

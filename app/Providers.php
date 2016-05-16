@@ -11,7 +11,7 @@ class Providers extends Model
     protected $fillable = [
         'provider_name',
         'provider_logo',
-        'value'
+        'reference_name'
     ];
 
 

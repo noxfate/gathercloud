@@ -20,7 +20,7 @@ namespace App\Library\OneDrive;
 // TODO: pass parameters in POST request body when obtaining the access token
 class Client {
 	// The base URL for API requests.
-	const API_URL   = 'https://apis.live.net/v5.0/';
+	const API_URL   = 'https://api.onedrive.com/v1.0'  ;  // https://apis.live.net/v5.0/
 
 	// The base URL for authorization requests.
 	const AUTH_URL  = 'https://login.live.com/oauth20_authorize.srf';
@@ -78,7 +78,6 @@ class Client {
 	 */
 	private function _processResult($curl) {
 		$result = curl_exec($curl);
-
 		if (false === $result) {
 			throw new \Exception('curl_exec() failed: ' . curl_error($curl));
 		}
@@ -300,7 +299,6 @@ class Client {
 	public function apiGet($path, $options = array()) {
 		$url = self::API_URL . $path
 			. '?access_token=' . urlencode($this->_state->token->data->access_token);
-
 		$curl = self::_createCurl($path, $options);
 
 		curl_setopt($curl, CURLOPT_URL, $url);
@@ -309,7 +307,7 @@ class Client {
 	}
 
 	public function apiSearch($query, $options = array()){
-		$url = "https://api.onedrive.com/v1.0/drive/items/root/view.search".
+		$url = self::API_URL . "/drive/items/root/view.search".
 			'?q=' . $query
 			. '&access_token=' . urlencode($this->_state->token->data->access_token);
 		$curl = self::_createCurl($query, $options);
@@ -319,12 +317,76 @@ class Client {
 	}
 
 	public function apiDownload($path) {
-		$options = array();
-		$url = self::API_URL . $path
-			. '/content?download=true&suppress_redirects=true&access_token=' . urlencode($this->_state->token->data->access_token);
-		$curl = self::_createCurl($path, $options);
-		curl_setopt($curl, CURLOPT_URL, $url);
-		return $this->_processResult($curl);
+		$url = self::API_URL . "/drive/root:" . $path . ':/content';
+		$curl = curl_init();
+		curl_setopt_array($curl, array(
+			// SSL options.
+			CURLOPT_SSL_VERIFYHOST => false,
+			CURLOPT_SSL_VERIFYPEER => false,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_FOLLOWLOCATION => false,
+			CURLOPT_HEADER => true,
+			CURLOPT_CUSTOMREQUEST => "GET",
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_URL        => $url,
+			CURLOPT_HTTPHEADER => array(
+				'Content-Type: application/json',
+				'Authorization: Bearer ' . $this->_state->token->data->access_token
+			),
+		));
+
+		$content = curl_exec( $curl );
+		curl_close ( $curl );
+		return $this->get_headers_from_curl_response($content);
+	}
+
+	public function apiDownloadIn($path, $des = null) {
+		$url = self::API_URL . "/drive/root:" . $path . ':/content';
+		$curl = curl_init();
+
+		$fh = @fopen($des, 'wb'); // write binary
+		if($fh === false) {
+			@fclose($fh);
+			throw new DropboxException("Could not create file $des !");
+		}
+		curl_setopt_array($curl, array(
+			// SSL options.
+			CURLOPT_SSL_VERIFYHOST => false,
+			CURLOPT_SSL_VERIFYPEER => false,
+			CURLOPT_BINARYTRANSFER => true,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_FILE => $fh,
+			CURLOPT_CUSTOMREQUEST => "GET",
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_URL        => $url,
+			CURLOPT_HTTPHEADER => array(
+				'Content-Type: application/json',
+				'Authorization: Bearer ' . $this->_state->token->data->access_token
+			),
+		));
+		curl_exec($curl);
+		curl_close ( $curl );
+		fclose($fh);
+	}
+
+	function get_headers_from_curl_response($response)
+	{
+		$headers = array();
+
+		$header_text = substr($response, 0, strpos($response, "\r\n\r\n"));
+
+		foreach (explode("\r\n", $header_text) as $i => $line)
+			if ($i === 0)
+				$headers['http_code'] = $line;
+			else
+			{
+				list ($key, $value) = explode(': ', $line);
+
+				$headers[$key] = $value;
+			}
+
+		return $headers;
 	}
 
 	/**
@@ -394,7 +456,6 @@ class Client {
 	public function apiDelete($path) {
 		$url = self::API_URL . $path
 			. '?access_token=' . urlencode($this->_state->token->data->access_token);
-
 		$curl = self::_createCurl($path);
 
 		curl_setopt_array($curl, array(
@@ -489,21 +550,22 @@ class Client {
 	 * @return (Folder) The folder created, as a Folder instance referencing to
 	 *         the OneDrive folder created.
 	 */
-	public function createFolder($name, $parentId = null, $description = null) {
+	public function createFolder($name, $parentId = null) {
+
 		if (null === $parentId) {
-			$parentId = 'me/skydrive';
+			$parentId = '/drive/root/children';
+		}else{
+			$parentId = $parentId . '/children';
 		}
 
 		$properties = array(
-			'name' => (string) $name
+			'name' => (string) $name,
+			'folder' => (object)(array(
+			)),
+			'@name.conflictBehavior' => 'rename'
 		);
-
-		if (null !== $description) {
-			$properties['description'] = (string) $description;
-		}
-
 		$folder = $this->apiPost($parentId, (object) $properties);
-		return new Folder($this, $folder->id, $folder);
+		return $folder;
 	}
 
 	public function createSharing($type, $objectId = null) {
@@ -517,25 +579,25 @@ class Client {
 
 	public function searchFile($query){
 		$result =  $this->apiSearch($query);
-		$objects  = array();
-		foreach ($result->value as $d) {
-			$d = (object)$d;
-			$data = array(
-				'name' => $d->name,
-				'parent_id' => 'folder.'.strtolower(substr($d->parentReference->id,0,strpos($d->parentReference->id,"!"))).".".$d->parentReference->id,
-				'description' => "",
-				'size' => $d->size,
-				'created_time' => $d->createdDateTime,
-				'updated_time' => $d->lastModifiedDateTime,
-			);
-			$object = property_exists($d, 'folder') ?
-				new Folder($this, 'folder.'.strtolower(substr($d->id,0,strpos($d->id,"!"))).".".$d->id, $data)
-				: new File($this, 'file.'.strtolower(substr($d->id,0,strpos($d->id,"!"))).".".$d->id, $data);
+//		$objects  = array();
+//		foreach ($result->value as $d) {
+//			$d = (object)$d;
+//			$data = array(
+//				'name' => $d->name,
+//				'parent_id' => 'folder.'.strtolower(substr($d->parentReference->id,0,strpos($d->parentReference->id,"!"))).".".$d->parentReference->id,
+//				'description' => "",
+//				'size' => $d->size,
+//				'created_time' => $d->createdDateTime,
+//				'updated_time' => $d->lastModifiedDateTime,
+//			);
+//			$object = property_exists($d, 'folder') ?
+//				new Folder($this, 'folder.'.strtolower(substr($d->id,0,strpos($d->id,"!"))).".".$d->id, $data)
+//				: new File($this, 'file.'.strtolower(substr($d->id,0,strpos($d->id,"!"))).".".$d->id, $data);
+//
+//			$objects[] = $object;
+//		}
 
-			$objects[] = $object;
-		}
-
-		return $objects;
+		return $result->value;
 	}
 
 	/**
@@ -550,10 +612,8 @@ class Client {
 	 *         OneDrive file created.
 	 * @throw  (\Exception) Thrown on I/O errors.
 	 */
-	public function createFile($name, $parentId = null, $content = '') {
-		if (null === $parentId) {
-			$parentId = 'me/skydrive';
-		}
+	public function createFile($name, $content = '',$parentId = '') {
+		$parentId = '/drive/root:' . $parentId . '/' . urlencode($name) . ':/content';
 
 		$stream = fopen('php://temp', 'w+b');
 
@@ -573,93 +633,11 @@ class Client {
 
 		// TODO: some versions of cURL cannot PUT memory streams? See here for a
 		// workaround: https://bugs.php.net/bug.php?id=43468
-		$file = $this->apiPut($parentId . '/files/' . urlencode($name), $stream);
+		$file = $this->apiPut($parentId, $stream);
 		fclose($stream);
-		return new File($this, $file->id, $file);
+		dd($file);
 	}
 
-
-	/**
-	 * Fetches an object from the current OneDrive account.
-	 *
-	 * @param  (null|string) The unique ID of the OneDrive object to fetch, or
-	 *         null to fetch the OneDrive root folder. Default: null.
-	 * @return (Object) The object fetched, as an Object instance referencing to
-	 *         the OneDrive object fetched.
-	 */
-	public function fetchObject($objectId = null) {
-		$objectId = null !== $objectId ? $objectId : 'me/skydrive';
-		$result   = $this->apiGet($objectId);
-
-		if (in_array($result->type, array('folder', 'album'))) {
-			return new Folder($this, $objectId, $result);
-		}
-
-		return new File($this, $objectId, $result);
-	}
-
-	/**
-	 * Fetches the root folder from the current OneDrive account.
-	 *
-	 * @return (Folder) The root folder, as a Folder instance referencing to the
-	 *         OneDrive root folder.
-	 */
-	public function fetchRoot() {
-		return $this->fetchObject();
-	}
-
-	/**
-	 * Fetches the "Camera Roll" folder from the current OneDrive account.
-	 *
-	 * @return (Folder) The "Camera Roll" folder, as a Folder instance referencing
-	 *         to the OneDrive "Camera Roll" folder.
-	 */
-	public function fetchCameraRoll() {
-		return $this->fetchObject('me/skydrive/camera_roll');
-	}
-
-	/**
-	 * Fetches the "Documents" folder from the current OneDrive account.
-	 *
-	 * @return (Folder) The "Documents" folder, as a Folder instance referencing
-	 *         to the OneDrive "Documents" folder.
-	 */
-	public function fetchDocs() {
-		return $this->fetchObject('me/skydrive/my_documents');
-	}
-
-	/**
-	 * Fetches the "Pictures" folder from the current OneDrive account.
-	 *
-	 * @return (Folder) The "Pictures" folder, as a Folder instance referencing to
-	 *         the OneDrive "Pictures" folder.
-	 */
-	public function fetchPics() {
-		return $this->fetchObject('me/skydrive/my_photos');
-	}
-
-	/**
-	 * Fetches the "Public" folder from the current OneDrive account.
-	 *
-	 * @return (Folder) The "Public" folder, as a Folder instance referencing to
-	 *         the OneDrive "Public" folder.
-	 */
-	public function fetchPublicDocs() {
-		return $this->fetchObject('me/skydrive/public_documents');
-	}
-
-	/**
-	 * Fetches the properties of an object in the current OneDrive account.
-	 *
-	 * @return (array) The properties of the object fetched.
-	 */
-	public function fetchProperties($objectId) {
-		if (null === $objectId) {
-			$objectId = 'me/skydrive';
-		}
-
-		return $this->apiGet($objectId);
-	}
 
 	/**
 	 * Fetches the objects in a folder in the current OneDrive account.
@@ -667,23 +645,20 @@ class Client {
 	 * @return (array) The objects in the folder fetched, as Object instances
 	 *         referencing OneDrive objects.
 	 */
-	public function fetchObjects($objectId) {
-		if (null === $objectId) {
-			$objectId = 'me/skydrive';
-		}
+	public function fetchObjects($objectId = '/') {
+		$objectId = '/drive/root:' . $objectId . ':/children';
+		$result   = $this->apiGet($objectId);
+//		$objects  = array();
+//
+//		foreach ($result->data as $data) {
+//			$object = in_array($data->type, array('folder', 'album')) ?
+//				new Folder($this, $data->id, $data)
+//				: new File($this, $data->id, $data);
+//
+//			$objects[] = $object;
+//		}
 
-		$result   = $this->apiGet($objectId . '/files');
-		$objects  = array();
-
-		foreach ($result->data as $data) {
-			$object = in_array($data->type, array('folder', 'album')) ?
-				new Folder($this, $data->id, $data)
-				: new File($this, $data->id, $data);
-
-			$objects[] = $object;
-		}
-
-		return $objects;
+		return $result->value;
 	}
 
 	/**
@@ -695,24 +670,32 @@ class Client {
 	 * @throw  (\Exception) Thrown on I/O errors.
 	 */
 	public function updateObject($objectId, $properties = array()) {
-		$objectId   = $objectId;
-		$properties = (object) $properties;
-		$encoded    = json_encode($properties);
-		$stream     = fopen('php://temp', 'w+b');
+		$path = '/drive/root:' . $objectId;
+		$data = (object) $properties;
+		$url = self::API_URL . $path;
+		$curl = curl_init();
+		curl_setopt_array($curl, array(
+			// SSL options.
+			CURLOPT_SSL_VERIFYHOST => false,
+			CURLOPT_SSL_VERIFYPEER => false,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_HEADER => true,
+			CURLOPT_CUSTOMREQUEST => "PATCH",
+			CURLOPT_URL        => $url,
+			CURLOPT_HTTPHEADER => array(
+				'Content-Type: application/json',
+				'Authorization: Bearer ' . $this->_state->token->data->access_token
+			),
+			CURLOPT_POSTFIELDS => json_encode($data)
+		));
 
-		if (false === $stream) {
-			throw new \Exception('fopen() failed');
-		}
+		$content = curl_exec( $curl );
+		curl_close ( $curl );
+		return $this->get_headers_from_curl_response($content);
 
-		if (false === fwrite($stream, $encoded)) {
-			throw new \Exception('fwrite() failed');
-		}
 
-		if (!rewind($stream)) {
-			throw new \Exception('rewind() failed');
-		}
 
-		$this->apiPut($objectId, $stream, 'application/json');
 	}
 
 	/**
@@ -752,59 +735,16 @@ class Client {
 		));
 	}
 
-	/**
-	 * Deletes an object in the current OneDrive account.
-	 *
-	 * @param  (string) $objectId - The unique ID of the object to delete.
-	 */
+
 	public function deleteObject($objectId) {
-		$objectId = $objectId;
-		$this->apiDelete($objectId);
+		$objectId = '/drive/root:' . $objectId;
+		$res = $this->apiDelete($objectId);
+		return true;
 	}
 
-	/**
-	 * Fetches the quota of the current OneDrive account.
-	 *
-	 * @return (object) An object with the following properties:
-	 *           (int) quota - The total space, in bytes.
-	 *           (int) available - The available space, in bytes.
-	 */
-	public function fetchQuota() {
-		return $this->apiGet('me/skydrive/quota');
-	}
 
-	/**
-	 * Fetches the account info of the current OneDrive account.
-	 *
-	 * @return (object) An object with the following properties:
-	 *           (string) id - OneDrive account ID.
-	 *           (string) first_name - account owner's first name.
-	 *           (string) last_name - account owner's last name.
-	 *           (string) name - account owner's full name.
-	 *           (string) gender - account owner's gender.
-	 *           (string) locale - account owner's locale.
-	 */
 	public function fetchAccountInfo() {
-		return $this->apiGet('me');
+		return $this->apiGet('/drive');
 	}
 
-	/**
-	 * Fetches the recent documents uploaded to the current OneDrive account.
-	 *
-	 * @return (object) An object with the following properties:
-	 *           (array) data - The list of the recent documents uploaded.
-	 */
-	public function fetchRecentDocs() {
-		return $this->apiGet('me/skydrive/recent_docs');
-	}
-
-	/**
-	 * Fetches the objects shared with the current OneDrive account.
-	 *
-	 * @return (object) An object with the following properties:
-	 *           (array) data - The list of the shared objects.
-	 */
-	public function fetchShared() {
-		return $this->apiGet('me/skydrive/shared');
-	}
 }

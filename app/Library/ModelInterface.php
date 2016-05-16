@@ -51,14 +51,15 @@ interface ModelInterface
 
     /**
      * @param string $file
+     * @param string $destination
      * @return string of Location
      */
-    public function downloadFile($file);
+    public function downloadFile($file, $destination = null);
 
     /**
      * @param string $file
      * @param string $destination
-     * @return boolean
+     * @return list of file metadata (return value depends on Provider)
      *
      */
     public function uploadFile($file, $destination);

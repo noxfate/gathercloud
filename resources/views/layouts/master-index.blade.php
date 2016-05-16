@@ -9,7 +9,7 @@
 <body>
 
 <div id="top-bar" class="top-bar">
-    <div id="logo" class="logo"><img src="{{URL::asset('images/logo-mini-white-gtc.png')}}" height="40px"></div>
+    <div id="logo" class="logo"><img src="{{URL::asset('images/logo-mini-white-gtc.png')}}"></div>
     <div style="position: absolute;right: 50px;top: 17px;">admin gtc</div>
     <div id="userMenu" class="userMenu">
         <div class="dropdown">
@@ -52,10 +52,12 @@
                                     All in one
                             </a>
                         </li>
-                        @foreach ($conn as $c)
+                        @foreach ($conn as $index => $c)
                             <li id="side-bar-select-{{ $c->connection_name }}">
                                 <a class="btn btn-link"  href="{{ url("/home/{$c->connection_name}") }}">
-                                    <span class="glyphicon glyphicon-cloud"></span>
+                                    <div class="div-circle-icon">
+                                        <img src="{{ URL::asset('images/logo-provider/'. $logo[$index]->provider_logo) }}">
+                                    </div>
                                         {{ $c->connection_name }}
 
 

@@ -1,10 +1,10 @@
 body{
-    background-color: #2196f3;
+    background-color: #35a3dd;
 }
 
 header {
     color: whitesmoke;
-    background-color: #2196f3;
+    background-color: inherit;
     height: 80px;
     border-top: solid #101010 2px;
 }
@@ -13,6 +13,14 @@ header {
 .land-logo{
     float: left;
     height: 30px;
+    padding: 10px;
+}
+
+.land-logo img{
+    height: 80px;
+    background-color: white;
+    border-radius: 30px;
+    padding: 10px;
 }
 
 .land-menu{
@@ -32,12 +40,12 @@ header {
 
 .land-menu ul li a{
     text-transform: uppercase;
-    color: whitesmoke;
+    color: white;
     font-size: 1.1em;
 }
 
 .land-menu ul li a:hover{
-    color: white;
+    color: #0c7cd5;
     border-bottom: 1px dashed white;
     text-decoration: none;
 }
@@ -46,7 +54,7 @@ header {
     width: 100%;
     display: inline-block;
     vertical-align: middle;
-    background-color: #2196f3;
+    background-color: inherit;
 }
 
 span.v{
@@ -62,9 +70,9 @@ span.v{
     height: 40px;
     margin: 0 auto;
     text-align: center;
-    color: black;
+    color: white;
     font-size: 4em;
-    border: solid black 3px;
+    border: solid white 3px;
     border-radius: 50px;
     padding: 65px;
 }
@@ -72,7 +80,7 @@ span.v{
 .qoute{
     padding-top: 30px;
     text-align: center;
-    color: whitesmoke;
+    color: white;
     font-size: 2em;
 }
 
@@ -82,7 +90,7 @@ span.v{
 }
 
 .join a{
-    color: #420952;
+    color: #0c7cd5;
     padding: 10px 30px 10px 30px;
     background-color: whitesmoke;
     border-radius: 10px;
@@ -96,11 +104,11 @@ span.v{
 }
 
 footer{
-    background-color: gainsboro;
+    background-color: #101010;
     height: 100px;
 
     padding-top: 40px;
     text-align: center;
-    color: purple;
+    color: #878787;
     font-size: 2.3em;
 }

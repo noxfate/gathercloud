@@ -9,7 +9,7 @@ use App\Providers;
 
 class Provider
 {
-	private $provider_value;
+    private $provider_value;
     private $provider_logo;
     private $owner;
     private $connObj;
@@ -17,8 +17,8 @@ class Provider
     private $storage;
     private $connection_name;
 
-	function __construct($connection_name)
-	{
+    function __construct($connection_name)
+    {
         $this->connection_name = $connection_name;
         $tk = Token::where('connection_name', $connection_name)
             ->where('user_id', Auth::user()->id)
@@ -29,13 +29,13 @@ class Provider
         $this->owner = $tk->user_id;
         $this->token_id  = $tk->id;
         $token = array(
-                    'access_token' => $tk->access_token,
-                    'expired_in' => $tk->expired_in,
-                    'refresh_token' => $tk->refresh_token,
-                );
+            'access_token' => $tk->access_token,
+            'expired_in' => $tk->expired_in,
+            'refresh_token' => $tk->refresh_token,
+        );
         $className = '\\App\\Library\\' . $this->provider_value . 'Interface';
         $this->connObj = new $className((object)$token);
-	}
+    }
 
     /**
      * @return mixed
@@ -113,46 +113,52 @@ class Provider
 //        return $this->storage;
 //    }
 
-	function downloadFile($file)
-	{
-        $this->connObj->downloadFile($file);
-	}
-	function uploadFile($file, $destination = null)
-	{
-       return $this->connObj->uploadFile($file, $destination);
-	}
-	function getFiles($file = null)
-	{
+    function downloadFile($file , $des = null)
+    {
+        return $this->connObj->downloadFile($file,$des);
+    }
+    function uploadFile($file, $destination = null)
+    {
+        $res = $this->connObj->uploadFile($file, $destination);
+        $res = $this->connObj->normalizeMetaData($res,$this->provider_logo,$this->connection_name);
+        return $res;
+    }
+    function getFiles($file = null)
+    {
         $data = $this->connObj->getFiles($file);
         $data = $this->connObj->normalizeMetaData($data,$this->provider_logo,$this->connection_name);
         $data = $this->humanFileSize($data);
         return $data;
-	}
+    }
     function deleteFile($file)
     {
-        $this->connObj->deleteFile($file);
+        $res = $this->connObj->deleteFile($file);
+        return ($res) ? 'true' : 'false';
     }
 
     function rename($file, $new_name){
-        return $this->connObj->rename($file,$new_name);
+        $res = $this->connObj->rename($file,$new_name);
+        return ($res) ? 'true' : 'false';
+
     }
 
     function searchFile($keyword)
     {
         $data = $this->connObj->searchFile($keyword);
-        $data = $this->connObj->normalizeMetaData($data,$this->token_id,$this->connection_name);
+        $data = $this->connObj->normalizeMetaData($data,$this->provider_logo,$this->connection_name);
         $data = $this->humanFileSize($data);
         return $data;
     }
 
-	function getLink($file)
-	{
-
-	}
-	function getAccountInfo()
-	{
-        return $this->connObj->getAccountInfo();
-	}
+    function getLink($file)
+    {
+        return 0;
+    }
+    function getAccountInfo()
+    {
+        $info = $this->connObj->getAccountInfo();
+        return $this->humanStorageSize($info);
+    }
 
     function getPathName($file){
         return $this->connObj->getPathName($file);
@@ -268,6 +274,27 @@ class Provider
             }
         }
         return $data;
+    }
+
+    private function humanStorageSize($data)
+    {
+        $data = (array)$data;
+        $percent = floor(($data['used'] / $data['quota']) * 100);
+        foreach($data as $key => $d){
+            if(is_numeric($d)){
+                if (($d >= 1 << 30)) {
+                    $data[$key] = number_format($d / (1 << 30), 2) . "GB";
+                } elseif (($data[$key] >= 1 << 20)) {
+                    $data[$key] = number_format($d / (1 << 20), 2) . "MB";
+                } elseif (($data[$key] >= 1 << 10)) {
+                    $data[$key] = number_format($d / (1 << 10), 2) . "KB";
+                } else {
+                    $data[$key] = number_format($d) . "B";
+                }
+            }
+        }
+        $data['percent'] = $percent;
+        return (object)$data;
     }
 }
 

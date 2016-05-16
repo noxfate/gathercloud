@@ -29,9 +29,15 @@
                                                 <img src="{{ URL::asset('images/logo-provider/logo-box.png') }}">
                                             </div>
                                             <br>
-                                            <h6 class="text-primary">Connection Name:</h6>
-                                            <input class="form-control" type="hidden" name="_token" value="{{ csrf_token() }}">
-                                            <input type="text" name="connection_name" required>
+                                            <div class="form-group">
+                                                <label for="gtl-name" class="col-lg-4 control-label" style="padding: 5px 0px 0px 0px;">
+                                                    <h5 style="margin: 0px;"><span class="label label-primary">Connection Name</span></h5>
+                                                </label>
+                                                <div class="col-lg-7" style="margin-left: 25px;padding: 0px;">
+                                                    <input type="text" name="connection_name" required class="form-control" id="gtl-name" style="font-size: 18px" placeholder="name">
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         </div>
                                     </div>
                                     <div class="modal-footer">
@@ -110,9 +116,15 @@
                                             <div class="div-circle">
                                                 <img src="{{ URL::asset('images/logo-provider/logo-googledrive.png') }}">
                                             </div>
-                                            <h5>Connection Name:</h5>
+                                            <div class="form-group">
+                                                <label for="gtl-name" class="col-lg-4 control-label" style="padding: 5px 0px 0px 0px;">
+                                                    <h5 style="margin: 0px;"><span class="label label-primary">Connection Name</span></h5>
+                                                </label>
+                                                <div class="col-lg-7" style="margin-left: 25px;padding: 0px;">
+                                                    <input type="text" name="connection_name" required class="form-control" id="gtl-name" style="font-size: 18px" placeholder="name">
+                                                </div>
+                                            </div>
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                            <input type="text" name="connection_name" required>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
@@ -147,9 +159,15 @@
                                             <div class="div-circle">
                                                 <img src="{{ URL::asset('images/logo-provider/logo-onedrive.png') }}">
                                             </div>
-                                            <h5>Connection Name:</h5>
+                                            <div class="form-group">
+                                                <label for="gtl-name" class="col-lg-4 control-label" style="padding: 5px 0px 0px 0px;">
+                                                    <h5 style="margin: 0px;"><span class="label label-primary">Connection Name</span></h5>
+                                                </label>
+                                                <div class="col-lg-7" style="margin-left: 25px;padding: 0px;">
+                                                    <input type="text" name="connection_name" required class="form-control" id="gtl-name" style="font-size: 18px" placeholder="name">
+                                                </div>
+                                            </div>
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                            <input type="text" name="connection_name" required>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
