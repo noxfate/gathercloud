@@ -9,7 +9,7 @@
 <body>
 
 <div id="top-bar" class="top-bar">
-    <div id="logo" class="logo">&lt;Logo&gt;</div>
+    <div id="logo" class="logo"><img src="{{URL::asset('images/logo-mini-white-gtc.png')}}"></div>
 </div>
 
 <div class="box-lv-1">

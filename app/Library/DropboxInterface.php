@@ -132,16 +132,19 @@ Class DropboxInterface implements ModelInterface
         if(is_array($file)){
             if (empty($destination)){
                 $destination = $file['name'];
+            } else if(strpos($destination,'/') == 0){
+                $destination = $destination."/".$file['name'];
             } else
             {
-                $destination = $destination."/".$file['name'];
+                $destination = '/'.$destination."/".$file['name'];
             }
-
+            dump($destination);
             $res = $this->dbxObj->UploadFile($file['tmp_name'] ,$destination);
             return array((object)\GuzzleHttp\json_decode($res));
         } else {
+            $file = '/'.$destination."/".$file;
             $res = $this->dbxObj->CreateFolder($file);
-            return array((object)\GuzzleHttp\json_decode($res));;
+            return array((object)$res);
         }
     }
 
@@ -245,6 +248,7 @@ Class DropboxInterface implements ModelInterface
                 array(
                     'name' => basename($k),
                     'path' => $val->path,
+                    'path_name' => substr($val->path,0,strrpos($val->path,"/",-1)),
                     'bytes' => $val->bytes,
                     'mime_type' => $mime,
                     'is_dir' => ($val->is_dir)? true:false,

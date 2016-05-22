@@ -518,15 +518,16 @@ class Client {
 		return $this->_processResult($curl);
 	}
 
-	public function apiShare($path, $data) {
-		$url  = self::API_URL . $path . '/action.createLink';
-		$data = (object) $data;
+	public function apiShare($path) {
+		$url  = self::API_URL . '/drive/root:' . $path . ':/action.createLink';
+		$data = array(
+			'type' => 'view'
+		);
 		$curl = self::_createCurl($path);
 
 		curl_setopt_array($curl, array(
 			CURLOPT_URL        => $url,
-			CURLOPT_POST       => true,
-
+			CURLOPT_CUSTOMREQUEST=> "POST",
 			CURLOPT_HTTPHEADER => array(
 				'Content-Type: application/json', // The data is sent as JSON as per OneDrive documentation
 				'Authorization: Bearer ' . $this->_state->token->data->access_token
@@ -552,12 +553,11 @@ class Client {
 	 */
 	public function createFolder($name, $parentId = null) {
 
-		if (null === $parentId) {
+		if (null == $parentId && $parentId == "") {
 			$parentId = '/drive/root/children';
 		}else{
-			$parentId = $parentId . '/children';
+			$parentId = '/drive/root:/' . $parentId . ':/children';
 		}
-
 		$properties = array(
 			'name' => (string) $name,
 			'folder' => (object)(array(
@@ -613,7 +613,12 @@ class Client {
 	 * @throw  (\Exception) Thrown on I/O errors.
 	 */
 	public function createFile($name, $content = '',$parentId = '') {
-		$parentId = '/drive/root:' . $parentId . '/' . urlencode($name) . ':/content';
+
+		if (null == $parentId && $parentId == "") {
+			$parentId = '/drive/root:/' . urlencode($name) . ':/content';
+		}else{
+			$parentId = '/drive/root:/' . $parentId . '/' . urlencode($name) . ':/content';
+		}
 
 		$stream = fopen('php://temp', 'w+b');
 

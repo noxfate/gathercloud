@@ -128,11 +128,12 @@ class OneDriveInterface implements ModelInterface
         if(is_array($file)){
             $name		 = $file['name'];
             $content 	 = file_get_contents($file['tmp_name']);
-            $file        = $onedrive->createFile($name, $content);
+            $file        = $onedrive->createFile($name, $content,urlencode($destination));
             return array($file);
         } else {
             $name        = $file;
-            $folder      = $onedrive->createFolder($name, $destination);
+            $folder      = $onedrive->createFolder($name, urlencode($destination));
+            dd($folder);
             return array($folder);
         }
 
@@ -149,6 +150,7 @@ class OneDriveInterface implements ModelInterface
         $onedrive = new \App\Library\OneDrive\Client(array(
             'state' => $this->state
         ));
+//        dd(urlencode($file));
         $object = $onedrive->fetchObjects(urlencode($file));
 
 //        if (null === $file) {
@@ -179,13 +181,12 @@ class OneDriveInterface implements ModelInterface
 
     public function getLink($file)
     {
-        if ($file != null){
-            $list_file = explode("/", $file);
-            $file = end($list_file);
-        }
         $onedrive = new \App\Library\OneDrive\Client(array(
             'state' => $this->state
         ));
+        return $onedrive->apiShare(urlencode($file))->link->webUrl;
+
+
     }
 
     public function getAccountInfo(){
@@ -283,7 +284,8 @@ class OneDriveInterface implements ModelInterface
                 array(
                     'name' => basename($val->name),
                     'path' => substr($val->parentReference->path,strpos($val->parentReference->path,':') +1 ) . '/' . $val->name,
-                    'bytes' => $val->size,
+                    'path_name' => urldecode(substr($val->parentReference->path,strpos($val->parentReference->path,':') +1 )),
+                    'bytes' => $is? 0 : $val->size,
                     'mime_type' => $mime,
                     'is_dir' => $is,
                     'modified' => date('Y m d H:i:s', strtotime($val->lastModifiedDateTime)),

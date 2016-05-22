@@ -66,7 +66,12 @@
 					{{--@endfor--}}
 				</table>
 			</div>
-			<input type="hidden" name="items" id="post-data">
+			<input type="hidden" name="items" id="post-data-path">
+			<input type="hidden" name="path_name" id="post-data-path-name">
+			<input type="hidden" name="names" id="post-data-name">
+			<input type="hidden" name="connections_name" id="post-data-conname">
+			<input type="hidden" name="sizes" id="post-data-size">
+			<input type="hidden" name="dates" id="post-data-date">
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
 		</div>
 		<br>
@@ -124,21 +129,28 @@
     $(document).ready(function(){
         var table = document.getElementById("gtl-table");
         var items = JSON.parse(sessionStorage.getItem("selected"));
+		var name = JSON.parse(sessionStorage.getItem("selected_name"));
+		var path = JSON.parse(sessionStorage.getItem("selected_path"));
+		var path_name = JSON.parse(sessionStorage.getItem("selected_path_name"));
+		var conname = JSON.parse(sessionStorage.getItem("selected_conname"));
         var size = JSON.parse(sessionStorage.getItem("selected_size"));
         var date = JSON.parse(sessionStorage.getItem("selected_date"));
+		var icon = JSON.parse(sessionStorage.getItem("selected_icon"));
         document.getElementById("gtl-label-count").textContent = items.length;
         var gtlName = sessionStorage.getItem("gtl-name");
         document.getElementById("gtl-label-name").value = gtlName;
         for (i in items){
             var row = table.insertRow(-1);
             row.className += "withItemMenu";
-            row.insertCell(0).innerHTML = '<span class="glyphicon glyphicon-cloud"></span>';
+            row.insertCell(0).innerHTML = '<div class="div-circle-icon">' +
+					'<img src="http://localhost/gathercloud/public/images/logo-provider/' + icon[i] + '">' +
+			'</div>';
             row.cells[0].className += "th-icon-cloud";
-            var itm = items[i].split("/").pop();
             if (size[i] === null || size[i] === ""){
-                row.insertCell(1).innerHTML = '<span class="glyphicon glyphicon-folder-close"></span><a href="#"><span>'+itm+'</span></a>';
+                row.insertCell(1).innerHTML = '<span class="glyphicon glyphicon-folder-close"></span><a href="#"><span>'+name[i]+'</span></a>';
             }else{
-                row.insertCell(1).innerHTML = '<span class="glyphicon glyphicon glyphicon-file"></span><a href="#"><span>'+itm+'</span></a>';
+                row.insertCell(1).innerHTML = '<span class="glyphicon glyphicon glyphicon-file"></span><a href="#"><span>'+name[i]+'</span></a>' +
+						'<br><span class="text-muted font-12">in</span><span class="text-primary font-12">' + conname[i] + path_name[i] +'</span>';
             }
             row.cells[1].className += "th-name";
             row.insertCell(2).innerHTML = size[i];
@@ -148,15 +160,23 @@
             row.insertCell(4).innerHTML = '<span class="caret action"></span>';
             row.cells[4].className += "th-action";
         }
-        $("#post-data").attr("value",JSON.stringify(items));
+        $("#post-data-path").attr("value",JSON.stringify(path));
+        $("#post-data-path-name").attr("value",JSON.stringify(path_name));
+		$("#post-data-name").attr("value",JSON.stringify(name));
+		$("#post-data-conname").attr("value",JSON.stringify(conname));
+		$("#post-data-size").attr("value",JSON.stringify(size));
+		$("#post-data-date").attr("value",JSON.stringify(date));
 
     });
 
     function resetSession(){
-        sessionStorage.removeItem("selected");
-        sessionStorage.removeItem("selected_size");
-        sessionStorage.removeItem("selected_date");
-        sessionStorage.removeItem("gtl-name");
+//        sessionStorage.removeItem("selected");
+//		sessionStorage.removeItem("selected-path");
+//		sessionStorage.removeItem("selected-conname");
+//        sessionStorage.removeItem("selected_size");
+//        sessionStorage.removeItem("selected_date");
+//        sessionStorage.removeItem("gtl-name");
+		sessionStorage.clear();
     }
 
 

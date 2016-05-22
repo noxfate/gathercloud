@@ -36,11 +36,14 @@ function onSuccess(data, status, xhr) {
 
 }
 
-function trig_priority(){
+function trig_priority(form){
 
     $.ajax({
         type: "POST",
         url : $('#ajr').attr('data-getStorages').trim(),
+        data:new FormData($("#" + form)[0]),
+        processData: false,
+        contentType: false,
         success : function(data){
             console.log(data);
             setStoragesBar(data);
@@ -116,11 +119,12 @@ function setStoragesBar($data){
     }
 }
 
-function trig_redundancy(){
+function trig_redundancy(form){
+    console.log('in');
     $.ajax({
         type: "POST",
         url : $('#ajr').attr('data-redundancyCheck').trim(),
-        data:new FormData($("#upload_form")[0]),
+        data:new FormData($("#" + form)[0]),
         processData: false,
         contentType: false,
         success : function(data){
@@ -128,6 +132,44 @@ function trig_redundancy(){
             setRddStatus(data);
         }
     },"json");
+}
+
+function checkStorage(form){
+    var con = $("#" + form).find("input[name='connection_name']").val();
+    console.log(con);
+    if(con != 'all'){
+        document.getElementById('chstr-text').className = 'displayBlock';
+        var chstr_text = document.getElementById('chstr-text');
+        chstr_text.innerHTML = '<div class="loader"> <span></span><span></span><span></span><span></span> </div>Storage size checking...';
+        $.ajax({
+            type: "POST",
+            url : $('#ajr').attr('data-checkStorage').trim(),
+            data:new FormData($("#" + form)[0]),
+            processData: false,
+            contentType: false,
+            success : function(data){
+                console.log(data);
+                if(data == 'false'){
+                    chstr_text.innerHTML = '<span class="glyphicon glyphicon glyphicon-remove-sign rdd-danger" aria-hidden="true"></span>'
+                        + " Not enough space.";
+                    console.log("Not enough space.");
+                    document.getElementById('panel-priority').className = 'panel panel-primary displayBlock';
+                    var priority_box = document.getElementById('priority-storages');
+                    priority_box.innerHTML = '<span class="loading style-1"></span>';
+                    trig_priority(form);
+                }else{
+                    chstr_text.innerHTML = '<span class="glyphicon glyphicon-ok-sign rdd-success" aria-hidden="true"></span>'
+                        + " Enough space.";
+                    console.log("Enough space.");
+                }
+            }
+        },"json");
+    } else {
+        document.getElementById('panel-priority').className = 'panel panel-primary displayBlock';
+        var priority_box = document.getElementById('priority-storages');
+        priority_box.innerHTML = '<span class="loading style-1"></span>';
+        trig_priority(form);
+    }
 }
 
 
@@ -142,10 +184,10 @@ function setRddStatus($data){
         }
         text = text.substring(0, text.length -2);
         rdd_text.innerHTML = '<span class="glyphicon glyphicon-exclamation-sign rdd-warning" aria-hidden="true"></span>'
-                            + text +"</i>";
+            + text +"</i>";
     } else {
         rdd_text.innerHTML = '<span class="glyphicon glyphicon-ok-sign rdd-success" aria-hidden="true"></span>'
-                                + " File doesn't exist in all drives.";
+            + " File doesn't exist in all drives.";
         console.log("This file doesn't exist in all drives.");
     }
 
@@ -154,7 +196,7 @@ function setRddStatus($data){
 function trig_getFolderList(e){
     console.log($(e).attr('data-connection_name'));
     var param = {connection_name:$(e).attr('data-connection_name'),
-                path:$(e).attr('data-path')};
+        path:$(e).attr('data-path')};
     $.ajax({
         type: "POST",
         url : $('#ajr').attr('data-getFolderList').trim(),
@@ -180,24 +222,38 @@ function setFolderList(e,$data){
             '<input type="radio" name="to_path" value="' + data[v]['path'] +
             '"><input type="radio" name="to_connection_name" value="' + data[v]['connection_name'] + '">' +
             data[v]['name'] + '</label>';
-            //'<a class="btn btn-link">' +
-            //data[v]['name'] + '</a>';
+        //'<a class="btn btn-link">' +
+        //data[v]['name'] + '</a>';
         ul_tf.appendChild(li);
     }
 }
 
-document.getElementById("file").onchange = function () {
-    document.getElementById("file-selected").innerHTML = this.value.replace("C:\\fakepath\\", "");
-    document.getElementById('panel-priority').className = 'panel panel-primary displayBlock';
-    document.getElementById('rdd-text').className = 'displayBlock';
-    var priority_box = document.getElementById('priority-storages');
-    priority_box.innerHTML = '<span class="loading style-1"></span>';
-    var rdd_text = document.getElementById('rdd-text');
-    rdd_text.innerHTML = '<div class="loader"> <span></span><span></span><span></span><span></span> </div>Redundancy checking...';
-    trig_priority();
-    trig_redundancy();
-
-};
+//document.getElementById("file-dummy").onchange = function () {
+//    document.getElementById("file-selected").innerHTML = this.value.replace("C:\\fakepath\\", "");
+//    //document.getElementById('panel-priority').className = 'panel panel-primary displayBlock';
+//    //var priority_box = document.getElementById('priority-storages');
+//    //priority_box.innerHTML = '<span class="loading style-1"></span>';
+//    //trig_priority();
+//    document.getElementById('rdd-text').className = 'displayBlock';
+//    var rdd_text = document.getElementById('rdd-text');
+//    rdd_text.innerHTML = '<div class="loader"> <span></span><span></span><span></span><span></span> </div>Redundancy checking...';
+//    trig_redundancy('form-upload-dummy');
+//
+//};
+//
+//
+//document.getElementById("file").onchange = function () {
+//    document.getElementById("file-selected").innerHTML = this.value.replace("C:\\fakepath\\", "");
+//    //document.getElementById('panel-priority').className = 'panel panel-primary displayBlock';
+//    //var priority_box = document.getElementById('priority-storages');
+//    //priority_box.innerHTML = '<span class="loading style-1"></span>';
+//    //trig_priority();
+//    document.getElementById('rdd-text').className = 'displayBlock';
+//    var rdd_text = document.getElementById('rdd-text');
+//    rdd_text.innerHTML = '<div class="loader"> <span></span><span></span><span></span><span></span> </div>Redundancy checking...';
+//    trig_redundancy('form-upload');
+//
+//};
 
 // listeners
 // $('button#get').on('click', onGetClick);

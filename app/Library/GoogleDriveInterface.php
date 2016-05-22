@@ -10,11 +10,15 @@ namespace App\Library;
 
 require_once __DIR__ . '../../../vendor/autoload.php';
 
+use Google_Exception;
+use Google_Service_Drive_Permission;
+use Google_Http_Request;
 use Google_Client;
 use Google_Service_Drive;
 use Google_Service_Drive_ParentReference;
 use Google_Service_Drive_DriveFile;
 use App\Token;
+use Mockery\CountValidator\Exception;
 
 
 class GoogleDriveInterface implements ModelInterface
@@ -117,7 +121,33 @@ class GoogleDriveInterface implements ModelInterface
      */
     public function getFiles($file)
     {
-        return $this->drive_service->files->listFiles(array())->getItems();
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
+        $is_root = false;
+        if($file == null || $file == ""){
+            $is_root = true;
+        }
+        $res = $this->drive_service->files->listFiles(array())->getItems();
+        $nfile = array();
+        foreach($res as $item){
+            $parents = $item->getParents();
+            $parent = $parents[0];
+            if($is_root){
+                if($parent->getIsRoot()){
+                    array_push($nfile,$item);
+                }
+            }else{
+                if($parent->getId() == $file){
+                    array_push($nfile,$item);
+                }
+            }
+        }
+//        dd($nfile);
+//        return $res;
+        return $nfile;
+
     }
 
     /**
@@ -127,7 +157,58 @@ class GoogleDriveInterface implements ModelInterface
      */
     public function downloadFile($file, $destination = null)
     {
-        // TODO: Implement downloadFile() method.
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
+        $res = $this->drive_service->files->get($file);
+
+        if($destination == 'temp'){
+            $downloadUrl = $res->getDownloadUrl();
+            if ($downloadUrl) {
+                $des = $destination.'/'.$res->getTitle();
+
+                $request = new Google_Http_Request($downloadUrl, 'GET', null, null);
+                $httpRequest = $this->drive_service->getClient()->getAuth()->authenticatedRequest($request);
+                if ($httpRequest->getResponseHttpCode() == 200) {
+                    $body = $httpRequest->getResponseBody();
+                    file_put_contents($des,$body);
+                    return $des;
+                } else  {
+                    // An error occurred.
+                    dd($httpRequest);
+                    return null;
+                }
+            } else {
+                // The file doesn't have any content stored on Drive.
+                dd("The file doesn't have any content stored on Drive.");
+                return null;
+            }
+
+        }else {
+            $downloadUrl = $res->getWebContentLink();
+            if ($downloadUrl) {
+                $request = new Google_Http_Request($downloadUrl, 'GET', null, null);
+                $httpRequest = $this->drive_service->getClient()->getAuth()->authenticatedRequest($request);
+                if($httpRequest->getResponseHttpCode() == 302){
+                    $body = $httpRequest->getResponseBody();
+                    $str_body = (string)$body;
+//                dump($body);
+//                echo $str_body;
+//                echo strrpos($str_body,'<A HREF="')+9;
+//                echo strpos($str_body,'">here');
+//                echo strrpos($str_body,'">here') - (strrpos($str_body,'<A HREF="')+9);
+                    $location = substr($str_body,strrpos($str_body,'<A HREF="')+9,strrpos($str_body,'">here') - (strrpos($str_body,'<A HREF="')+9));
+                    header("Location: " . $location);
+                    die();
+                    return true;
+                } else  {
+                    // An error occurred.
+                    dd($httpRequest);
+                    return null;
+                }
+            }
+        }
     }
 
     /**
@@ -140,28 +221,34 @@ class GoogleDriveInterface implements ModelInterface
     {
 
         if(is_array($file)){
-            $dfile = new Google_Service_Drive_DriveFile();
-            $dfile->setTitle($file['name']);
-            $dfile->setMimeType($file['type']);
+            $new_file = new Google_Service_Drive_DriveFile();
+            $new_file->setTitle($file['name']);
+            $new_file->setMimeType($file['type']);
 
             // Set the parent folder.
-            if ($destination != null) {
-                $parent = new Google_Service_Drive_ParentReference();
+            $parent = new Google_Service_Drive_ParentReference();
+            if ($destination != null && $destination != "") {
+                $destination = explode("/", $destination);
+                $destination = end($destination);
                 $parent->setId($destination);
-                $dfile->setParents(array($parent));
+            }else{
+                $info = $this->drive_service->about->get();
+                $parent->setId($info->getRootFolderId());
+
             }
+            $new_file->setParents(array($parent));
 
             try {
-                $data = file_get_contents($file['temp_name']);
+                $data = file_get_contents($file['tmp_name']);
 
-                $createdFile = $this->drive_service->files->insert($dfile, array(
+                $createdFile = $this->drive_service->files->insert($new_file, array(
                     'data' => $data,
                     'mimeType' => $file['type'],
+                    'uploadType' => 'media'
                 ));
 
                 // Uncomment the following line to print the File ID
                 // print 'File ID: %s' % $createdFile->getId();
-
                 return array($createdFile);
             } catch (Exception $e) {
                 print "An error occurred: " . $e->getMessage();
@@ -199,7 +286,23 @@ class GoogleDriveInterface implements ModelInterface
      */
     public function getLink($file)
     {
-        // TODO: Implement getLink() method.
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $fileId = end($list_file);
+
+            $newPermission = new Google_Service_Drive_Permission();
+            $newPermission->setType('anyone');
+            $newPermission->setRole('reader');
+            $newPermission->setWithLink(true);
+            try {
+                $this->drive_service->permissions->insert($fileId, $newPermission);
+                $file =  $this->drive_service->files->get($fileId);
+                return $file->getAlternateLink();
+            } catch (Google_Exception $e) {
+                print "An error occurred: " . $e->getMessage();
+            }
+            return NULL;
+        }
     }
 
     /**
@@ -229,7 +332,17 @@ class GoogleDriveInterface implements ModelInterface
      */
     public function deleteFile($file)
     {
-        // TODO: Implement deleteFile() method.
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $fileId = end($list_file);
+        }
+        try {
+            $this->drive_service->files->delete($fileId);
+        } catch (Exception $e) {
+            print "An error occurred: " . $e->getMessage();
+        }
+
+        return true;
     }
 
     /**
@@ -239,7 +352,23 @@ class GoogleDriveInterface implements ModelInterface
      */
     public function rename($file, $new_name)
     {
-        // TODO: Implement rename() method.
+        try {
+            if ($file != null){
+                $list_file = explode("/", $file);
+                $fileId = end($list_file);
+            }
+            // First retrieve the file from the API.
+            $file = $this->drive_service->files->get($fileId);
+
+            // File's new metadata.
+            $file->setTitle($new_name);
+
+            // Send the request to the API.
+            $updatedFile = $this->drive_service->files->update($fileId, $file);
+            return true;
+        } catch (Exception $e) {
+            print "An error occurred: " . $e->getMessage();
+        }
     }
 
     /**
@@ -248,7 +377,16 @@ class GoogleDriveInterface implements ModelInterface
      */
     public function getPathName($file)
     {
-        // TODO: Implement getPathName() method.
+        if ($file != null){
+            $list_file = explode("/", $file);
+        }
+        $path_name = '';
+        foreach($list_file as $f){
+            $res = $this->drive_service->files->get($f);
+            $path_name = $path_name . $res->getTitle() .'/';
+        }
+
+        return substr($path_name,0,-1);
     }
 
     /**
@@ -270,11 +408,22 @@ class GoogleDriveInterface implements ModelInterface
     {
         $format = array();
         foreach ($list_data as $f) {
-            $is = ($f->getFileExtension() == null) ? true : false;
+            $parents = $f->getParents();
+            $parent = $parents[0];
+            $path_col = array(
+                'path_name' => '',
+                'path' => ''
+            );
+            if(!$parent->getIsRoot()){
+                $parentId = $parent->getId();
+                $path_col = $this->recusiveGetPath($parentId,$path_col);
+            }
+            $is = ($f->getMimeType() == 'application/vnd.google-apps.folder') ? true : false;
             array_push($format,
                 array(
                     'name' => $f->getTitle(),
-                    'path' => $f->getId(),
+                    'path' => $path_col['path'] .'/' . $f->getId(),
+                    'path_name' => $path_col['path_name'],
                     'bytes' => $f->getFileSize(),
                     'mime_type' => $f->getMimeType(),
                     'is_dir' => $is,
@@ -286,6 +435,20 @@ class GoogleDriveInterface implements ModelInterface
         }
         return $format;
     }
+
+    private function recusiveGetPath($parentId,$path_col){
+        $res = $this->drive_service->files->get($parentId);
+        $parents = $res->getParents();
+        if(empty($parents) || $parents[0]->getIsRoot()){
+            $path_col['path_name'] = '/' . $res->getTitle() . $path_col['path_name'];
+            $path_col['path'] = '/' . $res->getId() . $path_col['path'];
+            return $path_col;
+        }
+        $path_col['path_name'] = '/' . $res->getTitle() . $path_col['path_name'];
+        $path_col['path'] = '/' . $res->getId() . $path_col['path'];
+        return $this->recusiveGetPath($parents[0]->getId(), $path_col);
+    }
+
 
     /**
      * Gets the access token expiration delay.

@@ -21,11 +21,10 @@ class AddConnectionService
     private $provider_value;
     private $provider_id;
 
-
     function __construct($provider_value)
     {
         $this->provider_value = $provider_value;
-        $this->provider_id = Providers::where("value",$this->provider_value)->first()->id;
+        $this->provider_id = Providers::where("reference_name",$this->provider_value)->first()->id;
     }
 
     public function add(){

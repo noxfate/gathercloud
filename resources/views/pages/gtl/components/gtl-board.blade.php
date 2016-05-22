@@ -1,5 +1,4 @@
-<iframe name="hiddenIframe" id="hiddenIframe" style="display: none;" ></iframe>
-{{--<iframe name="hiddenIframe" id="hiddenIframe"  ></iframe>--}}
+<input type="hidden" id="ajr" data-selectIn="{{URL::route("selectIn")}}" data-select="{{URL::route("select")}}">
 <script>
     document.getElementById('side-bar-select-{{ $cname }}').className = "withSelect";
 </script>
@@ -8,7 +7,7 @@
         <div class="form-group">
             <label for="gtl-name" class="col-lg-4 control-label" style="padding: 2px 0px 0px 0px;">
                 <h5 style="color: #666;margin: 0px;"><span class="label label-default" style="color: black">GTL Name</span></h5>
-                </label>
+            </label>
             <div class="col-lg-7" style="padding:0px">
                 <input type="text" class="form-control input-sm" id="gtl-name" style="font-size: 18px" placeholder="name" required>
             </div>
@@ -32,12 +31,10 @@
                         @for ($i = 0; $i < count($parent->par_name); $i++)
                             <li>
                                 @if ($i == 0)
-                                    {{--{{$parent->par_now}}--}}
-                                    <a href="{{ url("/gtl/select{$parent->par_path[$i]}") }}"><span>{{ $parent->par_name[$i] }}</span></a>
+                                    <a onclick="select()">{{ $parent->par_name[$i] }}</a>
                                 @else
-                                    <span class="glyphicon glyphicon-menu-right"></span>
-                                    <span class="glyphicon glyphicon-folder-open"></span>
-                                    <a href="{{ url("/gtl/select{$parent->par_path[$i]}?in={$in}") }}"><span>{{ $parent->par_name[$i] }}</span></a>
+                                    <a onclick="selectIn($(this))" data-conname="{{$in}}"
+                                          data-value="{{urldecode($parent->par_path[$i])}}">{{ $parent->par_name[$i] }}</a>
                                 @endif
                             </li>
                         @endfor
@@ -57,60 +54,28 @@
             </table>
             <div id="board-body" class="board-body thin-scrollbar">
                 <table class="table-body table-hover table-striped">
-                    {{--@if (!empty($data))--}}
-                    {{--@foreach($data as $d => $val)--}}
-                    {{--<tr class="withItemMenu" value="{{ $val['path'] }}">--}}
-                    {{--<td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>--}}
-                    {{--<td class="th-name">--}}
-                    {{--@if ($val['is_dir'])--}}
-                    {{--<span class="glyphicon glyphicon-folder-close"></span>--}}
-                    {{--<a href="{{ Request::getBaseUrl() . "/home/" .$cname . $val['path'] . ($cname == 'all' ? '?in='.$val['connection_name'] : '')}}">--}}
-                    {{--<span class="dir"--}}
-                    {{--data-conname="{{ $val['connection_name'] }}"--}}
-                    {{--value="{{ $val['path'] }}">{{ $val['name'] }}</span>--}}
-                    {{--</a>--}}
-                    {{--@else--}}
-                    {{--<span class="glyphicon glyphicon glyphicon-file"></span>--}}
-                    {{--<a href="#">--}}
-                    {{--<span data-conname="{{ $val['connection_name'] }}"--}}
-                    {{--value="{{ $val['path'] }}">{{ $val['name'] }}</span>--}}
-                    {{--</a>--}}
-
-                    {{--@endif--}}
-                    {{--</td>--}}
-                    {{--@if ($val['is_dir']  or ($val['size'] == 0))--}}
-                    {{--<td class="th-size"></td>--}}
-                    {{--@else--}}
-                    {{--<td class="th-size">{{ $val['size'] }}</td>--}}
-                    {{--@endif--}}
-                    {{--<td class="th-last-mo">{{ $val['modified'] }}</td>--}}
-                    {{--<td class="th-action"><span class="caret action"></span></td>--}}
-                    {{--</tr>--}}
-                    {{--@endforeach--}}
-                    {{--@endif--}}
                     @if (!empty($data))
                         @foreach($data as $d => $val)
                             <tr class="withItemMenu" value="{{ $val['path'] }}">
-                                <td class="th-icon-cloud"><input class="gtl-chkbox" data-conname="{{ "/".$val['connection_name'].$val['path'] }} "
-                                                                 data-size="{{ $val['size'] }}" data-date="{{ $val['modified'] }}" type="checkbox"></td>
-                                <td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>
+                                <td class="th-icon-cloud"><input class="gtl-chkbox" data-conname="{{ $val['connection_name']}}" data-path="{{urldecode($val['path'])}}"
+                                                                 data-value="{{$val['connection_name'] . $val['path']}}" data-name="{{$val['name']}}"
+                                                                 data-size="{{ $val['size'] }}" data-date="{{ $val['modified'] }}"
+                                                                 data-icon="{{$val['provider_logo']}}"
+                                                                 data-path-name="{{$val['path_name']}}"
+                                                                 type="checkbox"></td>
+                                <td class="th-icon-cloud">
+                                    <div class="div-circle-icon">
+                                        <img src="{{ URL::asset('images/logo-provider/'. $val['provider_logo']) }}">
+                                    </div>
+                                </td>
                                 <td class="th-name">
                                     @if ($val['is_dir'])
                                         <span class="glyphicon glyphicon-folder-close"></span>
-                                        {{--<a href="{{ Request::getBaseUrl() . "/home/" .$cname . $val['path'] . ($cname == 'all' ? '?in='.$val['connection_name'] : '')}}">--}}
-                                            {{--<span class="dir" data-conname="{{ $val['connection_name'] }}" value="{{ $val['path'] }}">{{ $val['name'] }}</span>--}}
-                                            {{--<br><span class="text-muted font-12">in</span><a href="#"><span class="text-primary font-12">{{"/".$val['connection_name']. $val['path'] }}</span></a>--}}
-                                        {{--</a>--}}
-                                        <span class="dir" data-conname="{{ $val['connection_name'] }}" value="{{ $val['path'] }}" onclick="onGetClick({{ Request::getBaseUrl() }})">{{ $val['name'] }}</span>
-                                        <br><span class="text-muted font-12">in</span><a href="#"><span class="text-primary font-12">{{"/".$val['connection_name']. $val['path'] }}</span></a>
+                                        <span class="dir" data-conname="{{ $val['connection_name'] }}" data-value="{{ urldecode($val['path']) }}" onclick="selectIn($(this))">{{ $val['name'] }}</span>
+                                        <br><span class="text-muted font-12">in</span><span class="text-primary font-12">{{$val['connection_name']. $val['path_name'] }}</span>
                                     @else
-                                        <span class="glyphicon glyphicon glyphicon-file"></span>
-                                        {{--<a href="#">--}}
-                                            {{--<span data-conname="{{ $val['connection_name'] }}" value="{{ $val['path'] }}">{{ $val['name'] }}</span>--}}
-                                            {{--<br><span class="text-muted font-12">in</span><a href="#"><span class="text-primary font-12">{{ "/".$val['connection_name']. $val['path'] }}</span></a>--}}
-                                        {{--</a>--}}
-                                        <span data-conname="{{ $val['connection_name'] }}" value="{{ $val['path'] }}">{{ $val['name'] }}</span>
-                                        <br><span class="text-muted font-12">in</span><a href="#"><span class="text-primary font-12">{{ "/".$val['connection_name']. $val['path'] }}</span></a>
+                                        <span class="glyphicon glyphicon glyphicon-file"></span><span>{{ $val['name'] }}</span>
+                                        <br><span class="text-muted font-12">in</span><span class="text-primary font-12">{{$val['connection_name']. $val['path_name'] }}</span>
                                     @endif
                                 </td>
                                 @if ($val['is_dir']  or ($val['size'] == 0))
@@ -129,9 +94,12 @@
     </div>
     <div class="gtl-buttom-bar">
         <h5 class="text-primary" style="display: inline;padding-right: 3px">Yours Selected items <span id="gtl-label-count" class="badge">0</span></h5>
-        <button id="gtl-btn-save" class="btn btn-primary btn-lg">Continue</button>
+        <button id="gtl-btn-continue" class="btn btn-primary btn-lg">Continue</button>
     </div>
 </div>
 
+{{--// becuz window load on board--}}
+<link rel="stylesheet" href="{{URL::asset('css/bootswatch.min.css')}}">
+<link rel="stylesheet" href="{{URL::asset('css/cloud-index.css')}}">
 {{--<script src="{{ URL::asset('js/index-board.script.js') }}"></script>--}}
 <script src="{{ URL::asset('js/gtl-board.script.js') }}"></script>

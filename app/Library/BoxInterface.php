@@ -256,35 +256,99 @@ class BoxInterface implements ModelInterface
 
     public function deleteFile($file)
     {
+        $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
         if ($file != null){
             $list_file = explode("/", $file);
             $file = end($list_file);
         }
         if (strpos($file, 'folder') !== false) {
             $file = substr($file, 7);
-        } elseif (strpos($file, 'file') !== false) {
-            $file = substr($file, 5);
-        } else {
-            echo "LOL";
-        }
-        $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
-        $er = new ExtendedRequest();
-        $command = new Content\File\DeleteFile($file);
-        $response = ResponseFactory::getResponse($contentClient, $command);
-        if ($response instanceof SuccessResponse) {
+            $er = new ExtendedRequest();
+            $er->addQueryField('recursive', true);
+            $command = new Content\Folder\DeleteFolder($file,$er);
+            $response = ResponseFactory::getResponse($contentClient, $command);
+            if ($response instanceof SuccessResponse) {
 //            echo (string)$response->getStatusCode();
 //            echo "<br>";
 //            echo (string)$response->getReasonPhrase();
-            return true;
+                return true;
 
-        } elseif ($response instanceof ErrorResponse) {
-            return false;
+            } elseif ($response instanceof ErrorResponse) {
+                $data = (string)$response->getBody();
+                return $data;
+            }
+
+
+        } elseif (strpos($file, 'file') !== false) {
+            $file = substr($file, 5);
+
+            $command = new Content\File\DeleteFile($file);
+            $response = ResponseFactory::getResponse($contentClient, $command);
+            if ($response instanceof SuccessResponse) {
+//            echo (string)$response->getStatusCode();
+//            echo "<br>";
+//            echo (string)$response->getReasonPhrase();
+                return true;
+
+            } elseif ($response instanceof ErrorResponse) {
+                return false;
+            }
+
+        } else {
+            echo "LOL";
         }
+
 
     }
 
     public function getLink($file)
     {
+        $contentClient = new ContentClient(new ApiClient($this->access_token), new UploadClient($this->access_token));
+        if ($file != null){
+            $list_file = explode("/", $file);
+            $file = end($list_file);
+        }
+        if (strpos($file, 'folder') !== false) {
+            $folderId = substr($file, 7);
+
+            $er = new ExtendedRequest();
+            $er->setPostBodyField('shared_link', ['access'=>'open']);
+
+            $command = new Content\Folder\CreateSharedFolderLink($folderId, $er);
+            $response = ResponseFactory::getResponse($contentClient, $command);
+
+            if ($response instanceof SuccessResponse) {
+//            echo (string)$response->getStatusCode();
+//            echo "<br>";
+//            echo (string)$response->getReasonPhrase();
+                $res = $this->getEntity('folder.'.$folderId);
+                return $res->shared_link->url;
+
+            } elseif ($response instanceof ErrorResponse) {
+                return NULL;
+            }
+
+        } elseif (strpos($file, 'file') !== false) {
+            $fileId = substr($file, 5);
+            $er = new ExtendedRequest();
+            $er->setPostBodyField('shared_link', ['access'=>'open']);
+
+            $command = new Content\File\CreateSharedFileLink($fileId, $er);
+            $response = ResponseFactory::getResponse($contentClient, $command);
+            if ($response instanceof SuccessResponse) {
+//            echo (string)$response->getStatusCode();
+//            echo "<br>";
+//            echo (string)$response->getReasonPhrase();
+                $res = $this->getEntity('file.'.$fileId);
+                return $res->shared_link->url;
+
+            } elseif ($response instanceof ErrorResponse) {
+                return NULL;
+            }
+
+        } else {
+            echo "LOL";
+        }
 
     }
 
@@ -457,6 +521,7 @@ class BoxInterface implements ModelInterface
                 array(
                     'name' => $val['name'],
                     'path' => $val['path'],
+                    'path_name' => $val['path'],
                     'bytes' => $val['size'],
                     'mime_type' => $val['mime_type'],
                     'is_dir' => $val['is_dir'],
