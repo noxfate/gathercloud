@@ -25,10 +25,12 @@ class AppServiceProvider extends ServiceProvider
             $link = User::find(auth()->user()->id)->link
                 ->groupBy('link_name')
                 ->all();
+            $usr = User::find(auth()->user()->id);
             $view->with([
                 'conn'=> $conn,
                 'logo'=>$logo,
-                'link' => $link
+                'link' => $link,
+                'usr' => $usr
                 ]);
         });
     }

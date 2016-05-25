@@ -28,7 +28,7 @@
                                 <td style="vertical-align: middle">{{ $c->connection_email }}</td>
                                 <td style="vertical-align: middle">Dropbox</td>
                                 <td style="vertical-align: middle">{{ $c->updated_at  }}</td>
-                                <td style="vertical-align: middle"><button class="btn btn-danger" id="dis{{ $c->id }}" data-token="{{ csrf_token() }}">Disconnect</button></td>
+                                <td style="vertical-align: middle"><button class="btn btn-danger disBtn" onclick="dis($(this))" id="{{ $c->id }}" data-token="{{ csrf_token() }}">Disconnect</button></td>
                                 {{--<td><button class="saveBtn" id="saveBtn{{ $c->id }}" data-token="{{ csrf_token() }}" disabled>Save</button></td>--}}
                             </tr>
                         @endforeach
@@ -40,25 +40,27 @@
     </div>
     <script>
 
-        $(".disBtn").click(function(){
+
+        function dis(t)
+        {
 
             confirm("This Connection will be Disconnect. Are you sure?");
-            var connId = $(this).attr("id");
-            connId = connId.substr(3);
+            var connId = t.attr("id");
             var url = window.location.pathname + "/" + connId;
             $.ajax({
                 type: 'DELETE',
                 url: url,
                 data: {
-                    _token: $(this).data('token')
+                    _token: t.attr('data-token')
                 },
-                success: function(response){
+                success: function (response) {
                     // Show Successful Feedback
-                    alert("response: "+response);
+                    alert("response: " + response);
+                    location.reload();
                     // do more stuff
                 }
             });
-        });
+        }
 
         $(".conn").dblclick(function(){
             var id = $(this).attr("value");

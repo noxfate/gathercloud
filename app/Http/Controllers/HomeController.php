@@ -136,19 +136,40 @@ class HomeController extends Controller
         return $parent;
     }
 
-    public function getStorages(){
-        $tks = User::find(auth()->user()->id)->token->all();
-        $storages = array();
-        foreach($tks as $tk){
-            $proObj = new Provider($tk->connection_name);
-            $temp = $proObj->getAccountInfo();
-            $temp = (array)$temp;
-            $temp['connection_name'] = $tk->connection_name;
-            $temp = (object)$temp;
-            array_push($storages,$temp);
-
+    public function checkStorage(Request $req){
+        if ($req->hasFile('file'))
+        {
+            if($req->input('connection_name') != "all"){
+                $proObj = new Provider($req->input('connection_name'));
+                $info = $proObj->getAccountInfo();
+                $file = $req->file('file');
+                if($info->remain > $file->getSize()){
+                    return 'true';
+                }
+            }
+            return 'false';
         }
-        return json_encode($storages);
+    }
+
+    public function getStorages(Request $req){
+        if ($req->hasFile('file')) {
+            $tks = User::find(auth()->user()->id)->token->all();
+            $storages = array();
+            foreach ($tks as $tk) {
+                $proObj = new Provider($tk->connection_name);
+                $temp = $proObj->getAccountInfo();
+                $file = $req->file('file');
+                if($temp->remain > $file->getSize()){
+                    $temp = $proObj->humanStorageSize($temp);
+                    $temp = (array)$temp;
+                    $temp['connection_name'] = $tk->connection_name;
+                    $temp = (object)$temp;
+                    array_push($storages, $temp);
+                }
+
+            }
+            return json_encode($storages);
+        }
     }
 
     public function redundancyCheck(Request $req){
@@ -162,7 +183,13 @@ class HomeController extends Controller
                 $proObj = new Provider($tk->connection_name);
                 $temp = $proObj->SearchFile($file_name);
                 if(!empty($temp)){
-                    array_push($data,$tk->connection_name);
+                    foreach($temp as $t){
+                        if($t['bytes'] == $file->getClientSize()){
+                            array_push($data,$tk->connection_name);
+                            break;
+                        }
+                    }
+
                 }
             }
             return json_encode($data);
@@ -221,9 +248,19 @@ class HomeController extends Controller
         unlink($filename);
     }
 
+    public function getLink(Request $req){
+        $file = $req->input('file');
+        $connection_name = $req->input('connection_name');
+        $proObj = new Provider($connection_name);
+        $link = $proObj->getLink($file);
+        return $link;
+    }
+
     public function test(){
 
-         phpinfo();
+//        phpinfo();
+        $token = User::find(Auth::user()->id)->token->where('id',14)->first();
+        dd($token->id);
     }
 
     public function download(){
@@ -253,8 +290,12 @@ class HomeController extends Controller
         $tk = Token::where('connection_name', $_POST['real_store'])
             ->where('user_id', Auth::user()->id)
             ->firstOrFail();
+        $des = $tk->gtc_folder;
+        if($_POST['dummy_path'] == ""){
+            $des = "";
+        }
         $proObj = new Provider($_POST['real_store']);
-        $path = $proObj->uploadFile($_FILES['file'], $tk->gtc_folder);
+        $path = $proObj->uploadFile($_FILES['file'], $des);
         if($_POST['dummy_store'] != 'all'){
             $dm = new DummyFile();
             $real_store = User::find(Auth::user()->id)->token
@@ -269,6 +310,7 @@ class HomeController extends Controller
             $dm->dummy_store = $dummy_store;
             $dm->save();
         }
+        return 'true';
 
     }
 
@@ -281,7 +323,7 @@ class HomeController extends Controller
     public function rename(){
         // Provider(" waiting edit with ALL")
         $proObj = new Provider($_POST['connection_name']);
-        return $proObj->rename($_POST['file'], $_POST['new_name']);
+        return $proObj->rename($_POST['file'], $_POST['new_name'].$_POST['extension']);
     }
 
     public function search($id)
@@ -298,6 +340,16 @@ class HomeController extends Controller
             $proObj = new Provider($id);
             $data = $proObj->SearchFile($_GET['keyword']);
         }
+
+        if(!empty($data)){
+            foreach ($data as $key => $row) {
+                $is_dir[$key]  = $row['is_dir'];
+                $name[$key] = $row['name'];
+            }
+
+            array_multisort($is_dir, SORT_DESC, $name, SORT_ASC, $data);
+        }
+
         $parent = $this->getNavbar("Results of '".$_GET['keyword']."'","","");
         return view('pages.cloud.index',[
             'data' => $data,

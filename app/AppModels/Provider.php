@@ -24,7 +24,7 @@ class Provider
             ->where('user_id', Auth::user()->id)
             ->firstOrFail();
         $pvd = Providers::where("id",$tk->provider_id)->first();
-        $this->provider_value = $pvd->value;
+        $this->provider_value = $pvd->reference_name;
         $this->provider_logo = $pvd->provider_logo;
         $this->owner = $tk->user_id;
         $this->token_id  = $tk->id;
@@ -133,7 +133,7 @@ class Provider
     function deleteFile($file)
     {
         $res = $this->connObj->deleteFile($file);
-        return ($res) ? 'true' : 'false';
+        return $res;
     }
 
     function rename($file, $new_name){
@@ -152,12 +152,12 @@ class Provider
 
     function getLink($file)
     {
-        return 0;
+        $link = $this->connObj->getLink($file);
+        return $link;
     }
     function getAccountInfo()
     {
-        $info = $this->connObj->getAccountInfo();
-        return $this->humanStorageSize($info);
+        return $info = $this->connObj->getAccountInfo();
     }
 
     function getPathName($file){
@@ -276,7 +276,7 @@ class Provider
         return $data;
     }
 
-    private function humanStorageSize($data)
+    public function humanStorageSize($data)
     {
         $data = (array)$data;
         $percent = floor(($data['used'] / $data['quota']) * 100);

@@ -11,7 +11,9 @@
 |
 */
 
-Route::get('/test','HomeController@test');
+Route::get('/test', 'HomeController@test');
+
+
 
 Route::get('/', "PagesController@index");
 
@@ -27,11 +29,18 @@ Route::get('/home/{id}', 'HomeController@index');
 Route::get('/home/{id}/{any}', 'HomeController@show')->where('any', '.*');
 Route::get('/search/{id}', "HomeController@search");
 Route::get('/download',"HomeController@download");
-Route::post('/upload', 'HomeController@upload');
-Route::post('/upload-dummy', 'HomeController@upload_dummy');
+Route::post('/upload', array(
+    'as' => 'upload',
+    'uses' => 'HomeController@upload'));
+Route::post('/upload-dummy', array(
+    'as'    =>  'upload-dummy',
+    'uses'  =>  'HomeController@upload_dummy'));
 Route::any('/getStorages', array(
     'as'    =>  'getStorages',
     'uses'  =>  'HomeController@getStorages'));
+Route::any('/checkStorage', array(
+    'as'    =>  'checkStorage',
+    'uses'  =>  'HomeController@checkStorage'));
 Route::any('/redundancyCheck', array(
     'as'    =>  'redundancyCheck',
     'uses'  =>  'HomeController@redundancyCheck'));
@@ -44,9 +53,22 @@ Route::any('/getConnectionList', array(
 Route::any('/transferFile', array(
     'as'    =>  'transferFile',
     'uses'  =>  'HomeController@transferFile'));
-Route::post('/createFolder', 'HomeController@createFolder');
+Route::post('/createFolder', array(
+    'as'    => 'createFolder',
+    'uses'  =>  'HomeController@createFolder'));
 Route::post('/{any}/delete', 'HomeController@delete')->where('any', '.*');
-Route::post('/rename', 'HomeController@rename');
+Route::post('/rename', array(
+    'as'    => 'rename',
+    'uses'  =>  'HomeController@rename'));
+Route::any('/getLink', array(
+    'as'    => 'getLink',
+    'uses'  =>  'HomeController@getLink'));
+Route::any('/copy', array(
+    'as'    => 'copy',
+    'uses'  =>  'HomeController@copy'));
+Route::any('/move', array(
+    'as'    => 'move',
+    'uses'  =>  'HomeController@move'));
 Route::get('/home',function ()
 {
     if (!Auth::check())
@@ -72,8 +94,12 @@ Route::get('/upload',function(){
 
 // GatherLink Ver. 1
 Route::get('/gtl/shared', 'GatherlinkController@showFromToken');
-Route::get('/gtl/select/{id}', 'GatherlinkController@select');
-Route::get('/gtl/select/{id}/{any}', 'GatherlinkController@select')->where('any', '.*');;
+Route::any('/gtl/select/all', array(
+    'as' => 'select',
+    'uses' => 'GatherlinkController@select'));
+Route::any('/gtl/select', array(
+    'as' => 'selectIn',
+    'uses' => 'GatherlinkController@selectIn'));
 Route::resource('/gtl','GatherlinkController');
 
 

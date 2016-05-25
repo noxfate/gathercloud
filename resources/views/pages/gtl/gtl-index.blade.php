@@ -1,50 +1,51 @@
 @extends('layouts.master-index')
 
 @section('content')
-	{{--<h1>GatherLinks</h1>--}}
-	{{--<br>--}}
+	<div id="board" class="board">
+		{{--<h1>GatherLinks</h1>--}}
+		{{--<br>--}}
 
-	{{--Links name: {{ $link[0]->link_name }} <br>--}}
+		{{--Links name: {{ $link[0]->link_name }} <br>--}}
 
-	{{--<button id="geturl-btn" value="{{ url('gtl/shared').'?tokens='.$link[0]->url }}">Get Shareable URL</button>--}}
-	{{--<br><br>--}}
+		{{--<button id="geturl-btn" value="{{ url('gtl/shared').'?tokens='.$link[0]->url }}">Get Shareable URL</button>--}}
+		{{--<br><br>--}}
 
-	{{--<table border="1">--}}
+		{{--<table border="1">--}}
 		{{--<tr>--}}
-            {{--<th class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></th>--}}
-            {{--<th class="th-name">Name</th>--}}
-            {{--<th class="th-size">Size</th>--}}
-            {{--<th class="th-last-mo">Last modified</th>--}}
-        {{--</tr>--}}
-        {{--@foreach($data as $l)--}}
-        {{--<tr>--}}
-        	{{--<td>{{ $l->token_id }}</td>--}}
-        	{{--<td>{{ $l->name }}</td>--}}
-        	{{--<td>{{ $l->size }}</td>--}}
-        	{{--<td>{{ $l->modified }}</td>--}}
-        {{--</tr>--}}
-        {{--@endforeach--}}
-	{{--</table>--}}
+		{{--<th class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></th>--}}
+		{{--<th class="th-name">Name</th>--}}
+		{{--<th class="th-size">Size</th>--}}
+		{{--<th class="th-last-mo">Last modified</th>--}}
+		{{--</tr>--}}
+		{{--@foreach($data as $l)--}}
+		{{--<tr>--}}
+		{{--<td>{{ $l->token_id }}</td>--}}
+		{{--<td>{{ $l->name }}</td>--}}
+		{{--<td>{{ $l->size }}</td>--}}
+		{{--<td>{{ $l->modified }}</td>--}}
+		{{--</tr>--}}
+		{{--@endforeach--}}
+		{{--</table>--}}
 
-	{{--<form method="POST">--}}
+		{{--<form method="POST">--}}
 		{{--<input type="submit" id="gtl-del-btn" value="Delete">--}}
 		{{--<input type="hidden" name="_token" value="{{ csrf_token() }}">--}}
-        {{--<input type="hidden" name="_method" value="delete">--}}
-	{{--</form>--}}
+		{{--<input type="hidden" name="_method" value="delete">--}}
+		{{--</form>--}}
 
-	{{--<script>--}}
+		{{--<script>--}}
 		{{--$("#geturl-btn").click(function(){--}}
-			{{--window.prompt("Copy to Clipboard: Press Ctrl+C, Enter", $(this).val());--}}
+		{{--window.prompt("Copy to Clipboard: Press Ctrl+C, Enter", $(this).val());--}}
 		{{--});--}}
 
 		{{--$("#gtl-del-btn").click(function(){--}}
-			{{--confirm("Are you sure? ** BUG ALERT ** ");--}}
+		{{--confirm("Are you sure? ** BUG ALERT ** ");--}}
 		{{--});--}}
-	{{--</script>--}}
+		{{--</script>--}}
 
 
 
-	<div class="gtl-box">
+		<div class="gtl-box">
 			<h4><span class="label label-default" style="color: black">GTL Name</span>&nbsp;<span>{{ $link->link_name }}</span></h4>
 			<hr width="50%">
 			<div style="margin-bottom: 10px">
@@ -100,19 +101,24 @@
 						{{--</tr>--}}
 						{{--@endforeach--}}
 						{{--@endif--}}
-{{--						@for($i=0 ; $i<3 ; $i++)--}}
-						@foreach($data as $d)
-							<tr class="withItemMenu">
-								<td class="th-icon-cloud"><span class="glyphicon glyphicon-cloud"></span></td>
+						{{--						@for($i=0 ; $i<3 ; $i++)--}}
+						@foreach($data as $index => $d)
+							<tr>
+								<td class="th-icon-cloud">
+									<div class="div-circle-icon">
+										<img src="{{ URL::asset('images/logo-provider/'. $logo[$index]) }}">
+									</div>
+								</td>
 								<td class="th-name">
 									@if ($d->is_dir)
 										<span class="glyphicon glyphicon glyphicon-folder-close"></span>
 									@else
 										<span class="glyphicon glyphicon glyphicon-file"></span>
 									@endif
-									<a href="#">
+									<a href="{{$d->shared}}" target="_blank">
 										<span>{{ $d->name }}</span>
 									</a>
+										<br><span class="text-muted font-12">in</span><span class="text-primary font-12">{{$con[$index] . $d->path }}</span>
 								</td>
 								<td class="th-size">{{ $d->size }}</td>
 								<td class="th-last-mo">{{ $d->modified }}</td>
@@ -124,14 +130,25 @@
 				</div>
 			</div>
 			<br>
-			<button class="btn btn-default"  id="gtl-edit-btn">Edit</button>
-			<button class="btn btn-danger"  id="gtl-delete-btn">Delete</button>
+			{{--<button class="btn btn-default"  id="gtl-edit-btn">Edit</button>--}}
+			<form action="" method="POST">
+				{{--<button class="btn btn-danger"  id="gtl-delete-btn">Delete</button>--}}
+				<input type="submit" class="btn btn-danger" name="delBtn" value="Delete">
+				{{ method_field("DELETE") }}
+				<input type="hidden" name="_token" value="{{ csrf_token() }}"/>
+			</form>
+		</div>
 	</div>
+	<script>
 
-    <script>
+		document.getElementById('tab-drives').className = "";
+		document.getElementById('tab-gtls').className = "active";
+		document.getElementById('content-drives').className = "tab-pane fade";
+		document.getElementById('content-gtls').className = "tab-pane fade active in";
+		document.getElementById('side-bar-select-{{ $key }}').className = "withSelect";
 
-        $("#gtl-url-btn").click(function (e) {
-            window.prompt("Copy to Clipboard: Press Ctrl+C, Enter", $(this).attr("data-url"));
-        });
-    </script>
+		$("#gtl-url-btn").click(function (e) {
+			window.prompt("Copy to Clipboard: Press Ctrl+C, Enter", $(this).attr("data-url"));
+		});
+	</script>
 @endsection

@@ -1,9 +1,9 @@
 <div class="contextMenu" id="myMenu">
 
     <ul class="itemMenu show-itemMenu">
-        <li class="itemMenu-item">
+        <li class="itemMenu-item" id="right-share">
             <button type="button" class="itemMenu-btn">
-                <span class="glyphicon glyphicon-share"></span>
+                <span class="glyphicon glyphicon-link"></span>
                 <span class="itemMenu-text">Share</span>
             </button>
         </li>
@@ -23,18 +23,6 @@
             <button type="button" class="itemMenu-btn">
                 <span class="glyphicon glyphicon-edit"></span>
                 <span class="itemMenu-text">Rename</span>
-            </button>
-        </li>
-        <li class="itemMenu-item">
-            <button type="button" class="itemMenu-btn">
-                <span class="glyphicon glyphicon-move"></span>
-                <span class="itemMenu-text">Move...</span>
-            </button>
-        </li>
-        <li class="itemMenu-item">
-            <button type="button" class="itemMenu-btn">
-                <span class="glyphicon glyphicon-copy"></span>
-                <span class="itemMenu-text">Copy...</span>
             </button>
         </li>
         <li class="itemMenu-item" id="right-transfer">
@@ -177,6 +165,9 @@
 <script>
     $('#board-body tbody tr').contextMenu('myMenu', {
         bindings: {
+            'right-share': function(t){
+                ShowAction(t, "Share");
+            },
             'right-download': function(t) {
                 ShowAction(t, "Download");
             },
@@ -194,9 +185,22 @@
     });
 
     function ShowAction(t, a) {
-        if(a == "Download"){
+        if(a == "Share"){
             var file = $(t).attr('value');
-            var connection_name = $(t).find("td:eq(1)").find("a").find("span").attr('data-conname');
+            var connection_name = $(t).attr('data-conname');
+            var data = {file : file, connection_name:connection_name}
+            $.ajax({
+                type: "POST",
+                url : $('#ajr').attr('data-getLink').trim(),
+                data: data,
+                success : function(data){
+                    console.log(data);
+                    prompt("Public Share",data);
+                }
+            },"json");
+        } else if(a == "Download"){
+            var file = $(t).attr('value');
+            var connection_name = $(t).attr('data-conname');
             var indOf = window.location.pathname.indexOf("/home",1);
             var myStr = window.location.pathname.substr(0,indOf );
             var url = myStr + "/download"
@@ -206,31 +210,50 @@
             );
 
         } else if(a == "Delete"){
-            var file = $(t).attr('value');
-            var connection_name = $(t).find("td:eq(1)").find("a").find("span").attr('data-conname');
-            var indOf = window.location.pathname.indexOf("/home",1);
-            var myStr = window.location.pathname.substr(0,indOf );
-            var url = myStr + "/delete"
-            $.ajax({
-                type: 'POST',
-                url: 'delete',
-                data: {
-                    file: file,
-                    connection_name: connection_name
-                },
-                success: function(result){
-                    console.log(result);
-                }
-            });
+            var res = confirm('Do you want to delete?');
+            if(res){
+                var p_loading = document.getElementById('p-loading');
+                p_loading.className = 'p-loading';
+                var file = $(t).attr('value');
+                var connection_name = $(t).attr('data-conname');
+                var indOf = window.location.pathname.indexOf("/home",1);
+                var myStr = window.location.pathname.substr(0,indOf );
+                var url = myStr + "/delete"
+                $.ajax({
+                    type: 'POST',
+                    url: 'delete',
+                    data: {
+                        file: file,
+                        connection_name: connection_name
+                    },
+                    success: function(result){
+                        console.log(result);
+                        if(result == 'true'){
+                            p_loading.className = 'p-loading displayNone';
+                            alert('Delete Complete.');
+                            $(t).remove();
+                        }
+                    }
+                });
+            }
 
         } else if(a == "Rename"){
             var file = $(t).attr('value');
-            var connection_name = $(t).find("td:eq(1)").find("a").find("span").attr('data-conname');
-            var old_name = $(t).find("td:eq(1)").find("a").find("span").html();
+            var connection_name = $(t).attr('data-conname');
+            var old_name = $(t).attr('data-name');
+            var just_name = old_name;
+            var extension = "";
+            var dot = old_name.indexOf(".");
+            if(dot != -1){
+                just_name = old_name.substr(0, dot)
+                extension = old_name.substr(dot);
+            }
             $("#modal-rename").modal();
-            $("#new_name").val(old_name);
+            $("#new_name").val(just_name);
+            $("#extension").val(extension);
             $("#rename_file").val(file);
             $("#rename_connection").val(connection_name);
+
 ////            alert(file);
 ////            alert(connection_name);
 ////            alert($(t).find("td:eq(1)").find("span").html());
@@ -243,8 +266,8 @@
         }else if(a == "Transfer"){
             $("#modal-transfer").modal();
             var file = $(t).attr('value');
-            var connection_name = $(t).find("td:eq(1)").find("a").find("span").attr('data-conname');
-            var mime_type = $(t).find("td:eq(1)").find("a").find("span").attr('data-mime');
+            var connection_name = $(t).attr('data-conname');
+            var mime_type = $(t).attr('data-mime');
             document.getElementById('transfer-box').innerHTML = "";
             $("#tf_file").val(file);
             $("#from_connection").val(connection_name);

@@ -10,7 +10,7 @@
 
 <div id="top-bar" class="top-bar">
     <div id="logo" class="logo"><img src="{{URL::asset('images/logo-mini-white-gtc.png')}}"></div>
-    <div style="position: absolute;right: 50px;top: 17px;">admin gtc</div>
+    <div style="position: absolute;right: 50px;top: 17px;">{{ $usr->first_name." ".$usr->last_name  }}</div>
     <div id="userMenu" class="userMenu">
         <div class="dropdown">
             <button class="btn-userMenu dropdown-toggle " type="button" id="dropdownMenu1" data-toggle="dropdown"
@@ -81,20 +81,14 @@
                     <ul id="list-cloud" class="list-cloud">
                         @foreach ($link as $key => $val)
                             <li id="side-bar-select-{{ $key }}">
-                                <a href="{{ url("/gtl/{$key}") }}">
-                                    <div><span class="glyphicon glyphicon-cloud"></span>
+                                <a class="btn btn-link" href="{{ url("/gtl/{$key}") }}">
+                                    <div><span class="glyphicon glyphicon-th-list"></span>
                                         {{ $key }}
                                     </div>
                                 </a>
                             </li>
                         @endforeach
-                            {{--<li id="side-bar-select-test">--}}
-                                {{--<a class="btn btn-link" href="#">--}}
-                                    {{--<div><span class="glyphicon glyphicon-list"></span>--}}
-                                        {{--test gtl--}}
-                                    {{--</div>--}}
-                                {{--</a>--}}
-                            {{--</li>--}}
+
                     </ul>
                 </div>
             </div>
